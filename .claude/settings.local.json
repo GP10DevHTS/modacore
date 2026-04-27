@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r \"Flux::toast\\\\|flux\\(\\)->toast\\\\|Flux\\\\\\\\\\\\\\\\Flux\" /c/Users/gp10devhts/Herd/modacore/vendor/livewire/flux/src --include=\"*.php\" -l)",
+      "Bash(xargs grep *)",
+      "Bash(php artisan *)",
+      "Bash(php -l app/Livewire/Inventory/Index.php)",
+      "Bash(xargs -I{} basename {} .blade.php)",
+      "WebFetch(domain:github.com)",
+      "Bash(composer require *)",
+      "PowerShell(New-Item *)",
+      "Bash(./vendor/bin/pint *)",
+      "Bash(vendor/bin/pint *)",
+      "PowerShell(php vendor/bin/pint app/Livewire/Employees/Index.php app/Models/User.php app/Providers/AppServiceProvider.php database/seeders/RolesAndPermissionsSeeder.php database/seeders/SuperAdminSeeder.php database/seeders/DatabaseSeeder.php --format agent 2>&1)",
+      "PowerShell(php vendor/bin/pint app/Livewire/Customers/Index.php app/Livewire/Inventory/Index.php app/Livewire/Bookings/Index.php app/Livewire/Bookings/Create.php app/Livewire/Bookings/Show.php --format agent 2>&1)",
+      "PowerShell(php artisan test --compact 2>&1)"
+    ]
+  }
+}
