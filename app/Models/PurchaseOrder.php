@@ -15,8 +15,10 @@ class PurchaseOrder extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'po_number', 'supplier_id', 'status', 'total_amount',
+        'po_number', 'supplier_id', 'total_amount',
         'notes', 'expected_at', 'received_at', 'created_by',
+        'order_status', 'receipt_status', 'invoice_status',
+        'payment_status', 'closure_status', 'cancellation_type'
     ];
 
     protected function casts(): array
@@ -36,6 +38,46 @@ class PurchaseOrder extends Model
     public function items(): HasMany
     {
         return $this->hasMany(PurchaseOrderItem::class);
+    }
+
+    public function approvals(): HasMany
+    {
+        return $this->hasMany(PoApproval::class);
+    }
+
+    public function goodsReceipts(): HasMany
+    {
+        return $this->hasMany(GoodsReceipt::class);
+    }
+
+    public function supplierInvoices(): HasMany
+    {
+        return $this->hasMany(SupplierInvoice::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(SupplierPayment::class);
+    }
+
+    public function returns(): HasMany
+    {
+        return $this->hasMany(ReturnToSupplier::class);
+    }
+
+    public function creditNotes(): HasMany
+    {
+        return $this->hasMany(CreditNote::class);
+    }
+
+    public function refunds(): HasMany
+    {
+        return $this->hasMany(Refund::class);
+    }
+
+    public function auditTrails(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(AuditTrail::class, 'auditable');
     }
 
     public function createdBy(): BelongsTo

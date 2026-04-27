@@ -6,6 +6,7 @@ use Database\Factories\PurchaseOrderItemFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PurchaseOrderItem extends Model
 {
@@ -32,5 +33,15 @@ class PurchaseOrderItem extends Model
     public function inventoryItem(): BelongsTo
     {
         return $this->belongsTo(InventoryItem::class);
+    }
+
+    public function receiptItems(): HasMany
+    {
+        return $this->hasMany(GoodsReceiptItem::class);
+    }
+
+    public function invoiceItems(): HasMany
+    {
+        return $this->hasMany(SupplierInvoiceItem::class);
     }
 }
