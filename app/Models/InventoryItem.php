@@ -14,7 +14,7 @@ class InventoryItem extends Model
 
     protected $fillable = [
         'name', 'description', 'category_id', 'sku',
-        'base_rental_price', 'image_path', 'is_active',
+        'base_rental_price', 'stock_quantity', 'image_path', 'is_active',
     ];
 
     protected function casts(): array
@@ -22,6 +22,7 @@ class InventoryItem extends Model
         return [
             'is_active' => 'boolean',
             'base_rental_price' => 'decimal:2',
+            'stock_quantity' => 'integer',
         ];
     }
 

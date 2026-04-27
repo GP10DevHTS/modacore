@@ -4,6 +4,8 @@ namespace App\Livewire\Employees;
 
 use App\Models\User;
 use Flux\Flux;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -25,8 +27,6 @@ class Index extends Component
     public string $jobTitle = '';
 
     public string $role = '';
-
-    public string $password = '';
 
     public bool $isActive = true;
 
@@ -88,22 +88,16 @@ class Index extends Component
 
     public function save(): void
     {
-        $rules = [
+        abort_unless(auth()->user()->can($this->editingId ? 'employees.edit' : 'employees.create'), 403);
+
+        $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($this->editingId)],
             'phone' => ['nullable', 'string', 'max:50'],
             'jobTitle' => ['nullable', 'string', 'max:100'],
             'role' => ['required', Rule::in(Role::whereNot('name', 'superadmin')->pluck('name'))],
             'isActive' => ['boolean'],
-        ];
-
-        if (! $this->editingId) {
-            $rules['password'] = ['required', 'string', 'min:8'];
-        } else {
-            $rules['password'] = ['nullable', 'string', 'min:8'];
-        }
-
-        $validated = $this->validate($rules);
+        ]);
 
         $data = [
             'name' => $validated['name'],
@@ -113,24 +107,38 @@ class Index extends Component
             'is_active' => $validated['isActive'],
         ];
 
-        if ($validated['password']) {
-            $data['password'] = $validated['password'];
-        }
-
         if ($this->editingId) {
             $user = User::findOrFail($this->editingId);
             $user->update($data);
             $user->syncRoles([$validated['role']]);
             Flux::toast('Employee updated.');
         } else {
+            $data['password'] = Str::password(20);
             $user = User::create($data);
             $user->assignRole($validated['role']);
-            Flux::toast('Employee created.');
+
+            Password::sendResetLink(['email' => $user->email]);
+
+            Flux::toast('Employee created. A password setup link has been emailed to them.');
         }
 
         unset($this->employees);
         $this->js('$flux.modal("employee-form").close()');
         $this->resetForm();
+    }
+
+    public function resendSetupLink(int $id): void
+    {
+        abort_unless(auth()->user()->can('employees.edit'), 403);
+
+        $user = User::findOrFail($id);
+
+        if ($user->hasRole('superadmin')) {
+            return;
+        }
+
+        Password::sendResetLink(['email' => $user->email]);
+        Flux::toast('Password setup link sent to '.$user->email.'.');
     }
 
     public function openDelete(int $id): void
@@ -155,6 +163,8 @@ class Index extends Component
 
     public function delete(): void
     {
+        abort_unless(auth()->user()->can('employees.delete'), 403);
+
         $user = User::findOrFail($this->deletingId);
         $user->delete();
         unset($this->employees);
@@ -165,6 +175,8 @@ class Index extends Component
 
     public function toggleActive(int $id): void
     {
+        abort_unless(auth()->user()->can('employees.edit'), 403);
+
         $user = User::findOrFail($id);
 
         if ($user->hasRole('superadmin')) {
@@ -175,7 +187,7 @@ class Index extends Component
 
         $user->update(['is_active' => ! $user->is_active]);
         unset($this->employees);
-        Flux::toast($user->is_active ? 'Employee activated.' : 'Employee deactivated.');
+        Flux::toast($user->is_active ? 'Employee deactivated.' : 'Employee activated.');
     }
 
     private function resetForm(): void
@@ -186,7 +198,6 @@ class Index extends Component
         $this->phone = '';
         $this->jobTitle = '';
         $this->role = '';
-        $this->password = '';
         $this->isActive = true;
         $this->resetValidation();
     }

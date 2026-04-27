@@ -32,6 +32,8 @@ class Index extends Component
 
     public string $baseRentalPrice = '';
 
+    public int $stockQuantity = 1;
+
     public bool $isActive = true;
 
     public ?int $editingId = null;
@@ -97,6 +99,7 @@ class Index extends Component
         $this->categoryId = $item->category_id;
         $this->sku = $item->sku ?? '';
         $this->baseRentalPrice = (string) $item->base_rental_price;
+        $this->stockQuantity = $item->stock_quantity;
         $this->isActive = $item->is_active;
 
         $this->js('$flux.modal("item-form").show()');
@@ -112,6 +115,7 @@ class Index extends Component
             'categoryId' => ['required', Rule::exists('inventory_categories', 'id')],
             'sku' => ['nullable', 'string', 'max:100', Rule::unique('inventory_items', 'sku')->ignore($this->editingId)],
             'baseRentalPrice' => ['required', 'numeric', 'min:0'],
+            'stockQuantity' => ['required', 'integer', 'min:0'],
             'isActive' => ['boolean'],
         ]);
 
@@ -121,6 +125,7 @@ class Index extends Component
             'category_id' => $validated['categoryId'],
             'sku' => $validated['sku'] ?: null,
             'base_rental_price' => $validated['baseRentalPrice'],
+            'stock_quantity' => $validated['stockQuantity'],
             'is_active' => $validated['isActive'],
         ];
 
@@ -250,8 +255,9 @@ class Index extends Component
         $this->categoryId = null;
         $this->sku = '';
         $this->baseRentalPrice = '';
+        $this->stockQuantity = 1;
         $this->isActive = true;
-        $this->resetValidation(['name', 'description', 'categoryId', 'sku', 'baseRentalPrice', 'isActive']);
+        $this->resetValidation(['name', 'description', 'categoryId', 'sku', 'baseRentalPrice', 'stockQuantity', 'isActive']);
     }
 
     private function resetCategoryForm(): void

@@ -131,8 +131,8 @@
                                 </div>
                                 <div class="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-400 dark:text-zinc-500">
                                     <span>Qty: <strong class="text-zinc-600 dark:text-zinc-300">{{ $item->quantity }}</strong></span>
-                                    <span>Unit: <strong class="text-zinc-600 dark:text-zinc-300">${{ number_format($item->unit_price, 2) }}</strong></span>
-                                    <span>Subtotal: <strong class="text-zinc-700 dark:text-zinc-200">${{ number_format($item->subtotal, 2) }}</strong></span>
+                                    <span>Unit: <strong class="text-zinc-600 dark:text-zinc-300">UGX {{ number_format($item->unit_price, 0) }}</strong></span>
+                                    <span>Subtotal: <strong class="text-zinc-700 dark:text-zinc-200">UGX {{ number_format($item->subtotal, 0) }}</strong></span>
                                     @if($item->checked_out_at)
                                         <span>Checked out: <strong class="text-zinc-600 dark:text-zinc-300">{{ $item->checked_out_at->format('d M H:i') }}</strong></span>
                                     @endif
@@ -233,7 +233,7 @@
                                             <span class="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">Payment</span>
                                         @endif
                                     </td>
-                                    <td class="px-5 py-3 text-right font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">${{ number_format($payment->amount, 2) }}</td>
+                                    <td class="px-5 py-3 text-right font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">UGX {{ number_format($payment->amount, 0) }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -254,20 +254,20 @@
                 <div class="space-y-2.5 text-sm">
                     <div class="flex justify-between">
                         <span class="text-zinc-500 dark:text-zinc-400">Total Amount</span>
-                        <span class="font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">${{ number_format($booking->total_amount, 2) }}</span>
+                        <span class="font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">UGX {{ number_format($booking->total_amount, 0) }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-zinc-500 dark:text-zinc-400">Deposit Paid</span>
-                        <span class="tabular-nums text-zinc-700 dark:text-zinc-300">${{ number_format($this->depositPaid, 2) }}</span>
+                        <span class="tabular-nums text-zinc-700 dark:text-zinc-300">UGX {{ number_format($this->depositPaid, 0) }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-zinc-500 dark:text-zinc-400">Total Paid</span>
-                        <span class="tabular-nums font-medium text-emerald-600 dark:text-emerald-400">${{ number_format($this->amountPaid, 2) }}</span>
+                        <span class="tabular-nums font-medium text-emerald-600 dark:text-emerald-400">UGX {{ number_format($this->amountPaid, 0) }}</span>
                     </div>
                     <div class="flex justify-between border-t border-zinc-100 pt-2.5 dark:border-zinc-700/60">
                         <span class="font-semibold text-zinc-900 dark:text-zinc-100">Balance Due</span>
                         <span class="text-lg font-bold tabular-nums {{ $this->balanceDue > 0 ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400' }}">
-                            ${{ number_format($this->balanceDue, 2) }}
+                            UGX {{ number_format($this->balanceDue, 0) }}
                         </span>
                     </div>
                 </div>
@@ -343,7 +343,7 @@
             <div class="border-b border-zinc-100 pb-4 dark:border-zinc-700">
                 <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">Record Payment</h3>
                 <p class="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">
-                    Balance due: <strong class="text-zinc-900 dark:text-zinc-100">${{ number_format($this->balanceDue, 2) }}</strong>
+                    Balance due: <strong class="text-zinc-900 dark:text-zinc-100">UGX {{ number_format($this->balanceDue, 0) }}</strong>
                 </p>
             </div>
 

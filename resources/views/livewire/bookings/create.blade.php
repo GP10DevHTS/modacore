@@ -63,7 +63,7 @@
                         <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Item <span class="text-red-500">*</span></label>
                         <flux:select wire:model.live="pickerItemId" placeholder="Select item">
                             @foreach($this->inventoryItems as $item)
-                                <flux:select.option value="{{ $item->id }}">{{ $item->name }} — ${{ number_format($item->base_rental_price, 2) }}</flux:select.option>
+                                <flux:select.option value="{{ $item->id }}">{{ $item->name }} — UGX {{ number_format($item->base_rental_price, 0) }}</flux:select.option>
                             @endforeach
                         </flux:select>
                         <flux:error name="pickerItemId" />
@@ -122,7 +122,7 @@
                                 {{-- Unit price --}}
                                 <div class="hidden w-24 text-right sm:block">
                                     <div class="text-xs text-zinc-400 dark:text-zinc-500">Unit price</div>
-                                    <div class="font-medium tabular-nums text-zinc-700 dark:text-zinc-300">${{ number_format($line['unit_price'], 2) }}</div>
+                                    <div class="font-medium tabular-nums text-zinc-700 dark:text-zinc-300">UGX {{ number_format($line['unit_price'], 0) }}</div>
                                 </div>
 
                                 {{-- Quantity stepper --}}
@@ -142,7 +142,7 @@
 
                                 {{-- Subtotal --}}
                                 <div class="w-24 text-right">
-                                    <div class="font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">${{ number_format($line['subtotal'], 2) }}</div>
+                                    <div class="font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">UGX {{ number_format($line['subtotal'], 0) }}</div>
                                 </div>
 
                                 {{-- Remove --}}
@@ -159,7 +159,7 @@
 
                     <div class="flex items-center justify-end gap-2 border-t border-zinc-100 bg-zinc-50/60 px-5 py-3 dark:border-zinc-700/60 dark:bg-zinc-800/40">
                         <span class="text-sm text-zinc-500 dark:text-zinc-400">Total</span>
-                        <span class="text-lg font-bold tabular-nums text-zinc-900 dark:text-zinc-100">${{ number_format($this->totalAmount, 2) }}</span>
+                        <span class="text-lg font-bold tabular-nums text-zinc-900 dark:text-zinc-100">UGX {{ number_format($this->totalAmount, 0) }}</span>
                     </div>
                 </div>
             @endif
@@ -178,7 +178,7 @@
                     </div>
                     <div class="flex justify-between border-t border-zinc-100 pt-2.5 dark:border-zinc-700/60">
                         <span class="font-semibold text-zinc-900 dark:text-zinc-100">Total</span>
-                        <span class="text-lg font-bold tabular-nums text-zinc-900 dark:text-zinc-100">${{ number_format($this->totalAmount, 2) }}</span>
+                        <span class="text-lg font-bold tabular-nums text-zinc-900 dark:text-zinc-100">UGX {{ number_format($this->totalAmount, 0) }}</span>
                     </div>
                 </div>
 

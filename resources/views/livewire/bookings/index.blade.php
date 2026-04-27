@@ -104,7 +104,7 @@
                         </td>
 
                         <td class="px-5 py-3.5 text-right font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">
-                            ${{ number_format($booking->total_amount, 2) }}
+                            UGX {{ number_format($booking->total_amount, 0) }}
                         </td>
 
                         <td class="px-5 py-3.5 text-center">

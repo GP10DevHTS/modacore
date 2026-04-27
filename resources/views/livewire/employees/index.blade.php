@@ -118,6 +118,13 @@
                             @if(! $isSuperAdmin)
                                 <div class="flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                                     @can('employees.edit')
+                                    <button wire:click="resendSetupLink({{ $employee->id }})"
+                                        class="rounded-lg p-1.5 text-zinc-400 hover:bg-amber-50 hover:text-amber-600 dark:hover:bg-amber-900/20 dark:hover:text-amber-400 transition-colors"
+                                        title="Resend password setup link">
+                                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                        </svg>
+                                    </button>
                                     <button wire:click="openEdit({{ $employee->id }})"
                                         class="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-700 dark:hover:text-zinc-300 transition-colors"
                                         title="Edit">
@@ -171,7 +178,7 @@
                     {{ $editingId ? 'Edit Employee' : 'Add Employee' }}
                 </h3>
                 <p class="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">
-                    {{ $editingId ? 'Update employee details and role.' : 'Create a new staff account.' }}
+                    {{ $editingId ? 'Update employee details and role.' : 'A password setup link will be emailed to the new employee.' }}
                 </p>
             </div>
 
@@ -204,13 +211,6 @@
                         @endforeach
                     </flux:select>
                     <flux:error name="role" />
-                </div>
-                <div class="{{ $editingId ? 'sm:col-span-2' : '' }}">
-                    <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                        Password {{ $editingId ? '(leave blank to keep current)' : '*' }}
-                    </label>
-                    <flux:input wire:model="password" type="password" placeholder="Min. 8 characters" />
-                    <flux:error name="password" />
                 </div>
                 @if($editingId)
                     <div>

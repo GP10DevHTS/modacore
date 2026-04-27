@@ -61,6 +61,7 @@
                         <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Item</th>
                         <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Category</th>
                         <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">SKU</th>
+                        <th class="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Stock</th>
                         <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Rate / Hire</th>
                         <th class="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Status</th>
                         <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Actions</th>
@@ -100,8 +101,13 @@
                                     <span class="text-zinc-300 dark:text-zinc-600">—</span>
                                 @endif
                             </td>
+                            <td class="px-5 py-3.5 text-center">
+                                <span class="inline-flex items-center justify-center min-w-[2rem] rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-semibold tabular-nums text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                    {{ $item->stock_quantity }}
+                                </span>
+                            </td>
                             <td class="px-5 py-3.5 text-right font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">
-                                ${{ number_format($item->base_rental_price, 2) }}
+                                UGX {{ number_format($item->base_rental_price, 0) }}
                             </td>
                             <td class="px-5 py-3.5 text-center">
                                 <button wire:click="toggleActive({{ $item->id }})"
@@ -132,7 +138,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-5 py-16 text-center">
+                            <td colspan="7" class="px-5 py-16 text-center">
                                 <svg class="mx-auto mb-3 size-10 text-zinc-200 dark:text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                                 <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">
                                     @if($search) No items match "{{ $search }}" @else No inventory items yet @endif
@@ -239,10 +245,15 @@
                     <flux:input wire:model="sku" placeholder="e.g. WG-001" />
                     <flux:error name="sku" />
                 </div>
-                <div class="sm:col-span-2">
-                    <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Base Rental Price <span class="text-red-500">*</span></label>
-                    <flux:input wire:model="baseRentalPrice" type="number" step="0.01" min="0" placeholder="0.00" />
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Base Rental Price (UGX) <span class="text-red-500">*</span></label>
+                    <flux:input wire:model="baseRentalPrice" type="number" step="1" min="0" placeholder="0" />
                     <flux:error name="baseRentalPrice" />
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Stock Quantity <span class="text-red-500">*</span></label>
+                    <flux:input wire:model="stockQuantity" type="number" min="0" step="1" placeholder="1" />
+                    <flux:error name="stockQuantity" />
                 </div>
                 <div class="sm:col-span-2">
                     <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Description</label>

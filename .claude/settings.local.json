@@ -13,7 +13,16 @@
       "Bash(vendor/bin/pint *)",
       "PowerShell(php vendor/bin/pint app/Livewire/Employees/Index.php app/Models/User.php app/Providers/AppServiceProvider.php database/seeders/RolesAndPermissionsSeeder.php database/seeders/SuperAdminSeeder.php database/seeders/DatabaseSeeder.php --format agent 2>&1)",
       "PowerShell(php vendor/bin/pint app/Livewire/Customers/Index.php app/Livewire/Inventory/Index.php app/Livewire/Bookings/Index.php app/Livewire/Bookings/Create.php app/Livewire/Bookings/Show.php --format agent 2>&1)",
-      "PowerShell(php artisan test --compact 2>&1)"
+      "PowerShell(php artisan test --compact 2>&1)",
+      "PowerShell(composer require *)",
+      "PowerShell(php artisan make:model Supplier -mf --no-interaction 2>&1; php artisan make:model PurchaseOrder -mf --no-interaction 2>&1; php artisan make:model PurchaseOrderItem -f --no-interaction 2>&1; php artisan make:model PurchaseOrderItem -m --no-interaction 2>&1)",
+      "PowerShell(php artisan make:migration add_stock_quantity_to_inventory_items_table --no-interaction 2>&1; php artisan make:livewire Roles/Index --no-interaction 2>&1; php artisan make:livewire Suppliers/Index --no-interaction 2>&1; php artisan make:livewire PurchaseOrders/Index --no-interaction 2>&1; php artisan make:livewire PurchaseOrders/Create --no-interaction 2>&1; php artisan make:seeder DemoDataSeeder --no-interaction 2>&1)",
+      "PowerShell(Select-String *)",
+      "PowerShell(php artisan migrate --no-interaction 2>&1 | Select-Object -Last 15)",
+      "PowerShell(php artisan migrate:status --no-interaction 2>&1 | Select-String \"two_factor|pending|No\" | Select-Object -First 20)",
+      "PowerShell(Remove-Item *)",
+      "PowerShell(php artisan migrate:status --no-interaction 2>&1 | Select-String \"Pending\")",
+      "PowerShell(php artisan migrate:status --no-interaction 2>&1 | Select-Object -Last 20)"
     ]
   }
 }

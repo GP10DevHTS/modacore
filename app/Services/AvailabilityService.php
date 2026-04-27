@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\BookingItem;
+use App\Models\InventoryItem;
 use Illuminate\Support\Carbon;
 
 class AvailabilityService
@@ -18,9 +19,7 @@ class AvailabilityService
         Carbon $hireTo,
         ?int $excludeBookingId = null,
     ): bool {
-        return ! $this->conflictingBookingExists(
-            $inventoryItemId, $variantId, $hireFrom, $hireTo, $excludeBookingId,
-        );
+        return $this->availableQuantity($inventoryItemId, $variantId, $hireFrom, $hireTo, $excludeBookingId) > 0;
     }
 
     /**
@@ -33,8 +32,8 @@ class AvailabilityService
         Carbon $hireTo,
         ?int $excludeBookingId = null,
     ): ?string {
-        if ($this->conflictingBookingExists($inventoryItemId, $variantId, $hireFrom, $hireTo, $excludeBookingId)) {
-            return 'This item is already booked for the selected dates.';
+        if ($this->availableQuantity($inventoryItemId, $variantId, $hireFrom, $hireTo, $excludeBookingId) <= 0) {
+            return 'This item is fully booked for the selected dates.';
         }
 
         return null;
@@ -72,14 +71,25 @@ class AvailabilityService
         return $errors;
     }
 
-    private function conflictingBookingExists(
+    /**
+     * How many units of this item are not already booked in the given window.
+     */
+    public function availableQuantity(
         int $inventoryItemId,
         ?int $variantId,
         Carbon $hireFrom,
         Carbon $hireTo,
-        ?int $excludeBookingId,
-    ): bool {
-        return BookingItem::query()
+        ?int $excludeBookingId = null,
+    ): int {
+        $item = InventoryItem::find($inventoryItemId);
+
+        if (! $item) {
+            return 0;
+        }
+
+        $stock = $item->stock_quantity;
+
+        $booked = BookingItem::query()
             ->where('inventory_item_id', $inventoryItemId)
             ->when($variantId, fn ($q) => $q->where('inventory_variant_id', $variantId))
             ->whereHas('booking', function ($q) use ($hireFrom, $hireTo, $excludeBookingId) {
@@ -88,6 +98,8 @@ class AvailabilityService
                     ->where('hire_from', '<=', $hireTo)
                     ->where('hire_to', '>=', $hireFrom);
             })
-            ->exists();
+            ->sum('quantity');
+
+        return max(0, $stock - (int) $booked);
     }
 }
