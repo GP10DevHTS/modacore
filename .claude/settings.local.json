@@ -24,5 +24,9 @@
       "PowerShell(php artisan migrate:status --no-interaction 2>&1 | Select-String \"Pending\")",
       "PowerShell(php artisan migrate:status --no-interaction 2>&1 | Select-Object -Last 20)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "laravel-boost"
+  ],
+  "enableAllProjectMcpServers": true
 }
