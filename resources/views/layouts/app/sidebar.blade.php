@@ -498,7 +498,7 @@
                 </a>
             </div>
 
-            <div class="erp-nav-section">
+            {{-- <div class="erp-nav-section">
                 <div class="erp-nav-label">Shop Floor</div>
                 <a href="#" wire:navigate class="erp-nav-item {{ request()->routeIs('orders.*') ? 'active' : '' }}">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -530,7 +530,7 @@
                     </svg>
                     Quality Control
                 </a>
-            </div>
+            </div> --}}
 
             <div class="erp-nav-section">
                 <div class="erp-nav-label">Inventory</div>
