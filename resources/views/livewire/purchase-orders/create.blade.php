@@ -27,12 +27,13 @@
                 <div class="space-y-4">
                     <flux:field>
                         <flux:label>Supplier <span class="text-red-500">*</span></flux:label>
-                        <x-searchable-select
-                            :options="$this->suppliers"
-                            wire-model="supplierId"
-                            :selected-value="$supplierId"
-                            placeholder="Select a supplier"
-                        />
+                        <select wire:model="supplierId"
+                            class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
+                            <option value="">Select a supplier</option>
+                            @foreach($this->suppliers as $supplier)
+                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                            @endforeach
+                        </select>
                         <flux:error name="supplierId" />
                     </flux:field>
                     <flux:field>
@@ -53,12 +54,13 @@
                 <div class="flex flex-wrap items-end gap-3">
                     <flux:field class="min-w-0 flex-1">
                         <flux:label>Item <span class="text-red-500">*</span></flux:label>
-                        <x-searchable-select
-                            :options="$this->inventoryItems"
-                            wire-model="pickerItemId"
-                            :selected-value="$pickerItemId"
-                            placeholder="Select item"
-                        />
+                        <select wire:model="pickerItemId"
+                            class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
+                            <option value="">Select item</option>
+                            @foreach($this->inventoryItems as $inv)
+                                <option value="{{ $inv->id }}">{{ $inv->name }}</option>
+                            @endforeach
+                        </select>
                         <flux:error name="pickerItemId" />
                     </flux:field>
                     <flux:field class="w-24">

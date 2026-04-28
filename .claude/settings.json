@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(php artisan route:list *)",
+      "PowerShell(php artisan migrate:status *)",
+      "PowerShell(php artisan config:show *)",
+      "PowerShell(php artisan list *)",
+      "PowerShell(php artisan test --compact *)",
+      "PowerShell(php artisan test --compact --filter=*)",
+      "PowerShell(php artisan migrate --no-interaction *)",
+      "PowerShell(vendor/bin/pint --dirty *)",
+      "PowerShell(php artisan *)",
+      "mcp__laravel-boost__last-error",
+      "mcp__laravel-boost__read-log-entries",
+      "mcp__laravel-boost__browser-logs",
+      "mcp__laravel-boost__get-absolute-url",
+      "mcp__laravel-boost__search-docs",
+      "mcp__laravel-boost__database-query"
+    ]
+  }
+}

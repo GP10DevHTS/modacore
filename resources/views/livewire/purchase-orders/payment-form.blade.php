@@ -32,11 +32,12 @@
 
             <flux:field>
                 <flux:label>Payment Method <span class="text-red-500">*</span></flux:label>
-                <flux:select wire:model="paymentMethod">
+                <select wire:model="paymentMethod"
+                    class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
                     @foreach($this->paymentMethods as $val => $label)
-                        <flux:select.option value="{{ $val }}">{{ $label }}</flux:select.option>
+                        <option value="{{ $val }}">{{ $label }}</option>
                     @endforeach
-                </flux:select>
+                </select>
                 <flux:error name="paymentMethod" />
             </flux:field>
 

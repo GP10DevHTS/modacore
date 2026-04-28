@@ -205,11 +205,13 @@
                 </div>
                 <div>
                     <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Role <span class="text-red-500">*</span></label>
-                    <flux:select wire:model="role" placeholder="Select a role">
+                    <select wire:model="role"
+                        class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
+                        <option value="">Select a role</option>
                         @foreach($this->availableRoles as $r)
-                            <flux:select.option value="{{ $r->name }}">{{ ucfirst($r->name) }}</flux:select.option>
+                            <option value="{{ $r->name }}">{{ ucfirst($r->name) }}</option>
                         @endforeach
-                    </flux:select>
+                    </select>
                     <flux:error name="role" />
                 </div>
                 @if($editingId)

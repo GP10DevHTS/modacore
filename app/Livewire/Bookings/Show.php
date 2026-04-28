@@ -4,6 +4,7 @@ namespace App\Livewire\Bookings;
 
 use App\Models\Booking;
 use App\Models\BookingItem;
+use App\Models\DepositRefund;
 use App\Models\Payment;
 use Flux\Flux;
 use Livewire\Attributes\Computed;
@@ -25,6 +26,15 @@ class Show extends Component
 
     public string $paymentPaidAt = '';
 
+    // Deposit refund state
+    public ?int $refundDepositId = null;
+
+    public string $refundAmount = '';
+
+    public string $refundReason = '';
+
+    public string $refundDate = '';
+
     #[Computed]
     public function amountPaid(): float
     {
@@ -45,8 +55,9 @@ class Show extends Component
 
     public function mount(Booking $booking): void
     {
-        $this->booking = $booking->load(['customer', 'items.inventoryItem', 'items.variant', 'payments.createdBy']);
+        $this->booking = $booking->load(['customer', 'items.inventoryItem', 'items.variant', 'payments.refunds', 'depositRefunds']);
         $this->paymentPaidAt = now()->format('Y-m-d');
+        $this->refundDate = now()->format('Y-m-d');
     }
 
     public function checkOutItem(int $itemId): void
@@ -135,6 +146,7 @@ class Show extends Component
         ]);
 
         Payment::create([
+            'receipt_number' => Payment::generateReceiptNumber(),
             'booking_id' => $this->booking->id,
             'amount' => $this->paymentAmount,
             'payment_method' => $this->paymentMethod,
@@ -145,11 +157,71 @@ class Show extends Component
             'created_by' => auth()->id(),
         ]);
 
-        $this->booking->refresh();
+        $this->booking->refresh()->load(['payments.refunds', 'depositRefunds']);
         unset($this->amountPaid, $this->depositPaid, $this->balanceDue);
 
         $this->js('$flux.modal("record-payment").close()');
         Flux::toast('Payment recorded.');
+    }
+
+    public function openRefundForm(int $paymentId): void
+    {
+        $payment = $this->booking->payments->find($paymentId);
+
+        if (! $payment || ! $payment->is_deposit) {
+            Flux::toast(text: 'Only deposit payments can be refunded.', variant: 'danger');
+
+            return;
+        }
+
+        $available = $payment->availableForRefund();
+
+        if ($available <= 0) {
+            Flux::toast(text: 'This deposit has already been fully refunded.', variant: 'danger');
+
+            return;
+        }
+
+        $this->refundDepositId = $paymentId;
+        $this->refundAmount = (string) $available;
+        $this->refundReason = '';
+        $this->refundDate = now()->format('Y-m-d');
+        $this->resetValidation(['refundAmount', 'refundReason', 'refundDate']);
+        $this->js('$flux.modal("refund-deposit").show()');
+    }
+
+    public function processRefund(): void
+    {
+        abort_unless(auth()->user()->can('payments.create'), 403);
+
+        $payment = Payment::find($this->refundDepositId);
+
+        abort_if(! $payment || $payment->booking_id !== $this->booking->id, 404);
+
+        $maxRefund = $payment->availableForRefund();
+
+        $this->validate([
+            'refundAmount' => ['required', 'numeric', 'min:0.01', "max:{$maxRefund}"],
+            'refundDate' => ['required', 'date'],
+            'refundReason' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        DepositRefund::create([
+            'refund_number' => DepositRefund::generateRefundNumber(),
+            'booking_id' => $this->booking->id,
+            'payment_id' => $payment->id,
+            'amount' => $this->refundAmount,
+            'refunded_at' => $this->refundDate,
+            'reason' => $this->refundReason ?: null,
+            'created_by' => auth()->id(),
+        ]);
+
+        $this->booking->refresh()->load(['payments.refunds', 'depositRefunds']);
+        unset($this->amountPaid, $this->depositPaid, $this->balanceDue);
+        $this->refundDepositId = null;
+
+        $this->js('$flux.modal("refund-deposit").close()');
+        Flux::toast('Deposit refund recorded.');
     }
 
     public function transitionStatus(string $status): void

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ReceiptController;
 use App\Livewire\Bookings\Create as BookingCreate;
 use App\Livewire\Bookings\Index as BookingsIndex;
 use App\Livewire\Bookings\Show as BookingShow;
@@ -34,6 +35,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/bookings/create', BookingCreate::class)->name('bookings.create');
     Route::get('/bookings/{booking}', BookingShow::class)->name('bookings.show');
     Route::get('/bookings/{booking}/edit', BookingCreate::class)->name('bookings.edit');
+
+    // Receipts
+    Route::get('/payments/{payment}/receipt', [ReceiptController::class, 'payment'])->name('receipts.payment');
+    Route::get('/refunds/{refund}/receipt', [ReceiptController::class, 'refund'])->name('receipts.refund');
 
     Route::get('/suppliers', SuppliersIndex::class)->name('suppliers.index');
 

@@ -29,11 +29,13 @@
                 <div class="space-y-4">
                     <div>
                         <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Customer <span class="text-red-500">*</span></label>
-                        <flux:select wire:model="customerId" placeholder="Select a customer">
+                        <select wire:model="customerId"
+                            class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
+                            <option value="">Select a customer</option>
                             @foreach($this->customers as $customer)
-                                <flux:select.option value="{{ $customer->id }}">{{ $customer->name }} — {{ $customer->phone }}</flux:select.option>
+                                <option value="{{ $customer->id }}">{{ $customer->name }} — {{ $customer->phone }}</option>
                             @endforeach
-                        </flux:select>
+                        </select>
                         <flux:error name="customerId" />
                     </div>
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -61,21 +63,25 @@
                 <div class="flex flex-wrap items-end gap-3">
                     <div class="min-w-0 flex-1">
                         <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Item <span class="text-red-500">*</span></label>
-                        <flux:select wire:model.live="pickerItemId" placeholder="Select item">
+                        <select wire:model.live="pickerItemId"
+                            class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
+                            <option value="">Select item</option>
                             @foreach($this->inventoryItems as $item)
-                                <flux:select.option value="{{ $item->id }}">{{ $item->name }} — UGX {{ number_format($item->base_rental_price, 0) }}</flux:select.option>
+                                <option value="{{ $item->id }}">{{ $item->name }} — UGX {{ number_format($item->base_rental_price, 0) }}</option>
                             @endforeach
-                        </flux:select>
+                        </select>
                         <flux:error name="pickerItemId" />
                     </div>
                     @if($this->selectedItemVariants->count() > 0)
                         <div class="w-40">
                             <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Variant</label>
-                            <flux:select wire:model="pickerVariantId" placeholder="Any">
+                            <select wire:model="pickerVariantId"
+                                class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
+                                <option value="">Any</option>
                                 @foreach($this->selectedItemVariants as $variant)
-                                    <flux:select.option value="{{ $variant->id }}">{{ $variant->name }}</flux:select.option>
+                                    <option value="{{ $variant->id }}">{{ $variant->name }}</option>
                                 @endforeach
-                            </flux:select>
+                            </select>
                         </div>
                     @endif
                     <div class="w-24">
