@@ -2,8 +2,11 @@
 
 namespace App\Livewire\PurchaseOrders;
 
+use App\Enums\CancellationType;
 use App\Models\PurchaseOrder;
+use App\Services\CancellationService;
 use Flux\Flux;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -16,6 +19,10 @@ class Index extends Component
 
     public string $statusFilter = '';
 
+    public string $cancelReason = '';
+
+    public ?int $cancellingOrderId = null;
+
     #[Computed]
     public function orders()
     {
@@ -25,7 +32,7 @@ class Index extends Component
                 $q->where('po_number', 'like', "%{$this->search}%")
                     ->orWhereHas('supplier', fn ($q) => $q->where('name', 'like', "%{$this->search}%"));
             }))
-            ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
+            ->when($this->statusFilter, fn ($q) => $q->where('order_status', $this->statusFilter))
             ->latest()
             ->paginate(15);
     }
@@ -40,42 +47,43 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public function markReceived(int $id): void
+    public function confirmCancel(int $id): void
     {
         abort_unless(auth()->user()->can('inventory.edit'), 403);
 
-        $order = PurchaseOrder::with('items')->findOrFail($id);
-
-        if ($order->status !== 'sent') {
-            Flux::toast(text: 'Only sent orders can be marked as received.', variant: 'danger');
-
-            return;
-        }
-
-        foreach ($order->items as $item) {
-            $item->inventoryItem()->increment('stock_quantity', $item->quantity);
-        }
-
-        $order->update(['status' => 'received', 'received_at' => now()]);
-        unset($this->orders);
-        Flux::toast('Purchase order received. Stock updated.');
+        $this->cancellingOrderId = $id;
+        $this->cancelReason = '';
+        Flux::modal('cancel-order')->show();
     }
 
-    public function cancelOrder(int $id): void
+    public function cancelOrder(CancellationService $service): void
     {
         abort_unless(auth()->user()->can('inventory.edit'), 403);
 
-        $order = PurchaseOrder::findOrFail($id);
+        $this->validate(['cancelReason' => ['required', 'string', 'min:5']]);
 
-        if (in_array($order->status, ['received', 'cancelled'])) {
-            Flux::toast(text: 'This order cannot be cancelled.', variant: 'danger');
+        $order = PurchaseOrder::findOrFail($this->cancellingOrderId);
+
+        try {
+            $cancellation = $service->initiate($order, $this->cancelReason);
+        } catch (ValidationException $e) {
+            Flux::toast(text: $e->getMessage(), variant: 'danger');
 
             return;
         }
 
-        $order->update(['status' => 'cancelled']);
+        Flux::modal('cancel-order')->close();
         unset($this->orders);
-        Flux::toast('Purchase order cancelled.');
+
+        $type = $cancellation->cancellation_type;
+        $msg = match ($type) {
+            default => 'Order cancelled.',
+            CancellationType::WithReturnToSupplier => 'Cancellation initiated. A Return to Supplier is required.',
+            CancellationType::WithCreditNote => 'Cancellation initiated. A Credit Note from the supplier is required.',
+            CancellationType::WithRefund => 'Cancellation initiated. A Refund must be processed.',
+        };
+
+        Flux::toast($msg);
     }
 
     public function render()

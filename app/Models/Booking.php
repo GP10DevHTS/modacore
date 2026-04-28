@@ -75,6 +75,19 @@ class Booking extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function depositRefunds(): HasMany
+    {
+        return $this->hasMany(DepositRefund::class);
+    }
+
+    public function totalDepositsHeld(): float
+    {
+        $deposited = (float) $this->payments()->where('is_deposit', true)->sum('amount');
+        $refunded = (float) $this->depositRefunds()->sum('amount');
+
+        return max(0, $deposited - $refunded);
+    }
+
     public function getHireDurationAttribute(): int
     {
         return $this->hire_from->diffInDays($this->hire_to) + 1;

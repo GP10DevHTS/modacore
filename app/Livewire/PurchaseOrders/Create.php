@@ -2,9 +2,11 @@
 
 namespace App\Livewire\PurchaseOrders;
 
+use App\Enums\OrderStatus;
 use App\Models\InventoryItem;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
+use App\Services\PurchaseOrderService;
 use Flux\Flux;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -32,8 +34,8 @@ class Create extends Component
         abort_unless(auth()->user()->can('inventory.create'), 403);
 
         if ($purchaseOrder->exists ?? false) {
-            if (in_array($purchaseOrder->status, ['received', 'cancelled'])) {
-                $this->redirectRoute('purchase-orders.index');
+            if (! $purchaseOrder->order_status->canEdit()) {
+                $this->redirectRoute('purchase-orders.show', $purchaseOrder->id);
 
                 return;
             }
@@ -107,7 +109,6 @@ class Create extends Component
         ];
 
         unset($this->totalAmount);
-
         $this->pickerItemId = '';
         $this->pickerQuantity = '1';
         $this->pickerUnitCost = '';
@@ -130,7 +131,7 @@ class Create extends Component
         unset($this->totalAmount);
     }
 
-    public function save(string $status = 'draft'): void
+    public function save(string $action = 'draft', ?PurchaseOrderService $poService = null): void
     {
         abort_unless(auth()->user()->can($this->editingOrderId ? 'inventory.edit' : 'inventory.create'), 403);
 
@@ -147,7 +148,6 @@ class Create extends Component
             $order = PurchaseOrder::findOrFail($this->editingOrderId);
             $order->update([
                 'supplier_id' => $this->supplierId,
-                'status' => $status,
                 'total_amount' => $total,
                 'expected_at' => $this->expectedAt ?: null,
                 'notes' => $this->notes ?: null,
@@ -157,7 +157,7 @@ class Create extends Component
             $order = PurchaseOrder::create([
                 'po_number' => PurchaseOrder::generatePoNumber(),
                 'supplier_id' => $this->supplierId,
-                'status' => $status,
+                'order_status' => OrderStatus::Draft,
                 'total_amount' => $total,
                 'expected_at' => $this->expectedAt ?: null,
                 'notes' => $this->notes ?: null,
@@ -174,8 +174,14 @@ class Create extends Component
             ]);
         }
 
+        if ($action === 'sent' && $poService) {
+            $poService->send($order);
+        } elseif ($action === 'approved' && $poService) {
+            $poService->approve($order);
+        }
+
         Flux::toast($this->editingOrderId ? 'Purchase order updated.' : 'Purchase order created.');
-        $this->redirectRoute('purchase-orders.index');
+        $this->redirectRoute('purchase-orders.show', $order->id);
     }
 
     public function render()

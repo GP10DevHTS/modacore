@@ -215,9 +215,10 @@
                             <tr class="border-b border-zinc-100 bg-zinc-50 dark:border-zinc-700/50 dark:bg-zinc-800/40">
                                 <th class="px-5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Date</th>
                                 <th class="px-5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Method</th>
-                                <th class="px-5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Reference</th>
+                                <th class="px-5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Receipt #</th>
                                 <th class="px-5 py-2.5 text-center text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Type</th>
                                 <th class="px-5 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Amount</th>
+                                <th class="px-5 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-zinc-100 dark:divide-zinc-700/50">
@@ -225,7 +226,13 @@
                                 <tr wire:key="payment-{{ $payment->id }}">
                                     <td class="px-5 py-3 text-zinc-700 dark:text-zinc-300">{{ $payment->paid_at->format('d M Y') }}</td>
                                     <td class="px-5 py-3 text-zinc-700 dark:text-zinc-300">{{ ucwords(str_replace('_', ' ', $payment->payment_method)) }}</td>
-                                    <td class="px-5 py-3 text-zinc-500 dark:text-zinc-400 font-mono text-xs">{{ $payment->reference ?: '—' }}</td>
+                                    <td class="px-5 py-3">
+                                        @if($payment->receipt_number)
+                                            <code class="font-mono text-xs text-zinc-500 dark:text-zinc-400">{{ $payment->receipt_number }}</code>
+                                        @else
+                                            <span class="text-zinc-300 dark:text-zinc-600">—</span>
+                                        @endif
+                                    </td>
                                     <td class="px-5 py-3 text-center">
                                         @if($payment->is_deposit)
                                             <span class="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/20 dark:text-amber-400">Deposit</span>
@@ -234,6 +241,26 @@
                                         @endif
                                     </td>
                                     <td class="px-5 py-3 text-right font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">UGX {{ number_format($payment->amount, 0) }}</td>
+                                    <td class="px-5 py-3 text-right">
+                                        <div class="flex items-center justify-end gap-1.5">
+                                            @if($payment->receipt_number)
+                                                <a href="{{ route('receipts.payment', $payment) }}" target="_blank"
+                                                    class="inline-flex items-center gap-1 rounded-md bg-zinc-100 px-2 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 transition-colors">
+                                                    <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                                    Receipt
+                                                </a>
+                                            @endif
+                                            @if($payment->is_deposit && $payment->availableForRefund() > 0)
+                                                @can('payments.create')
+                                                <button wire:click="openRefundForm({{ $payment->id }})"
+                                                    class="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/30 transition-colors">
+                                                    <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                                                    Refund
+                                                </button>
+                                                @endcan
+                                            @endif
+                                        </div>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -337,6 +364,44 @@
         </div>
     </div>
 
+    {{-- Deposit Refunds --}}
+    @if($booking->depositRefunds->count() > 0)
+        <div class="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-700/60 dark:bg-zinc-900">
+            <div class="flex items-center justify-between border-b border-zinc-200 px-5 py-4 dark:border-zinc-700/60">
+                <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Deposit Refunds</h2>
+                <span class="text-xs text-zinc-400 dark:text-zinc-500">{{ $booking->depositRefunds->count() }} recorded</span>
+            </div>
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-zinc-100 bg-zinc-50 dark:border-zinc-700/50 dark:bg-zinc-800/40">
+                        <th class="px-5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Date</th>
+                        <th class="px-5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Ref #</th>
+                        <th class="px-5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Reason</th>
+                        <th class="px-5 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Amount</th>
+                        <th class="px-5 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Receipt</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-100 dark:divide-zinc-700/50">
+                    @foreach($booking->depositRefunds as $refund)
+                        <tr wire:key="refund-{{ $refund->id }}">
+                            <td class="px-5 py-3 text-zinc-700 dark:text-zinc-300">{{ $refund->refunded_at->format('d M Y') }}</td>
+                            <td class="px-5 py-3"><code class="font-mono text-xs text-zinc-500 dark:text-zinc-400">{{ $refund->refund_number }}</code></td>
+                            <td class="px-5 py-3 text-zinc-500 dark:text-zinc-400">{{ $refund->reason ?: '—' }}</td>
+                            <td class="px-5 py-3 text-right font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">UGX {{ number_format($refund->amount, 0) }}</td>
+                            <td class="px-5 py-3 text-right">
+                                <a href="{{ route('receipts.refund', $refund) }}" target="_blank"
+                                    class="inline-flex items-center gap-1 rounded-md bg-zinc-100 px-2 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 transition-colors">
+                                    <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    Receipt
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
+
     {{-- Record Payment Modal --}}
     <flux:modal name="record-payment" class="md:w-[30rem]">
         <form wire:submit="recordPayment" class="space-y-5">
@@ -357,11 +422,12 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Method <span class="text-red-500">*</span></label>
-                        <flux:select wire:model="paymentMethod">
-                            <flux:select.option value="cash">Cash</flux:select.option>
-                            <flux:select.option value="card">Card</flux:select.option>
-                            <flux:select.option value="mobile_money">Mobile Money</flux:select.option>
-                        </flux:select>
+                        <select wire:model="paymentMethod"
+                            class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
+                            <option value="cash">Cash</option>
+                            <option value="card">Card</option>
+                            <option value="mobile_money">Mobile Money</option>
+                        </select>
                         <flux:error name="paymentMethod" />
                     </div>
                     <div>
@@ -392,6 +458,42 @@
                 <button type="submit"
                     class="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-black hover:bg-amber-400 transition-colors">
                     Record Payment
+                </button>
+            </div>
+        </form>
+    </flux:modal>
+
+    {{-- Refund Deposit Modal --}}
+    <flux:modal name="refund-deposit" class="md:w-[28rem]">
+        <form wire:submit="processRefund" class="space-y-5">
+            <div class="border-b border-zinc-100 pb-4 dark:border-zinc-700">
+                <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">Refund Security Deposit</h3>
+                <p class="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">Record a deposit refund to the customer.</p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Refund Amount (UGX) <span class="text-red-500">*</span></label>
+                    <flux:input wire:model="refundAmount" type="number" step="0.01" min="0.01" placeholder="0.00" />
+                    <flux:error name="refundAmount" />
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Date <span class="text-red-500">*</span></label>
+                    <flux:input wire:model="refundDate" type="date" />
+                    <flux:error name="refundDate" />
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Reason</label>
+                    <flux:textarea wire:model="refundReason" rows="2" placeholder="e.g. Items returned in good condition" />
+                    <flux:error name="refundReason" />
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 border-t border-zinc-100 pt-4 dark:border-zinc-700">
+                <flux:button x-on:click="$flux.modal('refund-deposit').close()" variant="ghost" type="button">Cancel</flux:button>
+                <button type="submit"
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-black hover:bg-amber-400 transition-colors">
+                    Process Refund
                 </button>
             </div>
         </form>
