@@ -4,9 +4,7 @@
     <div class="flex items-center gap-3">
         <a href="{{ route('purchase-orders.index') }}" wire:navigate
             class="flex size-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500 shadow-sm hover:bg-zinc-50 hover:text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors">
-            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
+            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
         </a>
         <div>
             <h1 class="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
@@ -27,24 +25,25 @@
             <div class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700/60 dark:bg-zinc-900">
                 <h2 class="mb-4 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Order Details</h2>
                 <div class="space-y-4">
-                    <div>
-                        <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Supplier <span class="text-red-500">*</span></label>
-                        <flux:select wire:model="supplierId" placeholder="Select a supplier">
-                            @foreach($this->suppliers as $supplier)
-                                <flux:select.option value="{{ $supplier->id }}">{{ $supplier->name }}</flux:select.option>
-                            @endforeach
-                        </flux:select>
+                    <flux:field>
+                        <flux:label>Supplier <span class="text-red-500">*</span></flux:label>
+                        <x-searchable-select
+                            :options="$this->suppliers"
+                            wire-model="supplierId"
+                            :selected-value="$supplierId"
+                            placeholder="Select a supplier"
+                        />
                         <flux:error name="supplierId" />
-                    </div>
-                    <div>
-                        <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Expected Delivery Date</label>
+                    </flux:field>
+                    <flux:field>
+                        <flux:label>Expected Delivery Date</flux:label>
                         <flux:input wire:model="expectedAt" type="date" />
                         <flux:error name="expectedAt" />
-                    </div>
-                    <div>
-                        <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Notes</label>
+                    </flux:field>
+                    <flux:field>
+                        <flux:label>Notes</flux:label>
                         <flux:textarea wire:model="notes" rows="2" placeholder="Any special instructions…" />
-                    </div>
+                    </flux:field>
                 </div>
             </div>
 
@@ -52,32 +51,27 @@
             <div class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700/60 dark:bg-zinc-900">
                 <h2 class="mb-4 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Add Item</h2>
                 <div class="flex flex-wrap items-end gap-3">
-                    <div class="min-w-0 flex-1">
-                        <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Item <span class="text-red-500">*</span></label>
-                        <flux:select wire:model.live="pickerItemId" placeholder="Select item">
-                            @foreach($this->inventoryItems as $item)
-                                <flux:select.option value="{{ $item->id }}">{{ $item->name }}</flux:select.option>
-                            @endforeach
-                        </flux:select>
+                    <flux:field class="min-w-0 flex-1">
+                        <flux:label>Item <span class="text-red-500">*</span></flux:label>
+                        <x-searchable-select
+                            :options="$this->inventoryItems"
+                            wire-model="pickerItemId"
+                            :selected-value="$pickerItemId"
+                            placeholder="Select item"
+                        />
                         <flux:error name="pickerItemId" />
-                    </div>
-                    <div class="w-24">
-                        <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Qty</label>
+                    </flux:field>
+                    <flux:field class="w-24">
+                        <flux:label>Qty</flux:label>
                         <flux:input wire:model="pickerQuantity" type="number" min="1" />
                         <flux:error name="pickerQuantity" />
-                    </div>
-                    <div class="w-36">
-                        <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Unit Cost (UGX)</label>
+                    </flux:field>
+                    <flux:field class="w-36">
+                        <flux:label>Unit Cost (UGX)</flux:label>
                         <flux:input wire:model="pickerUnitCost" type="number" min="0" step="100" placeholder="0" />
                         <flux:error name="pickerUnitCost" />
-                    </div>
-                    <button wire:click="addLineItem"
-                        class="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 transition-colors shrink-0">
-                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-                        </svg>
-                        Add
-                    </button>
+                    </flux:field>
+                    <flux:button wire:click="addLineItem" variant="filled" icon="plus" class="shrink-0">Add</flux:button>
                 </div>
             </div>
 
@@ -97,14 +91,12 @@
                                     <div class="font-medium tabular-nums text-zinc-700 dark:text-zinc-300">UGX {{ number_format($line['unit_cost'], 0) }}</div>
                                 </div>
                                 <div class="flex items-center gap-1 rounded-lg border border-zinc-200 bg-zinc-50 p-1 dark:border-zinc-700 dark:bg-zinc-800">
-                                    <button type="button"
-                                        wire:click="updateLineQuantity({{ $index }}, {{ max(1, $line['quantity'] - 1) }})"
+                                    <button type="button" wire:click="updateLineQuantity({{ $index }}, {{ max(1, $line['quantity'] - 1) }})"
                                         class="flex size-6 items-center justify-center rounded text-zinc-500 hover:bg-white hover:text-zinc-700 dark:hover:bg-zinc-700 transition-colors">
                                         <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4"/></svg>
                                     </button>
                                     <span class="w-8 text-center text-sm font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">{{ $line['quantity'] }}</span>
-                                    <button type="button"
-                                        wire:click="updateLineQuantity({{ $index }}, {{ $line['quantity'] + 1 }})"
+                                    <button type="button" wire:click="updateLineQuantity({{ $index }}, {{ $line['quantity'] + 1 }})"
                                         class="flex size-6 items-center justify-center rounded text-zinc-500 hover:bg-white hover:text-zinc-700 dark:hover:bg-zinc-700 transition-colors">
                                         <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                                     </button>
@@ -142,24 +134,23 @@
                     </div>
                 </div>
                 <div class="mt-5 space-y-2.5">
-                    <button wire:click="save('sent')"
-                        @if(count($lineItems) === 0) disabled @endif
-                        class="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                    <flux:button wire:click="save('sent')" variant="primary" icon="paper-airplane"
+                        :disabled="count($lineItems) === 0" class="w-full">
                         {{ $editingOrderId ? 'Update & Send' : 'Create & Send' }}
-                    </button>
-                    <button wire:click="save('draft')"
-                        class="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 transition-colors">
+                    </flux:button>
+                    <flux:button wire:click="save('approved')" variant="filled" icon="check"
+                        :disabled="count($lineItems) === 0" class="w-full">
+                        Save as Approved
+                    </flux:button>
+                    <flux:button wire:click="save('draft')" variant="ghost" class="w-full">
                         Save as Draft
-                    </button>
+                    </flux:button>
                 </div>
             </div>
 
             @if(count($lineItems) === 0)
                 <div class="rounded-xl border border-dashed border-zinc-300 bg-zinc-50 p-5 text-center dark:border-zinc-700 dark:bg-zinc-800/40">
-                    <svg class="mx-auto mb-2 size-8 text-zinc-300 dark:text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
+                    <svg class="mx-auto mb-2 size-8 text-zinc-300 dark:text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                     <p class="text-xs text-zinc-400 dark:text-zinc-500">No items added yet.</p>
                 </div>
             @endif
