@@ -81,7 +81,7 @@ class Create extends Component
             return collect();
         }
 
-        return InventoryItem::find($this->pickerItemId)?->variants()->orderBy('name')->get(['id', 'name']) ?? collect();
+        return InventoryItem::find($this->pickerItemId)?->variants()->orderBy('size')->orderBy('color')->get(['id', 'size', 'color']) ?? collect();
     }
 
     #[Computed]

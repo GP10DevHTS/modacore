@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\Customer;
 use App\Models\InventoryItem;
 use App\Models\Payment;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -65,12 +66,17 @@ class Dashboard extends Component
     #[Computed]
     public function revenueByMonth()
     {
+        $fmt = match (DB::getDriverName()) {
+            'mysql', 'mariadb' => "DATE_FORMAT(paid_at, '%Y-%m')",
+            default => "strftime('%Y-%m', paid_at)",
+        };
+
         return Payment::query()
-            ->selectRaw("strftime('%Y-%m', paid_at) as month, SUM(amount) as total, COUNT(*) as count")
+            ->selectRaw("{$fmt} as month, SUM(amount) as total, COUNT(*) as count")
             ->where('is_deposit', false)
             ->whereNotNull('paid_at')
-            ->groupByRaw("strftime('%Y-%m', paid_at)")
-            ->orderByRaw("strftime('%Y-%m', paid_at) DESC")
+            ->groupByRaw($fmt)
+            ->orderByRaw("{$fmt} DESC")
             ->limit(6)
             ->get();
     }
