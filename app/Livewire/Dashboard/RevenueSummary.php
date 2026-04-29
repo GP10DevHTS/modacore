@@ -4,6 +4,7 @@ namespace App\Livewire\Dashboard;
 
 use App\Models\Booking;
 use App\Models\Payment;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -25,7 +26,8 @@ class RevenueSummary extends Component
     {
         return (float) Payment::where('is_deposit', false)
             ->whereNotNull('paid_at')
-            ->whereRaw("strftime('%Y-%m', paid_at) = strftime('%Y-%m', 'now')")
+            ->whereYear('paid_at', now()->year)
+            ->whereMonth('paid_at', now()->month)
             ->sum('amount');
     }
 
@@ -34,7 +36,7 @@ class RevenueSummary extends Component
     {
         return (float) Payment::where('is_deposit', false)
             ->whereNotNull('paid_at')
-            ->whereRaw("date(paid_at) = date('now')")
+            ->whereDate('paid_at', today())
             ->sum('amount');
     }
 
@@ -59,14 +61,24 @@ class RevenueSummary extends Component
     #[Computed]
     public function revenueByMonth()
     {
+        $fmt = $this->monthExpr('paid_at');
+
         return Payment::query()
-            ->selectRaw("strftime('%Y-%m', paid_at) as month, SUM(amount) as total, COUNT(*) as cnt")
+            ->selectRaw("{$fmt} as month, SUM(amount) as total, COUNT(*) as cnt")
             ->where('is_deposit', false)
             ->whereNotNull('paid_at')
-            ->groupByRaw("strftime('%Y-%m', paid_at)")
-            ->orderByRaw("strftime('%Y-%m', paid_at) DESC")
+            ->groupByRaw($fmt)
+            ->orderByRaw("{$fmt} DESC")
             ->limit(6)
             ->get();
+    }
+
+    private function monthExpr(string $column): string
+    {
+        return match (DB::getDriverName()) {
+            'mysql', 'mariadb' => "DATE_FORMAT({$column}, '%Y-%m')",
+            default => "strftime('%Y-%m', {$column})",
+        };
     }
 
     public function render()

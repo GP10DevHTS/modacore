@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\SupplierInvoice;
 use App\Models\SupplierPayment;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -51,11 +52,16 @@ class Index extends Component
     #[Computed]
     public function paymentsByMonth()
     {
+        $fmt = match (DB::getDriverName()) {
+            'mysql', 'mariadb' => "DATE_FORMAT(paid_at, '%Y-%m')",
+            default => "strftime('%Y-%m', paid_at)",
+        };
+
         return Payment::query()
-            ->selectRaw("strftime('%Y-%m', paid_at) as month, SUM(amount) as total, COUNT(*) as count")
+            ->selectRaw("{$fmt} as month, SUM(amount) as total, COUNT(*) as count")
             ->whereNotNull('paid_at')
-            ->groupByRaw("strftime('%Y-%m', paid_at)")
-            ->orderByRaw("strftime('%Y-%m', paid_at) DESC")
+            ->groupByRaw($fmt)
+            ->orderByRaw("{$fmt} DESC")
             ->limit(12)
             ->get();
     }

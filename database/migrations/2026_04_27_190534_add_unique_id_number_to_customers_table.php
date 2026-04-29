@@ -10,15 +10,17 @@ return new class extends Migration
     public function up(): void
     {
         // Nullify duplicate id_numbers so the unique constraint can be applied cleanly.
-        DB::statement("
+        DB::statement('
             UPDATE customers SET id_number = NULL
             WHERE id NOT IN (
-                SELECT MIN(id) FROM customers
-                WHERE id_number IS NOT NULL
-                GROUP BY id_number
+                SELECT id FROM (
+                    SELECT MIN(id) as id FROM customers
+                    WHERE id_number IS NOT NULL
+                    GROUP BY id_number
+                ) AS keep_ids
             )
             AND id_number IS NOT NULL
-        ");
+        ');
 
         Schema::table('customers', function (Blueprint $table) {
             $table->string('id_number')->nullable()->unique()->change();
