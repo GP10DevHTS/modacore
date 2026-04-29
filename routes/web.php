@@ -11,6 +11,7 @@ use App\Livewire\Employees\Index as EmployeesIndex;
 use App\Livewire\Inventory\Index as InventoryIndex;
 use App\Livewire\Invoices\Index as InvoicesIndex;
 use App\Livewire\Invoices\Show as InvoiceShow;
+use App\Livewire\Notifications\Center as NotificationsCenter;
 use App\Livewire\PurchaseOrders\Create as PurchaseOrderCreate;
 use App\Livewire\PurchaseOrders\Index as PurchaseOrdersIndex;
 use App\Livewire\PurchaseOrders\InvoiceForm as PurchaseOrderInvoice;
@@ -67,6 +68,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Reports & Analytics
     Route::get('/reports', ReportsIndex::class)->name('reports.index');
     Route::get('/analytics', AnalyticsDashboard::class)->name('analytics.dashboard');
+
+    // Notifications
+    Route::get('/notifications', NotificationsCenter::class)->name('notifications.index');
 });
 
 require __DIR__.'/settings.php';

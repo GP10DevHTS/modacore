@@ -285,51 +285,6 @@
         .erp-breadcrumb-sep { opacity: 0.4; }
         .erp-breadcrumb-active { color: var(--erp-text-primary); font-weight: 500; }
 
-        .erp-topbar-divider {
-            width: 1px; height: 1.25rem;
-            background: var(--erp-border);
-        }
-
-        .erp-search {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0 0.625rem;
-            height: 1.875rem;
-            background: var(--erp-bg-canvas);
-            border: 1px solid var(--erp-border);
-            border-radius: var(--erp-radius);
-            flex: 1;
-            max-width: 18rem;
-            font-size: 0.75rem;
-            color: var(--erp-text-muted);
-            cursor: text;
-            transition: border-color var(--erp-transition);
-        }
-        .erp-search:hover,
-        .erp-search:focus-within { border-color: var(--erp-accent); }
-        .erp-search input {
-            background: transparent;
-            border: none;
-            outline: none;
-            color: var(--erp-text-primary);
-            font-size: 0.75rem;
-            width: 100%;
-        }
-        .erp-search input::placeholder { color: var(--erp-text-muted); }
-        .erp-search svg { width: 0.75rem; height: 0.75rem; flex-shrink: 0; }
-
-        .erp-kbd {
-            font-size: 0.5625rem;
-            padding: 0.0625rem 0.3125rem;
-            background: var(--erp-bg-hover);
-            border: 1px solid var(--erp-border);
-            border-radius: 0.25rem;
-            color: var(--erp-text-muted);
-            font-family: monospace;
-            white-space: nowrap;
-        }
-
         .erp-topbar-actions {
             margin-left: auto;
             display: flex;
@@ -619,6 +574,13 @@
 
             <div class="erp-nav-section">
                 <div class="erp-nav-label">System</div>
+                <a href="{{ route('notifications.index') }}" wire:navigate
+                   class="erp-nav-item {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
+                    </svg>
+                    Notifications
+                </a>
                 <a href="{{ route('profile.edit') }}" wire:navigate
                    class="erp-nav-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -689,12 +651,7 @@
                 <span class="erp-brand-name">{{ config('app.name', 'ShopERP') }}</span>
             </div>
             <div style="margin-left:auto;display:flex;gap:0.25rem">
-                <button class="erp-notif-btn">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                    </svg>
-                    <div class="erp-notif-count"></div>
-                </button>
+                @livewire('notifications.bell', key('mobile-bell'))
             </div>
         </header>
 
@@ -711,30 +668,10 @@
                 @endif
             </div>
 
-            <div class="erp-topbar-divider"></div>
-
-            {{-- Search --}}
-            <div class="erp-search">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-                <input type="text" placeholder="Search orders, jobs, parts…" />
-                <span class="erp-kbd">⌘K</span>
-            </div>
-
             {{-- Actions --}}
             <div class="erp-topbar-actions">
-                {{-- Theme toggle --}}
-                {{-- <flux:appearance-toggle class="erp-theme-toggle" /> --}}
-
-                {{-- Notifications --}}
-                <button class="erp-notif-btn">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                    </svg>
-                    <div class="erp-notif-count"></div>
-                </button>
+                {{-- Notifications bell --}}
+                @livewire('notifications.bell')
 
                 {{-- Quick Add --}}
                 <flux:dropdown position="bottom" align="end">
@@ -798,14 +735,6 @@
 
         // Close sidebar on Livewire navigate
         document.addEventListener('livewire:navigate', closeSidebar);
-
-        // ⌘K search shortcut
-        document.addEventListener('keydown', (e) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-                e.preventDefault();
-                document.querySelector('.erp-search input')?.focus();
-            }
-        });
     </script>
 </body>
 </html>
