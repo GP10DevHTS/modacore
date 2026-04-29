@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ReceiptController;
+use App\Livewire\Analytics\Dashboard as AnalyticsDashboard;
 use App\Livewire\Bookings\Create as BookingCreate;
 use App\Livewire\Bookings\Index as BookingsIndex;
 use App\Livewire\Bookings\Show as BookingShow;
@@ -8,6 +9,9 @@ use App\Livewire\Customers\Index as CustomersIndex;
 use App\Livewire\Employees\Attendance;
 use App\Livewire\Employees\Index as EmployeesIndex;
 use App\Livewire\Inventory\Index as InventoryIndex;
+use App\Livewire\Invoices\Index as InvoicesIndex;
+use App\Livewire\Invoices\Show as InvoiceShow;
+use App\Livewire\Notifications\Center as NotificationsCenter;
 use App\Livewire\PurchaseOrders\Create as PurchaseOrderCreate;
 use App\Livewire\PurchaseOrders\Index as PurchaseOrdersIndex;
 use App\Livewire\PurchaseOrders\InvoiceForm as PurchaseOrderInvoice;
@@ -15,6 +19,7 @@ use App\Livewire\PurchaseOrders\PaymentForm as PurchaseOrderPayment;
 use App\Livewire\PurchaseOrders\ProcurementDashboard;
 use App\Livewire\PurchaseOrders\ReceiveGoods as PurchaseOrderReceiveGoods;
 use App\Livewire\PurchaseOrders\Show as PurchaseOrderShow;
+use App\Livewire\Reports\Index as ReportsIndex;
 use App\Livewire\Roles\Index as RolesIndex;
 use App\Livewire\Suppliers\Index as SuppliersIndex;
 use Illuminate\Support\Facades\Route;
@@ -55,6 +60,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/procurement', ProcurementDashboard::class)->name('procurement.dashboard');
 
     Route::get('/roles', RolesIndex::class)->name('roles.index');
+
+    // Invoices
+    Route::get('/invoices', InvoicesIndex::class)->name('invoices.index');
+    Route::get('/invoices/{invoice}', InvoiceShow::class)->name('invoices.show');
+
+    // Reports & Analytics
+    Route::get('/reports', ReportsIndex::class)->name('reports.index');
+    Route::get('/analytics', AnalyticsDashboard::class)->name('analytics.dashboard');
+
+    // Notifications
+    Route::get('/notifications', NotificationsCenter::class)->name('notifications.index');
 });
 
 require __DIR__.'/settings.php';
