@@ -3,6 +3,7 @@
         "claude_code",
         "cursor"
     ],
+    "cloud": false,
     "guidelines": true,
     "mcp": true,
     "nightwatch_mcp": false,

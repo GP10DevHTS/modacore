@@ -3,6 +3,9 @@
 namespace App\Livewire\Reports;
 
 use App\Models\Booking;
+use App\Models\Expense;
+use App\Models\ExpenseCategory;
+use App\Models\ExpensePayment;
 use App\Models\Payment;
 use App\Models\SupplierInvoice;
 use App\Models\SupplierPayment;
@@ -84,6 +87,50 @@ class Index extends Component
             ->orderByDesc('paid_at')
             ->limit(15)
             ->get();
+    }
+
+    #[Computed]
+    public function totalExpenses(): float
+    {
+        return (float) Expense::sum('amount');
+    }
+
+    #[Computed]
+    public function totalOutstandingExpenses(): float
+    {
+        return max(0, (float) Expense::sum('amount') - (float) ExpensePayment::sum('amount'));
+    }
+
+    #[Computed]
+    public function expensesByMonth()
+    {
+        $fmt = match (DB::getDriverName()) {
+            'mysql', 'mariadb' => "DATE_FORMAT(expense_date, '%Y-%m')",
+            default => "strftime('%Y-%m', expense_date)",
+        };
+
+        return Expense::query()
+            ->selectRaw("{$fmt} as month, SUM(amount) as total_billed, COUNT(*) as count")
+            ->groupByRaw($fmt)
+            ->orderByRaw("{$fmt} DESC")
+            ->limit(24)
+            ->get();
+    }
+
+    #[Computed]
+    public function expensesByCategory()
+    {
+        return ExpenseCategory::query()
+            ->withSum('expenses', 'amount')
+            ->withCount('expenses')
+            ->orderByDesc('expenses_sum_amount')
+            ->get();
+    }
+
+    #[Computed]
+    public function netPosition(): float
+    {
+        return $this->totalRevenue - $this->totalExpenses;
     }
 
     public function render()

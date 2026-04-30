@@ -4,6 +4,8 @@ namespace App\Livewire\Analytics;
 
 use App\Models\Booking;
 use App\Models\Customer;
+use App\Models\Expense;
+use App\Models\ExpensePayment;
 use App\Models\InventoryItem;
 use App\Models\Payment;
 use Illuminate\Support\Facades\DB;
@@ -90,6 +92,18 @@ class Dashboard extends Component
             ->orderByDesc('rental_count')
             ->limit(5)
             ->get();
+    }
+
+    #[Computed]
+    public function totalExpensesBilled(): float
+    {
+        return (float) Expense::sum('amount');
+    }
+
+    #[Computed]
+    public function totalExpensesOutstanding(): float
+    {
+        return max(0, (float) Expense::sum('amount') - (float) ExpensePayment::sum('amount'));
     }
 
     #[Computed]

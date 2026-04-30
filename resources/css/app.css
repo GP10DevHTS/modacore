@@ -23,16 +23,18 @@
     --color-zinc-900: #171717;
     --color-zinc-950: #0a0a0a;
 
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
-    --color-accent-foreground: var(--color-white);
+    /* Deep sage green — 5:1 contrast with white, primary brand colour */
+    --color-accent: #3d7a69;
+    --color-accent-content: #3d7a69;
+    --color-accent-foreground: #ffffff;
 }
 
 @layer theme {
     .dark {
-        --color-accent: var(--color-white);
-        --color-accent-content: var(--color-white);
-        --color-accent-foreground: var(--color-neutral-800);
+        /* Light sage on dark surfaces — elegant and readable */
+        --color-accent: #a8c2b8;
+        --color-accent-content: #a8c2b8;
+        --color-accent-foreground: #1a3028;
     }
 }
 

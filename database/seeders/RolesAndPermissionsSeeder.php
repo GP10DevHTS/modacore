@@ -45,6 +45,12 @@ class RolesAndPermissionsSeeder extends Seeder
             'employees.delete',
             'employees.manage_roles',
 
+            // Expenses
+            'expenses.view',
+            'expenses.create',
+            'expenses.edit',
+            'expenses.delete',
+
             // Reports
             'reports.view',
         ];
@@ -64,6 +70,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'bookings.view', 'bookings.create', 'bookings.edit', 'bookings.cancel', 'bookings.confirm', 'bookings.manage_status',
             'payments.view', 'payments.create',
             'employees.view',
+            'expenses.view', 'expenses.create', 'expenses.edit', 'expenses.delete',
             'reports.view',
         ]);
 
@@ -74,6 +81,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'customers.view', 'customers.create', 'customers.edit',
             'bookings.view', 'bookings.create', 'bookings.edit', 'bookings.cancel', 'bookings.confirm',
             'payments.view', 'payments.create',
+            'expenses.view', 'expenses.create',
         ]);
 
         // Viewer — read only
@@ -83,6 +91,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'customers.view',
             'bookings.view',
             'payments.view',
+            'expenses.view',
             'reports.view',
         ]);
     }
