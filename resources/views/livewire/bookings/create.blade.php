@@ -29,7 +29,7 @@
                 <div class="space-y-4">
                     <div>
                         <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Customer <span class="text-red-500">*</span></label>
-                        <select wire:model="customerId"
+                        <select wire:model.live="customerId"
                             class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
                             <option value="">Select a customer</option>
                             @foreach($this->customers as $customer)
@@ -38,6 +38,27 @@
                         </select>
                         <flux:error name="customerId" />
                     </div>
+
+                    {{-- Customer Measurements --}}
+                    @if($customerId && $this->selectedCustomerMeasurements)
+                        @php $m = $this->selectedCustomerMeasurements; @endphp
+                        <div class="rounded-lg border border-zinc-100 bg-zinc-50 p-3 dark:border-zinc-700/60 dark:bg-zinc-800/40">
+                            <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Body Measurements (cm)</p>
+                            <div class="flex flex-wrap gap-x-4 gap-y-1.5 text-xs">
+                                @foreach([
+                                    'Chest' => $m->chest, 'Waist' => $m->waist, 'Hips' => $m->hips,
+                                    'Shoulder' => $m->shoulder_width, 'Sleeve' => $m->sleeve_length,
+                                    'Inseam' => $m->inseam, 'Neck' => $m->neck, 'Height' => $m->height,
+                                ] as $label => $val)
+                                    @if($val)
+                                    <span class="text-zinc-500 dark:text-zinc-400">{{ $label }}: <span class="font-semibold text-zinc-800 dark:text-zinc-200">{{ number_format($val, 1) }}</span></span>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                    @elseif($customerId)
+                        <p class="text-xs text-zinc-400 dark:text-zinc-500">No measurements on file for this customer.</p>
+                    @endif
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
                             <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Hire From <span class="text-red-500">*</span></label>
@@ -84,7 +105,12 @@
                             </select>
                         </div>
                     @endif
-                    <div class="w-24">
+                    <div class="w-28">
+                        <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Unit Price <span class="text-red-500">*</span></label>
+                        <flux:input wire:model="pickerUnitPrice" type="number" min="0" step="1" placeholder="0" />
+                        <flux:error name="pickerUnitPrice" />
+                    </div>
+                    <div class="w-20">
                         <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Qty</label>
                         <flux:input wire:model="pickerQuantity" type="number" min="1" />
                         <flux:error name="pickerQuantity" />
@@ -125,10 +151,20 @@
                                     @endif
                                 </div>
 
-                                {{-- Unit price --}}
-                                <div class="hidden w-24 text-right sm:block">
-                                    <div class="text-xs text-zinc-400 dark:text-zinc-500">Unit price</div>
-                                    <div class="font-medium tabular-nums text-zinc-700 dark:text-zinc-300">UGX {{ number_format($line['unit_price'], 0) }}</div>
+                                {{-- Unit price (editable) --}}
+                                <div class="hidden w-32 sm:block">
+                                    <div class="mb-1 text-xs text-zinc-400 dark:text-zinc-500">Unit price</div>
+                                    <div class="flex items-center rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1 dark:border-zinc-700 dark:bg-zinc-800">
+                                        <span class="mr-1 text-xs text-zinc-400">UGX</span>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            step="1"
+                                            value="{{ $line['unit_price'] }}"
+                                            wire:change="updateLinePrice({{ $index }}, $event.target.value)"
+                                            class="w-full bg-transparent text-sm font-medium tabular-nums text-zinc-800 focus:outline-none dark:text-zinc-200"
+                                        />
+                                    </div>
                                 </div>
 
                                 {{-- Quantity stepper --}}

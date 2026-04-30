@@ -2,16 +2,18 @@
 
 namespace App\Models;
 
+use Database\Factories\CustomerFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Customer extends Model
 {
-    /** @use HasFactory<\Database\Factories\CustomerFactory> */
+    /** @use HasFactory<CustomerFactory> */
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
@@ -26,6 +28,11 @@ class Customer extends Model
                 ->orWhere('phone', 'like', "%{$term}%")
                 ->orWhere('id_number', 'like', "%{$term}%");
         });
+    }
+
+    public function measurements(): HasOne
+    {
+        return $this->hasOne(CustomerMeasurement::class);
     }
 
     public function createdBy(): BelongsTo

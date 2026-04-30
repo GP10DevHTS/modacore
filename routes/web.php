@@ -6,6 +6,7 @@ use App\Livewire\Bookings\Create as BookingCreate;
 use App\Livewire\Bookings\Index as BookingsIndex;
 use App\Livewire\Bookings\Show as BookingShow;
 use App\Livewire\Customers\Index as CustomersIndex;
+use App\Livewire\Customers\Show as CustomerShow;
 use App\Livewire\Employees\Attendance;
 use App\Livewire\Employees\Index as EmployeesIndex;
 use App\Livewire\Expenses\Index as ExpensesIndex;
@@ -35,6 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/inventory', InventoryIndex::class)->name('inventory.index');
 
     Route::get('/customers', CustomersIndex::class)->name('customers.index');
+    Route::get('/customers/{customer}', CustomerShow::class)->name('customers.show');
 
     Route::get('/employees', EmployeesIndex::class)->name('employees.index');
     Route::get('/attendance', Attendance::class)->name('attendance.index');

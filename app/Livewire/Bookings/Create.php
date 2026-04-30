@@ -4,6 +4,7 @@ namespace App\Livewire\Bookings;
 
 use App\Models\Booking;
 use App\Models\Customer;
+use App\Models\CustomerMeasurement;
 use App\Models\InventoryItem;
 use App\Services\AvailabilityService;
 use Flux\Flux;
@@ -32,6 +33,8 @@ class Create extends Component
     public string $pickerQuantity = '1';
 
     public array $availabilityErrors = [];
+
+    public string $pickerUnitPrice = '';
 
     public function mount(?Booking $booking = null): void
     {
@@ -69,6 +72,21 @@ class Create extends Component
     }
 
     #[Computed]
+    public function selectedCustomerMeasurements(): ?CustomerMeasurement
+    {
+        if (! $this->customerId) {
+            return null;
+        }
+
+        return CustomerMeasurement::where('customer_id', $this->customerId)->first();
+    }
+
+    public function updatedCustomerId(): void
+    {
+        unset($this->selectedCustomerMeasurements);
+    }
+
+    #[Computed]
     public function inventoryItems()
     {
         return InventoryItem::query()->active()->orderBy('name')->get(['id', 'name', 'base_rental_price']);
@@ -93,7 +111,15 @@ class Create extends Component
     public function updatedPickerItemId(): void
     {
         $this->pickerVariantId = '';
+        $this->pickerUnitPrice = '';
         unset($this->selectedItemVariants);
+
+        if ($this->pickerItemId) {
+            $item = InventoryItem::find($this->pickerItemId);
+            if ($item) {
+                $this->pickerUnitPrice = (string) $item->base_rental_price;
+            }
+        }
     }
 
     public function addLineItem(): void
@@ -101,6 +127,7 @@ class Create extends Component
         $this->validate([
             'pickerItemId' => ['required', 'exists:inventory_items,id'],
             'pickerQuantity' => ['required', 'integer', 'min:1'],
+            'pickerUnitPrice' => ['required', 'numeric', 'min:0'],
             'hireFrom' => ['required', 'date'],
             'hireTo' => ['required', 'date', 'after_or_equal:hireFrom'],
         ]);
@@ -130,7 +157,7 @@ class Create extends Component
 
         $item = InventoryItem::find($itemId);
         $qty = (int) $this->pickerQuantity;
-        $unitPrice = (float) $item->base_rental_price;
+        $unitPrice = (float) $this->pickerUnitPrice;
 
         $this->lineItems[] = [
             'inventory_item_id' => $itemId,
@@ -147,6 +174,7 @@ class Create extends Component
         $this->pickerItemId = '';
         $this->pickerVariantId = '';
         $this->pickerQuantity = '1';
+        $this->pickerUnitPrice = '';
         unset($this->selectedItemVariants);
     }
 
@@ -164,6 +192,14 @@ class Create extends Component
 
         $this->lineItems[$index]['quantity'] = $quantity;
         $this->lineItems[$index]['subtotal'] = round($this->lineItems[$index]['unit_price'] * $quantity, 2);
+        unset($this->totalAmount);
+    }
+
+    public function updateLinePrice(int $index, string $price): void
+    {
+        $unitPrice = max(0, (float) $price);
+        $this->lineItems[$index]['unit_price'] = $unitPrice;
+        $this->lineItems[$index]['subtotal'] = round($unitPrice * $this->lineItems[$index]['quantity'], 2);
         unset($this->totalAmount);
     }
 
