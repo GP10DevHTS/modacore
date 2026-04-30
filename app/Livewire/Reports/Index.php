@@ -5,6 +5,7 @@ namespace App\Livewire\Reports;
 use App\Models\Booking;
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
+use App\Models\ExpensePayment;
 use App\Models\Payment;
 use App\Models\SupplierInvoice;
 use App\Models\SupplierPayment;
@@ -91,13 +92,13 @@ class Index extends Component
     #[Computed]
     public function totalExpenses(): float
     {
-        return (float) Expense::where('status', 'approved')->sum('amount');
+        return (float) Expense::sum('amount');
     }
 
     #[Computed]
-    public function totalPlannedExpenses(): float
+    public function totalOutstandingExpenses(): float
     {
-        return (float) Expense::where('status', 'draft')->sum('amount');
+        return max(0, (float) Expense::sum('amount') - (float) ExpensePayment::sum('amount'));
     }
 
     #[Computed]
@@ -109,19 +110,18 @@ class Index extends Component
         };
 
         return Expense::query()
-            ->selectRaw("{$fmt} as month, SUM(amount) as total, COUNT(*) as count, status")
-            ->groupByRaw("{$fmt}, status")
+            ->selectRaw("{$fmt} as month, SUM(amount) as total_billed, COUNT(*) as count")
+            ->groupByRaw($fmt)
             ->orderByRaw("{$fmt} DESC")
             ->limit(24)
-            ->get()
-            ->groupBy('month');
+            ->get();
     }
 
     #[Computed]
     public function expensesByCategory()
     {
         return ExpenseCategory::query()
-            ->withSum(['expenses' => fn ($q) => $q->where('status', 'approved')], 'amount')
+            ->withSum('expenses', 'amount')
             ->withCount('expenses')
             ->orderByDesc('expenses_sum_amount')
             ->get();

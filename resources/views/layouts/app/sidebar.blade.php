@@ -6,37 +6,72 @@
         /* ─── ERP Design System ─── */
         :root {
             --erp-sidebar-w: 15rem;
-            --erp-accent: #f59e0b;
-            --erp-accent-dim: #d97706;
-            --erp-accent-glow: rgba(245, 158, 11, 0.15);
-            --erp-border: rgba(113, 113, 122, 0.2);
-            --erp-radius: 0.375rem;
-            --erp-transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --erp-accent:      #3d7a69;
+            --erp-accent-dim:  #2d5c4d;
+            --erp-accent-glow: rgba(61, 122, 105, 0.12);
+            --erp-border:      rgba(113, 113, 122, 0.2);
+            --erp-radius:      0.375rem;
+            --erp-transition:  150ms cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Light mode overrides */
+        /* Light mode */
         html:not(.dark) {
-            --erp-bg-canvas:    #f4f4f5;
-            --erp-bg-sidebar:   #ffffff;
+            --erp-bg-canvas:    #edf2f0;
+            --erp-bg-sidebar:   #a8c2b8;
             --erp-bg-surface:   #ffffff;
-            --erp-bg-hover:     #f4f4f5;
+            --erp-bg-hover:     rgba(0, 0, 0, 0.07);
             --erp-text-primary: #18181b;
             --erp-text-muted:   #71717a;
-            --erp-border:       rgba(113, 113, 122, 0.18);
+            --erp-border:       rgba(26, 48, 40, 0.15);
             --erp-shadow:       0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.05);
         }
 
-        /* Dark mode overrides */
+        /* Dark mode */
         html.dark {
-            --erp-bg-canvas:    #111113;
-            --erp-bg-sidebar:   #18181b;
-            --erp-bg-surface:   #1c1c1f;
-            --erp-bg-hover:     #27272a;
-            --erp-text-primary: #fafafa;
-            --erp-text-muted:   #a1a1aa;
-            --erp-border:       rgba(113, 113, 122, 0.2);
+            --erp-bg-canvas:    #0f1a17;
+            --erp-bg-sidebar:   #1a2e28;
+            --erp-bg-surface:   #1c2320;
+            --erp-bg-hover:     rgba(168, 194, 184, 0.08);
+            --erp-text-primary: #e8f0ed;
+            --erp-text-muted:   #7fa99b;
+            --erp-border:       rgba(168, 194, 184, 0.12);
             --erp-shadow:       0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
         }
+
+        /* ─── Light sidebar contrast (#a8c2b8 bg) ─── */
+        html:not(.dark) .erp-sidebar .erp-nav-label         { color: #4a7a6a; }
+        html:not(.dark) .erp-sidebar .erp-nav-item          { color: #2d5c4d; }
+        html:not(.dark) .erp-sidebar .erp-nav-item:hover    { background: rgba(0,0,0,0.07); color: #1a3028; }
+        html:not(.dark) .erp-sidebar .erp-nav-item.active   { color: #1a3028; background: rgba(0,0,0,0.1); }
+        html:not(.dark) .erp-sidebar .erp-nav-item.active::before { background: #1a3028; }
+        html:not(.dark) .erp-sidebar .erp-brand-name        { color: #1a3028; }
+        html:not(.dark) .erp-sidebar .erp-brand-sub         { color: #3d7a69; }
+        html:not(.dark) .erp-sidebar .erp-nav-badge         { background: #1a3028; color: #fff; }
+        html:not(.dark) .erp-sidebar .erp-avatar            { background: #1a3028; color: #fff; }
+        html:not(.dark) .erp-sidebar .erp-user-name         { color: #1a3028; }
+        html:not(.dark) .erp-sidebar .erp-user-role         { color: #2d5c4d; }
+        html:not(.dark) .erp-sidebar .erp-icon-btn          { color: #2d5c4d; }
+        html:not(.dark) .erp-sidebar .erp-icon-btn:hover    { background: rgba(0,0,0,0.07); color: #1a3028; }
+        html:not(.dark) .erp-sidebar .erp-user-card:hover   { background: rgba(0,0,0,0.07); }
+        html:not(.dark) .erp-sidebar                        { border-right-color: rgba(26,48,40,0.15); }
+        html:not(.dark) .erp-status-bar   { background: rgba(61,122,105,0.07); border-bottom-color: rgba(26,48,40,0.1); }
+        html:not(.dark) .erp-status-text  { color: #4a7a6a; }
+        html:not(.dark) .erp-topbar       { border-bottom-color: rgba(26,48,40,0.15); }
+        html:not(.dark) .erp-mobile-topbar { border-bottom-color: rgba(26,48,40,0.15); }
+        html:not(.dark) .erp-breadcrumb         { color: #4a7a6a; }
+        html:not(.dark) .erp-breadcrumb-active  { color: #1a3028; font-weight: 600; }
+        html:not(.dark) .erp-notif-btn          { color: #2d5c4d; }
+        html:not(.dark) .erp-notif-btn:hover    { background: rgba(0,0,0,0.07); border-color: rgba(26,48,40,0.15); color: #1a3028; }
+        html:not(.dark) .erp-theme-toggle       { border-color: rgba(26,48,40,0.18); background: rgba(0,0,0,0.04); color: #2d5c4d; }
+        html:not(.dark) .erp-notif-count        { border-color: #a8c2b8; }
+        html:not(.dark) .erp-mobile-menu-btn    { color: #2d5c4d; }
+
+        /* ─── Dark sidebar contrast (#1a2e28 bg) ─── */
+        html.dark .erp-sidebar .erp-nav-item.active         { color: #a8c2b8; background: rgba(168,194,184,0.1); }
+        html.dark .erp-sidebar .erp-nav-item.active::before { background: #a8c2b8; }
+        html.dark .erp-sidebar .erp-nav-badge               { background: rgba(168,194,184,0.15); color: #a8c2b8; }
+        html.dark .erp-sidebar .erp-avatar                  { background: #2d5c4d; color: #fff; }
+        html.dark .erp-sidebar .erp-brand-sub               { color: #7fa99b; }
 
         /* ─── Base ─── */
         body {
@@ -69,12 +104,12 @@
         }
         .erp-brand-icon {
             width: 2rem; height: 2rem;
-            background: var(--erp-accent);
+            background: #1a3028;
             border-radius: 0.375rem;
             display: grid; place-items: center;
             flex-shrink: 0;
         }
-        .erp-brand-icon svg { width: 1.125rem; height: 1.125rem; color: #000; }
+        .erp-brand-icon svg { width: 1.125rem; height: 1.125rem; color: #a8c2b8; }
         .erp-brand-name {
             font-size: 0.875rem;
             font-weight: 600;
@@ -86,7 +121,7 @@
             font-size: 0.625rem;
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            color: var(--erp-accent);
+            color: #7fa99b;
             font-weight: 500;
             line-height: 1;
             margin-top: 0.125rem;
@@ -181,7 +216,7 @@
             font-weight: 700;
             padding: 0.125rem 0.375rem;
             background: var(--erp-accent);
-            color: #000;
+            color: #fff;
             border-radius: 9999px;
             line-height: 1.4;
         }
@@ -205,7 +240,7 @@
             width: 1.875rem; height: 1.875rem;
             border-radius: var(--erp-radius);
             background: var(--erp-accent);
-            color: #000;
+            color: #fff;
             font-size: 0.6875rem;
             font-weight: 700;
             display: grid; place-items: center;
@@ -653,7 +688,7 @@
             </button>
             <div style="display:flex;align-items:center;gap:0.5rem">
                 <div class="erp-brand-icon" style="width:1.5rem;height:1.5rem">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" style="width:0.875rem;height:0.875rem;color:#000">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" style="width:0.875rem;height:0.875rem;color:#a8c2b8">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                     </svg>
                 </div>
@@ -687,7 +722,7 @@
                     <button style="
                         display:flex;align-items:center;gap:0.375rem;
                         padding:0 0.625rem;height:1.875rem;
-                        background:var(--erp-accent);color:#000;
+                        background:var(--erp-accent);color:#fff;
                         border:none;border-radius:var(--erp-radius);
                         font-size:0.75rem;font-weight:600;cursor:pointer;
                         transition:background var(--erp-transition);
@@ -699,11 +734,11 @@
                         New
                     </button>
                     <flux:menu>
-                        <flux:menu.item icon="clipboard-document-list">Work Order</flux:menu.item>
-                        <flux:menu.item icon="cube">Material Request</flux:menu.item>
-                        <flux:menu.item icon="user-plus">Employee</flux:menu.item>
+                        <flux:menu.item icon="clipboard-document-list" href="{{ route('bookings.create') }}" wire:navigate>Booking</flux:menu.item>
+                        <flux:menu.item icon="cube" href="{{ route('purchase-orders.create') }}" wire:navigate>Purchase Order</flux:menu.item>
+                        <flux:menu.item icon="document-text" href="{{ route('expenses.index') }} wire:navigate">Bill</flux:menu.item>
                         <flux:menu.separator />
-                        <flux:menu.item icon="document-text">Invoice</flux:menu.item>
+                        <flux:menu.item icon="user-plus" href="{{ route('employees.index') }}" wire:navigate>Employee</flux:menu.item>
                     </flux:menu>
                 </flux:dropdown>
             </div>

@@ -68,9 +68,9 @@
             <div class="flex size-8 items-center justify-center rounded-lg bg-red-50 dark:bg-red-900/20">
                 <svg class="size-4 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
             </div>
-            <p class="mt-3 text-xs font-medium text-zinc-500 dark:text-zinc-400">Total Expenses</p>
+            <p class="mt-3 text-xs font-medium text-zinc-500 dark:text-zinc-400">Total Billed</p>
             <p class="mt-0.5 text-lg font-bold tabular-nums text-red-600 dark:text-red-400">UGX {{ number_format($this->totalExpenses, 0) }}</p>
-            <p class="mt-1 text-xs text-zinc-400">Approved only</p>
+            <p class="mt-1 text-xs text-zinc-400">All expense bills</p>
         </div>
 
         <div class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700/60 dark:bg-zinc-900">
@@ -221,35 +221,37 @@
     <div class="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-700/60 dark:bg-zinc-900">
         <div class="border-b border-zinc-200 px-5 py-3.5 dark:border-zinc-700/60">
             <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Expenses by Month</h2>
-            <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">Approved vs planned expenses grouped by month</p>
+            <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">Bills recorded per month</p>
         </div>
         <table class="w-full text-sm">
             <thead>
                 <tr class="border-b border-zinc-100 bg-zinc-50 dark:border-zinc-700/60 dark:bg-zinc-800/60">
                     <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Month</th>
-                    <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Approved</th>
-                    <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Planned (Draft)</th>
-                    <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Total</th>
+                    <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Bills</th>
+                    <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Total Billed</th>
+                    <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Bar</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-zinc-100 dark:divide-zinc-700/50">
-                @forelse($this->expensesByMonth as $month => $rows)
-                    @php
-                        $approved = $rows->where('status', 'approved')->sum('total');
-                        $draft    = $rows->where('status', 'draft')->sum('total');
-                    @endphp
-                    <tr wire:key="em-{{ $month }}" class="hover:bg-zinc-50/60 dark:hover:bg-zinc-800/30 transition-colors">
+                @php $maxBilled = $this->expensesByMonth->max('total_billed') ?: 1; @endphp
+                @forelse($this->expensesByMonth as $row)
+                    <tr wire:key="em-{{ $row->month }}" class="hover:bg-zinc-50/60 dark:hover:bg-zinc-800/30 transition-colors">
                         <td class="px-5 py-3.5 font-medium text-zinc-900 dark:text-zinc-100">
-                            {{ \Carbon\Carbon::createFromFormat('Y-m', $month)->format('F Y') }}
+                            {{ \Carbon\Carbon::createFromFormat('Y-m', $row->month)->format('F Y') }}
                         </td>
-                        <td class="px-5 py-3.5 text-right tabular-nums text-red-600 dark:text-red-400 font-semibold">
-                            UGX {{ number_format($approved, 0) }}
+                        <td class="px-5 py-3.5 text-right tabular-nums text-zinc-600 dark:text-zinc-400">
+                            {{ number_format($row->count) }}
                         </td>
-                        <td class="px-5 py-3.5 text-right tabular-nums text-amber-600 dark:text-amber-400">
-                            UGX {{ number_format($draft, 0) }}
+                        <td class="px-5 py-3.5 text-right tabular-nums font-semibold text-red-600 dark:text-red-400">
+                            UGX {{ number_format($row->total_billed, 0) }}
                         </td>
-                        <td class="px-5 py-3.5 text-right tabular-nums font-bold text-zinc-900 dark:text-zinc-100">
-                            UGX {{ number_format($approved + $draft, 0) }}
+                        <td class="px-5 py-3.5 text-right w-32">
+                            <div class="flex items-center justify-end gap-2">
+                                <div class="h-2 w-24 rounded-full bg-zinc-100 dark:bg-zinc-700">
+                                    <div class="h-2 rounded-full bg-red-500"
+                                        style="width: {{ round(($row->total_billed / $maxBilled) * 100) }}%"></div>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 @empty
@@ -267,14 +269,14 @@
     <div class="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-700/60 dark:bg-zinc-900">
         <div class="border-b border-zinc-200 px-5 py-3.5 dark:border-zinc-700/60">
             <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Expenses by Category</h2>
-            <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">Approved spend grouped by expense category</p>
+            <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">Total spend grouped by expense category</p>
         </div>
         <table class="w-full text-sm">
             <thead>
                 <tr class="border-b border-zinc-100 bg-zinc-50 dark:border-zinc-700/60 dark:bg-zinc-800/60">
                     <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Category</th>
                     <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Records</th>
-                    <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Approved Total</th>
+                    <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Total Billed</th>
                     <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Share</th>
                 </tr>
             </thead>
@@ -329,8 +331,8 @@
                 </div>
                 <div class="flex items-center justify-between px-5 py-4">
                     <div>
-                        <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Total Expenses (Approved)</p>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Confirmed spend across all categories</p>
+                        <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Total Billed Expenses</p>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">All bills recorded across all categories</p>
                     </div>
                     <p class="text-base font-bold tabular-nums text-red-600 dark:text-red-400">
                         − UGX {{ number_format($this->totalExpenses, 0) }}
@@ -339,7 +341,7 @@
                 <div class="flex items-center justify-between px-5 py-4 {{ $this->netPosition >= 0 ? 'bg-emerald-50/40 dark:bg-emerald-900/10' : 'bg-red-50/40 dark:bg-red-900/10' }}">
                     <div>
                         <p class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Net Position</p>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Revenue minus approved expenses</p>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Revenue minus total billed expenses</p>
                     </div>
                     <p class="text-xl font-bold tabular-nums {{ $this->netPosition >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}">
                         {{ $this->netPosition >= 0 ? '' : '−' }} UGX {{ number_format(abs($this->netPosition), 0) }}
@@ -347,21 +349,11 @@
                 </div>
                 <div class="flex items-center justify-between px-5 py-4 bg-zinc-50/60 dark:bg-zinc-800/30">
                     <div>
-                        <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Planned Expenses (Draft)</p>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Pending approval — not yet deducted</p>
+                        <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Outstanding Balance</p>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Bills not yet fully paid</p>
                     </div>
                     <p class="text-sm tabular-nums text-amber-600 dark:text-amber-400">
-                        UGX {{ number_format($this->totalPlannedExpenses, 0) }}
-                    </p>
-                </div>
-                <div class="flex items-center justify-between px-5 py-4 bg-zinc-50/60 dark:bg-zinc-800/30">
-                    <div>
-                        <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Worst-Case Net (incl. planned)</p>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">If all draft expenses are approved</p>
-                    </div>
-                    @php $worstCase = $this->netPosition - $this->totalPlannedExpenses; @endphp
-                    <p class="text-sm tabular-nums {{ $worstCase >= 0 ? 'text-zinc-600 dark:text-zinc-400' : 'text-red-500 dark:text-red-400' }}">
-                        {{ $worstCase >= 0 ? '' : '−' }} UGX {{ number_format(abs($worstCase), 0) }}
+                        UGX {{ number_format($this->totalOutstandingExpenses, 0) }}
                     </p>
                 </div>
             </div>

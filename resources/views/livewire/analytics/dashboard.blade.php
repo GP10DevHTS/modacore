@@ -68,6 +68,42 @@
 
     </div>
 
+    @can('expenses.view')
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="rounded-xl border border-red-200 bg-red-50 p-5 shadow-sm dark:border-red-800/30 dark:bg-red-900/10">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium text-red-700 dark:text-red-400">Total Billed Expenses</p>
+                    <p class="mt-1 text-2xl font-bold tabular-nums text-red-700 dark:text-red-300">UGX {{ number_format($this->totalExpensesBilled, 0) }}</p>
+                </div>
+                <div class="flex size-10 items-center justify-center rounded-xl bg-red-100 dark:bg-red-800/30">
+                    <svg class="size-5 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </div>
+            </div>
+            <div class="mt-3 flex items-center justify-between text-xs">
+                <span class="text-red-600/70 dark:text-red-500">All bills recorded</span>
+                <a href="{{ route('expenses.index') }}" wire:navigate class="text-red-600 hover:underline dark:text-red-400">View bills →</a>
+            </div>
+        </div>
+
+        <div class="rounded-xl border border-amber-200 bg-amber-50 p-5 shadow-sm dark:border-amber-800/30 dark:bg-amber-900/10">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium text-amber-700 dark:text-amber-400">Outstanding Balance</p>
+                    <p class="mt-1 text-2xl font-bold tabular-nums text-amber-700 dark:text-amber-300">UGX {{ number_format($this->totalExpensesOutstanding, 0) }}</p>
+                </div>
+                <div class="flex size-10 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-800/30">
+                    <svg class="size-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                </div>
+            </div>
+            <div class="mt-3 flex items-center justify-between text-xs">
+                <span class="text-amber-600/70 dark:text-amber-500">Unpaid / partially paid</span>
+                <a href="{{ route('reports.index') }}" wire:navigate class="text-amber-600 hover:underline dark:text-amber-400">Full report →</a>
+            </div>
+        </div>
+    </div>
+    @endcan
+
     <div class="grid gap-6 lg:grid-cols-2">
 
         {{-- Revenue by Month --}}

@@ -9,6 +9,8 @@ use App\Livewire\Customers\Index as CustomersIndex;
 use App\Livewire\Employees\Attendance;
 use App\Livewire\Employees\Index as EmployeesIndex;
 use App\Livewire\Expenses\Index as ExpensesIndex;
+use App\Livewire\Expenses\PaymentForm as ExpensePaymentForm;
+use App\Livewire\Expenses\Show as ExpenseShow;
 use App\Livewire\Inventory\Index as InventoryIndex;
 use App\Livewire\Invoices\Index as InvoicesIndex;
 use App\Livewire\Invoices\Show as InvoiceShow;
@@ -72,6 +74,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Expenses
     Route::get('/expenses', ExpensesIndex::class)->name('expenses.index');
+    Route::get('/expenses/{expense}', ExpenseShow::class)->name('expenses.show');
+    Route::get('/expenses/{expense}/pay', ExpensePaymentForm::class)->name('expenses.pay');
 
     // Notifications
     Route::get('/notifications', NotificationsCenter::class)->name('notifications.index');

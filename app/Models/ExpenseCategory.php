@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class ExpenseCategory extends Model
 {
@@ -12,8 +13,13 @@ class ExpenseCategory extends Model
 
     protected $fillable = ['name', 'description'];
 
-    public function expenses(): HasMany
+    public function items(): HasMany
     {
-        return $this->hasMany(Expense::class, 'category_id');
+        return $this->hasMany(ExpenseItem::class, 'category_id');
+    }
+
+    public function expenses(): HasManyThrough
+    {
+        return $this->hasManyThrough(Expense::class, ExpenseItem::class, 'category_id', 'item_id');
     }
 }
