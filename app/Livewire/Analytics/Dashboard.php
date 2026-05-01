@@ -107,6 +107,27 @@ class Dashboard extends Component
     }
 
     #[Computed]
+    public function totalOutstandingCustomers(): float
+    {
+        $totalBooked = (float) Booking::whereNotIn('status', ['cancelled'])->sum('total_amount');
+        $totalPaid = (float) Payment::sum('amount');
+
+        return max(0, $totalBooked - $totalPaid);
+    }
+
+    #[Computed]
+    public function totalBookedValue(): float
+    {
+        return (float) Booking::whereNotIn('status', ['cancelled'])->sum('total_amount');
+    }
+
+    #[Computed]
+    public function totalCashCollected(): float
+    {
+        return (float) Payment::sum('amount');
+    }
+
+    #[Computed]
     public function recentBookings()
     {
         return Booking::query()

@@ -7,6 +7,7 @@ use App\Models\BookingItem;
 use App\Models\DepositRefund;
 use App\Models\Payment;
 use Flux\Flux;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -241,6 +242,15 @@ class Show extends Component
             Flux::toast(text: "Cannot transition from {$current} to {$status}.", variant: 'danger');
 
             return;
+        }
+
+        if ($status === 'completed') {
+            $unreturned = $this->booking->items->filter(fn ($item) => $item->status !== 'returned')->count();
+            if ($unreturned > 0) {
+                Flux::toast(text: "Cannot complete booking — {$unreturned} ".Str::plural('item', $unreturned).' not yet returned.', variant: 'danger');
+
+                return;
+            }
         }
 
         $this->booking->update(['status' => $status]);

@@ -68,6 +68,51 @@
 
     </div>
 
+    {{-- Revenue vs Debt --}}
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700/60 dark:bg-zinc-900">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Total Booked (Invoiced)</p>
+                    <p class="mt-1 text-xl font-bold tabular-nums text-zinc-900 dark:text-zinc-100">UGX {{ number_format($this->totalBookedValue, 0) }}</p>
+                </div>
+                <div class="flex size-10 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800">
+                    <svg class="size-5 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                </div>
+            </div>
+            <p class="mt-3 text-xs text-zinc-400">All non-cancelled bookings</p>
+        </div>
+
+        <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm dark:border-emerald-800/30 dark:bg-emerald-900/10">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium text-emerald-700 dark:text-emerald-400">Cash Collected</p>
+                    <p class="mt-1 text-xl font-bold tabular-nums text-emerald-700 dark:text-emerald-300">UGX {{ number_format($this->totalCashCollected, 0) }}</p>
+                </div>
+                <div class="flex size-10 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-800/30">
+                    <svg class="size-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+            </div>
+            <p class="mt-3 text-xs text-emerald-600/60 dark:text-emerald-500">All payments received</p>
+        </div>
+
+        <div class="rounded-xl border border-orange-200 bg-orange-50 p-5 shadow-sm dark:border-orange-800/30 dark:bg-orange-900/10">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium text-orange-700 dark:text-orange-400">Customer Debt</p>
+                    <p class="mt-1 text-xl font-bold tabular-nums text-orange-700 dark:text-orange-300">UGX {{ number_format($this->totalOutstandingCustomers, 0) }}</p>
+                </div>
+                <div class="flex size-10 items-center justify-center rounded-xl bg-orange-100 dark:bg-orange-800/30">
+                    <svg class="size-5 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                </div>
+            </div>
+            <div class="mt-3 flex items-center justify-between text-xs">
+                <span class="text-orange-600/70 dark:text-orange-500">Booked but not yet paid</span>
+                <a href="{{ route('reports.index') }}" wire:navigate class="text-orange-600 hover:underline dark:text-orange-400">Debtors →</a>
+            </div>
+        </div>
+    </div>
+
     @can('expenses.view')
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div class="rounded-xl border border-red-200 bg-red-50 p-5 shadow-sm dark:border-red-800/30 dark:bg-red-900/10">

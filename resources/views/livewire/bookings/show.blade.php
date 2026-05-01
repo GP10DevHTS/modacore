@@ -447,10 +447,10 @@
                     <flux:textarea wire:model="paymentNotes" rows="2" placeholder="Optional notes…" />
                 </div>
 
-                <label class="flex items-center gap-2.5 cursor-pointer">
-                    <flux:checkbox wire:model="paymentIsDeposit" />
-                    <span class="text-sm text-zinc-700 dark:text-zinc-300">Mark as deposit</span>
-                </label>
+                {{-- <label class="flex items-center gap-2.5 cursor-pointer"> --}}
+                {{--     <flux:checkbox wire:model="paymentIsDeposit" /> --}}
+                {{--     <span class="text-sm text-zinc-700 dark:text-zinc-300">Mark as deposit</span> --}}
+                {{-- </label> --}}
             </div>
 
             <div class="flex justify-end gap-2 border-t border-zinc-100 pt-4 dark:border-zinc-700">
