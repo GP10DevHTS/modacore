@@ -53,6 +53,15 @@ class RevenueSummary extends Component
     }
 
     #[Computed]
+    public function totalOutstandingCustomers(): float
+    {
+        $totalBooked = (float) Booking::whereNotIn('status', ['cancelled'])->sum('total_amount');
+        $totalPaid = (float) Payment::sum('amount');
+
+        return max(0, $totalBooked - $totalPaid);
+    }
+
+    #[Computed]
     public function avgBookingValue(): float
     {
         return (float) (Booking::whereNotIn('status', ['cancelled'])->avg('total_amount') ?? 0);

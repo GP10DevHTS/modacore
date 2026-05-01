@@ -49,9 +49,27 @@ class Show extends Component
     }
 
     #[Computed]
+    public function financialSummary(): array
+    {
+        $bookings = $this->customer->bookings()
+            ->whereNotIn('status', ['cancelled'])
+            ->withSum('payments', 'amount')
+            ->get();
+
+        $totalBooked = (float) $bookings->sum('total_amount');
+        $totalPaid = (float) $bookings->sum('payments_sum_amount');
+        $outstanding = max(0, $totalBooked - $totalPaid);
+
+        return compact('totalBooked', 'totalPaid', 'outstanding');
+    }
+
+    #[Computed]
     public function bookings()
     {
-        return $this->customer->bookings()->with('items')->latest()->get();
+        return $this->customer->bookings()
+            ->withSum('payments', 'amount')
+            ->latest()
+            ->get();
     }
 
     public function saveMeasurements(): void

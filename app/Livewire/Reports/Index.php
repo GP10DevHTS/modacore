@@ -3,6 +3,7 @@
 namespace App\Livewire\Reports;
 
 use App\Models\Booking;
+use App\Models\Customer;
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
 use App\Models\ExpensePayment;
@@ -17,9 +18,15 @@ class Index extends Component
 {
     public string $activeReport = 'payments';
 
+    public string $receiptDateFrom = '';
+
+    public string $receiptDateTo = '';
+
     public function mount(): void
     {
         abort_unless(auth()->user()->can('reports.view'), 403);
+        $this->receiptDateFrom = now()->startOfMonth()->toDateString();
+        $this->receiptDateTo = now()->toDateString();
     }
 
     #[Computed]
@@ -50,6 +57,15 @@ class Index extends Component
     public function totalSupplierPaid(): float
     {
         return (float) SupplierPayment::sum('amount');
+    }
+
+    #[Computed]
+    public function totalOutstandingCustomers(): float
+    {
+        $totalBooked = (float) Booking::whereNotIn('status', ['cancelled'])->sum('total_amount');
+        $totalPaid = (float) Payment::sum('amount');
+
+        return max(0, $totalBooked - $totalPaid);
     }
 
     #[Computed]
@@ -131,6 +147,81 @@ class Index extends Component
     public function netPosition(): float
     {
         return $this->totalRevenue - $this->totalExpenses;
+    }
+
+    // ── Debtors ──────────────────────────────────────────────────────────────
+
+    #[Computed]
+    public function debtors()
+    {
+        return Customer::query()
+            ->whereNull('deleted_at')
+            ->whereHas('bookings', fn ($q) => $q->whereNotIn('status', ['cancelled']))
+            ->with(['bookings' => fn ($q) => $q
+                ->whereNotIn('status', ['cancelled'])
+                ->withSum('payments', 'amount'),
+            ])
+            ->get()
+            ->map(function (Customer $customer) {
+                $totalBooked = (float) $customer->bookings->sum('total_amount');
+                $totalPaid = (float) $customer->bookings->sum('payments_sum_amount');
+                $outstanding = max(0, $totalBooked - $totalPaid);
+
+                return [
+                    'id' => $customer->id,
+                    'name' => $customer->name,
+                    'phone' => $customer->phone,
+                    'total_booked' => $totalBooked,
+                    'total_paid' => $totalPaid,
+                    'outstanding' => $outstanding,
+                    'booking_count' => $customer->bookings->count(),
+                ];
+            })
+            ->filter(fn (array $c) => $c['outstanding'] > 0)
+            ->sortByDesc('outstanding')
+            ->values();
+    }
+
+    // ── Receipts ─────────────────────────────────────────────────────────────
+
+    public function updatedReceiptDateFrom(): void
+    {
+        unset($this->receiptsByPeriod, $this->receiptPeriodTotals);
+    }
+
+    public function updatedReceiptDateTo(): void
+    {
+        unset($this->receiptsByPeriod, $this->receiptPeriodTotals);
+    }
+
+    #[Computed]
+    public function receiptsByPeriod()
+    {
+        return Payment::query()
+            ->with(['booking.customer'])
+            ->when($this->receiptDateFrom, fn ($q) => $q->whereDate('paid_at', '>=', $this->receiptDateFrom))
+            ->when($this->receiptDateTo, fn ($q) => $q->whereDate('paid_at', '<=', $this->receiptDateTo))
+            ->whereNotNull('paid_at')
+            ->orderByDesc('paid_at')
+            ->get();
+    }
+
+    #[Computed]
+    public function receiptPeriodTotals(): array
+    {
+        $payments = $this->receiptsByPeriod;
+        $totalOrdered = (float) Booking::whereNotIn('status', ['cancelled'])
+            ->when($this->receiptDateFrom, fn ($q) => $q->whereDate('hire_from', '>=', $this->receiptDateFrom))
+            ->when($this->receiptDateTo, fn ($q) => $q->whereDate('hire_from', '<=', $this->receiptDateTo))
+            ->sum('total_amount');
+
+        return [
+            'total_collected' => (float) $payments->where('is_deposit', false)->sum('amount'),
+            'total_deposits' => (float) $payments->where('is_deposit', true)->sum('amount'),
+            'total_all' => (float) $payments->sum('amount'),
+            'total_ordered' => $totalOrdered,
+            'count' => $payments->count(),
+        ];
     }
 
     public function render()

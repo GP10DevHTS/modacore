@@ -549,6 +549,44 @@
             </div>
 
             <div class="erp-nav-section">
+                <div class="erp-nav-label">Finance</div>
+                @can('expenses.view')
+                    <a href="{{ route('expenses.index') }}" wire:navigate class="erp-nav-item {{ request()->routeIs('expenses.*') ? 'active' : '' }}">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        Expenses
+                    </a>
+                @endcan
+                @can('payments.view')
+                    <a href="{{ route('invoices.index') }}" wire:navigate class="erp-nav-item {{ request()->routeIs('invoices.*') ? 'active' : '' }}">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z"/>
+                        </svg>
+                        Invoices
+                    </a>
+                @endcan
+                @can('reports.view')
+                    <a href="{{ route('reports.index') }}" wire:navigate class="erp-nav-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        Reports
+                    </a>
+                    <a href="{{ route('analytics.dashboard') }}" wire:navigate class="erp-nav-item {{ request()->routeIs('analytics.*') ? 'active' : '' }}">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+                        </svg>
+                        Analytics
+                    </a>
+                @endcan
+            </div>
+
+            <div class="erp-nav-section">
                 <div class="erp-nav-label">People</div>
                 @can('employees.view')
                 <a href="{{ route('employees.index') }}" wire:navigate class="erp-nav-item {{ request()->routeIs('employees.index') ? 'active' : '' }}">
@@ -574,46 +612,8 @@
                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                     Attendance
-                    <span class="erp-nav-badge" style="background:var(--erp-bg-hover);color:var(--erp-text-muted);font-size:0.55rem">SOON</span>
+                    <span class="erp-nav-badge">SOON</span>
                 </a>
-            </div>
-
-            <div class="erp-nav-section">
-                <div class="erp-nav-label">Finance</div>
-                @can('expenses.view')
-                <a href="{{ route('expenses.index') }}" wire:navigate class="erp-nav-item {{ request()->routeIs('expenses.*') ? 'active' : '' }}">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
-                    Expenses
-                </a>
-                @endcan
-                @can('payments.view')
-                <a href="{{ route('invoices.index') }}" wire:navigate class="erp-nav-item {{ request()->routeIs('invoices.*') ? 'active' : '' }}">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z"/>
-                    </svg>
-                    Invoices
-                </a>
-                @endcan
-                @can('reports.view')
-                <a href="{{ route('reports.index') }}" wire:navigate class="erp-nav-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                    </svg>
-                    Reports
-                </a>
-                <a href="{{ route('analytics.dashboard') }}" wire:navigate class="erp-nav-item {{ request()->routeIs('analytics.*') ? 'active' : '' }}">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
-                    </svg>
-                    Analytics
-                </a>
-                @endcan
             </div>
 
             <div class="erp-nav-section">

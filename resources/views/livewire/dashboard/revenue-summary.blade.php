@@ -57,6 +57,15 @@
             <p class="mt-1 text-xs text-zinc-400">Per booking</p>
         </div>
 
+        <div class="rounded-xl border {{ $this->totalOutstandingCustomers > 0 ? 'border-orange-200 bg-orange-50 dark:border-orange-800/30 dark:bg-orange-900/10' : 'border-zinc-200 bg-white dark:border-zinc-700/60 dark:bg-zinc-900' }} p-5 shadow-sm">
+            <div class="flex size-8 items-center justify-center rounded-lg {{ $this->totalOutstandingCustomers > 0 ? 'bg-orange-100 dark:bg-orange-800/30' : 'bg-zinc-100 dark:bg-zinc-800' }}">
+                <svg class="size-4 {{ $this->totalOutstandingCustomers > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-zinc-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            </div>
+            <p class="mt-3 text-xs font-medium {{ $this->totalOutstandingCustomers > 0 ? 'text-orange-700 dark:text-orange-400' : 'text-zinc-500 dark:text-zinc-400' }}">Customer Debt</p>
+            <p class="mt-0.5 text-lg font-bold tabular-nums {{ $this->totalOutstandingCustomers > 0 ? 'text-orange-700 dark:text-orange-300' : 'text-zinc-400 dark:text-zinc-500' }}">UGX {{ number_format($this->totalOutstandingCustomers, 0) }}</p>
+            <a href="{{ route('reports.index') }}" wire:navigate class="mt-1 block text-xs {{ $this->totalOutstandingCustomers > 0 ? 'text-orange-600 hover:underline dark:text-orange-400' : 'text-zinc-400' }}">View debtors →</a>
+        </div>
+
     </div>
 
     {{-- Revenue trend --}}

@@ -8,6 +8,7 @@
             'completed' => ['pill' => 'bg-violet-50 text-violet-700 dark:bg-violet-900/20 dark:text-violet-400', 'label' => 'Completed'],
             'cancelled' => ['pill' => 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400', 'label' => 'Cancelled'],
         ];
+        $summary = $this->financialSummary;
     @endphp
 
     {{-- Page Header --}}
@@ -29,6 +30,33 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    {{-- Financial Mini-Dashboard --}}
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+
+        <div class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700/60 dark:bg-zinc-900">
+            <p class="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Total Ordered</p>
+            <p class="mt-2 text-2xl font-bold tabular-nums text-zinc-900 dark:text-zinc-100">UGX {{ number_format($summary['totalBooked'], 0) }}</p>
+            <p class="mt-1 text-xs text-zinc-400 dark:text-zinc-500">Across all non-cancelled bookings</p>
+        </div>
+
+        <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm dark:border-emerald-800/30 dark:bg-emerald-900/10">
+            <p class="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Total Paid</p>
+            <p class="mt-2 text-2xl font-bold tabular-nums text-emerald-700 dark:text-emerald-300">UGX {{ number_format($summary['totalPaid'], 0) }}</p>
+            <p class="mt-1 text-xs text-emerald-600/60 dark:text-emerald-500">Cash collected across all bookings</p>
+        </div>
+
+        <div class="rounded-xl border {{ $summary['outstanding'] > 0 ? 'border-red-200 bg-red-50 dark:border-red-800/30 dark:bg-red-900/10' : 'border-zinc-200 bg-white dark:border-zinc-700/60 dark:bg-zinc-900' }} p-5 shadow-sm">
+            <p class="text-xs font-semibold uppercase tracking-wider {{ $summary['outstanding'] > 0 ? 'text-red-600 dark:text-red-400' : 'text-zinc-400 dark:text-zinc-500' }}">Outstanding Debt</p>
+            <p class="mt-2 text-2xl font-bold tabular-nums {{ $summary['outstanding'] > 0 ? 'text-red-600 dark:text-red-400' : 'text-zinc-400 dark:text-zinc-500' }}">
+                UGX {{ number_format($summary['outstanding'], 0) }}
+            </p>
+            <p class="mt-1 text-xs {{ $summary['outstanding'] > 0 ? 'text-red-500/60 dark:text-red-500' : 'text-zinc-400 dark:text-zinc-500' }}">
+                {{ $summary['outstanding'] > 0 ? 'Amount still owed' : 'Fully settled' }}
+            </p>
+        </div>
+
     </div>
 
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -115,33 +143,45 @@
                     <table class="w-full text-sm">
                         <thead>
                             <tr class="border-b border-zinc-100 bg-zinc-50/60 dark:border-zinc-700/60 dark:bg-zinc-800/40">
-                                <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Booking #</th>
-                                <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Period</th>
-                                <th class="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Status</th>
-                                <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Amount</th>
-                                <th class="px-5 py-3"></th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Booking #</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Period</th>
+                                <th class="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Status</th>
+                                <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Ordered</th>
+                                <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Paid</th>
+                                <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Balance</th>
+                                <th class="px-4 py-3"></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-zinc-100 dark:divide-zinc-700/50">
                             @foreach($this->bookings as $booking)
-                                @php $cfg = $statusConfig[$booking->status] ?? $statusConfig['draft']; @endphp
+                                @php
+                                    $cfg = $statusConfig[$booking->status] ?? $statusConfig['draft'];
+                                    $paid = (float) $booking->payments_sum_amount;
+                                    $balance = max(0, (float) $booking->total_amount - $paid);
+                                @endphp
                                 <tr class="hover:bg-zinc-50/60 dark:hover:bg-zinc-800/30 transition-colors" wire:key="booking-{{ $booking->id }}">
-                                    <td class="px-5 py-3.5">
+                                    <td class="px-4 py-3.5">
                                         <span class="font-mono text-xs font-semibold text-zinc-700 dark:text-zinc-300">{{ $booking->booking_number }}</span>
                                     </td>
-                                    <td class="px-5 py-3.5 text-zinc-600 dark:text-zinc-400">
+                                    <td class="px-4 py-3.5 text-zinc-600 dark:text-zinc-400">
                                         <div class="text-xs">{{ $booking->hire_from->format('d M Y') }}</div>
                                         <div class="text-xs text-zinc-400">→ {{ $booking->hire_to->format('d M Y') }}</div>
                                     </td>
-                                    <td class="px-5 py-3.5 text-center">
+                                    <td class="px-4 py-3.5 text-center">
                                         <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold {{ $cfg['pill'] }}">
                                             {{ $cfg['label'] }}
                                         </span>
                                     </td>
-                                    <td class="px-5 py-3.5 text-right font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">
+                                    <td class="px-4 py-3.5 text-right tabular-nums font-medium text-zinc-900 dark:text-zinc-100">
                                         UGX {{ number_format($booking->total_amount, 0) }}
                                     </td>
-                                    <td class="px-5 py-3.5 text-right">
+                                    <td class="px-4 py-3.5 text-right tabular-nums text-emerald-600 dark:text-emerald-400">
+                                        UGX {{ number_format($paid, 0) }}
+                                    </td>
+                                    <td class="px-4 py-3.5 text-right tabular-nums font-semibold {{ $balance > 0 ? 'text-red-600 dark:text-red-400' : 'text-zinc-400 dark:text-zinc-500' }}">
+                                        {{ $balance > 0 ? 'UGX '.number_format($balance, 0) : '—' }}
+                                    </td>
+                                    <td class="px-4 py-3.5 text-right">
                                         <a href="{{ route('bookings.show', $booking->id) }}" wire:navigate
                                             class="text-xs font-medium text-amber-600 hover:text-amber-500 dark:text-amber-400 dark:hover:text-amber-300">
                                             View →
@@ -150,6 +190,17 @@
                                 </tr>
                             @endforeach
                         </tbody>
+                        <tfoot>
+                            <tr class="border-t-2 border-zinc-200 bg-zinc-50/60 dark:border-zinc-700 dark:bg-zinc-800/40">
+                                <td colspan="3" class="px-4 py-3 text-xs font-semibold text-zinc-500 dark:text-zinc-400">Totals (excl. cancelled)</td>
+                                <td class="px-4 py-3 text-right text-xs font-bold tabular-nums text-zinc-900 dark:text-zinc-100">UGX {{ number_format($summary['totalBooked'], 0) }}</td>
+                                <td class="px-4 py-3 text-right text-xs font-bold tabular-nums text-emerald-600 dark:text-emerald-400">UGX {{ number_format($summary['totalPaid'], 0) }}</td>
+                                <td class="px-4 py-3 text-right text-xs font-bold tabular-nums {{ $summary['outstanding'] > 0 ? 'text-red-600 dark:text-red-400' : 'text-zinc-400' }}">
+                                    {{ $summary['outstanding'] > 0 ? 'UGX '.number_format($summary['outstanding'], 0) : '—' }}
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 @endif
             </div>
