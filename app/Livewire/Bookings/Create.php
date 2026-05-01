@@ -99,7 +99,7 @@ class Create extends Component
             return collect();
         }
 
-        return InventoryItem::find($this->pickerItemId)?->variants()->orderBy('size')->orderBy('color')->get(['id', 'size', 'color']) ?? collect();
+        return InventoryItem::find($this->pickerItemId)?->variants()->active()->orderBy('label')->orderBy('size')->orderBy('color')->get(['id', 'size', 'color', 'label', 'rental_price', 'stock_quantity']) ?? collect();
     }
 
     #[Computed]
@@ -119,6 +119,18 @@ class Create extends Component
             if ($item) {
                 $this->pickerUnitPrice = (string) $item->base_rental_price;
             }
+        }
+    }
+
+    public function updatedPickerVariantId(): void
+    {
+        if (! $this->pickerVariantId || ! $this->pickerItemId) {
+            return;
+        }
+
+        $variant = InventoryItem::find($this->pickerItemId)?->variants()->find($this->pickerVariantId);
+        if ($variant && $variant->rental_price !== null) {
+            $this->pickerUnitPrice = (string) $variant->rental_price;
         }
     }
 

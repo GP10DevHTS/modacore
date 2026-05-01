@@ -13,6 +13,7 @@ use App\Livewire\Expenses\Index as ExpensesIndex;
 use App\Livewire\Expenses\PaymentForm as ExpensePaymentForm;
 use App\Livewire\Expenses\Show as ExpenseShow;
 use App\Livewire\Inventory\Index as InventoryIndex;
+use App\Livewire\Inventory\Show as InventoryShow;
 use App\Livewire\Invoices\Index as InvoicesIndex;
 use App\Livewire\Invoices\Show as InvoiceShow;
 use App\Livewire\Notifications\Center as NotificationsCenter;
@@ -34,6 +35,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
 
     Route::get('/inventory', InventoryIndex::class)->name('inventory.index');
+    Route::get('/inventory/{inventoryItem}', InventoryShow::class)->name('inventory.show');
 
     Route::get('/customers', CustomersIndex::class)->name('customers.index');
     Route::get('/customers/{customer}', CustomerShow::class)->name('customers.show');

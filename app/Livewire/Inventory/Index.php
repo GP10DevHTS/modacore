@@ -4,6 +4,8 @@ namespace App\Livewire\Inventory;
 
 use App\Models\InventoryCategory;
 use App\Models\InventoryItem;
+use App\Models\VariantType;
+use App\Models\VariantTypeValue;
 use Flux\Flux;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
@@ -32,6 +34,8 @@ class Index extends Component
 
     public string $baseRentalPrice = '';
 
+    public string $costPrice = '';
+
     public int $stockQuantity = 1;
 
     public bool $isActive = true;
@@ -49,6 +53,22 @@ class Index extends Component
 
     public ?int $deletingCategoryId = null;
 
+    // ── Variant Type form ─────────────────────────────────────────
+    public string $vtName = '';
+
+    public ?int $editingVariantTypeId = null;
+
+    public ?int $deletingVariantTypeId = null;
+
+    // ── Variant Type Value form ────────────────────────────────────
+    public string $vtvLabel = '';
+
+    public ?int $editingValueId = null;
+
+    public ?int $deletingValueId = null;
+
+    public ?int $managingValuesForTypeId = null;
+
     public function updatingSearch(): void
     {
         $this->resetPage();
@@ -57,6 +77,7 @@ class Index extends Component
     public function switchTab(string $tab): void
     {
         $this->activeTab = $tab;
+        $this->managingValuesForTypeId = null;
         $this->resetPage();
     }
 
@@ -80,6 +101,22 @@ class Index extends Component
         return InventoryCategory::withCount('items')->ordered()->get();
     }
 
+    #[Computed]
+    public function variantTypes()
+    {
+        return VariantType::withCount('values')->ordered()->get();
+    }
+
+    #[Computed]
+    public function managingVariantType(): ?VariantType
+    {
+        if (! $this->managingValuesForTypeId) {
+            return null;
+        }
+
+        return VariantType::with(['values' => fn ($q) => $q->ordered()])->find($this->managingValuesForTypeId);
+    }
+
     // ── Item CRUD ─────────────────────────────────────────────────
 
     public function openCreate(): void
@@ -99,6 +136,7 @@ class Index extends Component
         $this->categoryId = $item->category_id;
         $this->sku = $item->sku ?? '';
         $this->baseRentalPrice = (string) $item->base_rental_price;
+        $this->costPrice = $item->cost_price !== null ? (string) $item->cost_price : '';
         $this->stockQuantity = $item->stock_quantity;
         $this->isActive = $item->is_active;
 
@@ -115,6 +153,7 @@ class Index extends Component
             'categoryId' => ['required', Rule::exists('inventory_categories', 'id')],
             'sku' => ['nullable', 'string', 'max:100', Rule::unique('inventory_items', 'sku')->ignore($this->editingId)],
             'baseRentalPrice' => ['required', 'numeric', 'min:0'],
+            'costPrice' => ['nullable', 'numeric', 'min:0'],
             'stockQuantity' => ['required', 'integer', 'min:0'],
             'isActive' => ['boolean'],
         ]);
@@ -125,6 +164,7 @@ class Index extends Component
             'category_id' => $validated['categoryId'],
             'sku' => $validated['sku'] ?: null,
             'base_rental_price' => $validated['baseRentalPrice'],
+            'cost_price' => $validated['costPrice'] ?: null,
             'stock_quantity' => $validated['stockQuantity'],
             'is_active' => $validated['isActive'],
         ];
@@ -246,6 +286,124 @@ class Index extends Component
         unset($this->categories);
     }
 
+    // ── Variant Types CRUD ────────────────────────────────────────
+
+    public function openCreateVariantType(): void
+    {
+        $this->vtName = '';
+        $this->editingVariantTypeId = null;
+        $this->resetValidation(['vtName']);
+        $this->js('$flux.modal("variant-type-form").show()');
+    }
+
+    public function openEditVariantType(int $id): void
+    {
+        $vt = VariantType::findOrFail($id);
+        $this->editingVariantTypeId = $vt->id;
+        $this->vtName = $vt->name;
+        $this->resetValidation(['vtName']);
+        $this->js('$flux.modal("variant-type-form").show()');
+    }
+
+    public function saveVariantType(): void
+    {
+        abort_unless(auth()->user()->can($this->editingVariantTypeId ? 'inventory.edit' : 'inventory.create'), 403);
+
+        $validated = $this->validate([
+            'vtName' => ['required', 'string', 'max:100', Rule::unique('variant_types', 'name')->ignore($this->editingVariantTypeId)],
+        ]);
+
+        if ($this->editingVariantTypeId) {
+            VariantType::findOrFail($this->editingVariantTypeId)->update(['name' => $validated['vtName']]);
+            Flux::toast('Variant type updated.');
+        } else {
+            VariantType::create(['name' => $validated['vtName'], 'sort_order' => VariantType::max('sort_order') + 1]);
+            Flux::toast('Variant type created.');
+        }
+
+        $this->vtName = '';
+        $this->editingVariantTypeId = null;
+        $this->js('$flux.modal("variant-type-form").close()');
+        unset($this->variantTypes);
+    }
+
+    public function openDeleteVariantType(int $id): void
+    {
+        $this->deletingVariantTypeId = $id;
+        $this->js('$flux.modal("confirm-delete-variant-type").show()');
+    }
+
+    public function deleteVariantType(): void
+    {
+        abort_unless(auth()->user()->can('inventory.delete'), 403);
+
+        VariantType::findOrFail($this->deletingVariantTypeId)->delete();
+
+        Flux::toast('Variant type deleted.');
+        $this->deletingVariantTypeId = null;
+        $this->js('$flux.modal("confirm-delete-variant-type").close()');
+        unset($this->variantTypes, $this->managingVariantType);
+    }
+
+    // ── Variant Type Values CRUD ──────────────────────────────────
+
+    public function openManageValues(int $typeId): void
+    {
+        $this->managingValuesForTypeId = $typeId;
+        $this->vtvLabel = '';
+        $this->editingValueId = null;
+        $this->resetValidation(['vtvLabel']);
+        unset($this->managingVariantType);
+        $this->js('$flux.modal("variant-values-modal").show()');
+    }
+
+    public function saveVariantTypeValue(): void
+    {
+        abort_unless(auth()->user()->can('inventory.edit'), 403);
+
+        $validated = $this->validate([
+            'vtvLabel' => ['required', 'string', 'max:100'],
+        ]);
+
+        if ($this->editingValueId) {
+            VariantTypeValue::findOrFail($this->editingValueId)->update(['label' => $validated['vtvLabel']]);
+        } else {
+            VariantTypeValue::create([
+                'variant_type_id' => $this->managingValuesForTypeId,
+                'label' => $validated['vtvLabel'],
+                'sort_order' => VariantTypeValue::where('variant_type_id', $this->managingValuesForTypeId)->max('sort_order') + 1,
+            ]);
+        }
+
+        $this->vtvLabel = '';
+        $this->editingValueId = null;
+        $this->resetValidation(['vtvLabel']);
+        unset($this->managingVariantType, $this->variantTypes);
+    }
+
+    public function editVariantTypeValue(int $id): void
+    {
+        $value = VariantTypeValue::findOrFail($id);
+        $this->editingValueId = $value->id;
+        $this->vtvLabel = $value->label;
+    }
+
+    public function cancelEditValue(): void
+    {
+        $this->editingValueId = null;
+        $this->vtvLabel = '';
+        $this->resetValidation(['vtvLabel']);
+    }
+
+    public function deleteVariantTypeValue(int $id): void
+    {
+        abort_unless(auth()->user()->can('inventory.delete'), 403);
+
+        VariantTypeValue::findOrFail($id)->delete();
+        Flux::toast('Value deleted.');
+        unset($this->managingVariantType, $this->variantTypes);
+    }
+
     // ── Helpers ───────────────────────────────────────────────────
 
     private function resetItemForm(): void
@@ -255,9 +413,10 @@ class Index extends Component
         $this->categoryId = null;
         $this->sku = '';
         $this->baseRentalPrice = '';
+        $this->costPrice = '';
         $this->stockQuantity = 1;
         $this->isActive = true;
-        $this->resetValidation(['name', 'description', 'categoryId', 'sku', 'baseRentalPrice', 'stockQuantity', 'isActive']);
+        $this->resetValidation(['name', 'description', 'categoryId', 'sku', 'baseRentalPrice', 'costPrice', 'stockQuantity', 'isActive']);
     }
 
     private function resetCategoryForm(): void

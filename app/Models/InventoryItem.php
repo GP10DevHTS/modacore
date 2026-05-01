@@ -15,7 +15,7 @@ class InventoryItem extends Model
 
     protected $fillable = [
         'name', 'description', 'category_id', 'sku',
-        'base_rental_price', 'stock_quantity', 'image_path', 'is_active',
+        'base_rental_price', 'cost_price', 'stock_quantity', 'available_quantity', 'image_path', 'is_active',
     ];
 
     protected function casts(): array
@@ -23,7 +23,9 @@ class InventoryItem extends Model
         return [
             'is_active' => 'boolean',
             'base_rental_price' => 'decimal:2',
+            'cost_price' => 'decimal:2',
             'stock_quantity' => 'integer',
+            'available_quantity' => 'integer',
         ];
     }
 
@@ -35,6 +37,17 @@ class InventoryItem extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(InventoryCategory::class, 'category_id');
+    }
+
+    public function getEffectiveStockAttribute(): int
+    {
+        if ($this->relationLoaded('variants') && $this->variants->isNotEmpty()) {
+            return $this->variants->where('is_active', true)->sum('stock_quantity');
+        }
+
+        $variantStock = $this->variants()->active()->sum('stock_quantity');
+
+        return $variantStock > 0 ? $variantStock : $this->stock_quantity;
     }
 
     public function variants(): HasMany
