@@ -87,7 +87,13 @@ class AvailabilityService
             return 0;
         }
 
-        $stock = $item->stock_quantity;
+        if ($variantId) {
+            $variant = $item->variants()->find($variantId);
+            $stock = $variant ? $variant->stock_quantity : 0;
+        } else {
+            $variantStock = $item->variants()->active()->sum('stock_quantity');
+            $stock = $variantStock > 0 ? $variantStock : $item->stock_quantity;
+        }
 
         $booked = BookingItem::query()
             ->where('inventory_item_id', $inventoryItemId)

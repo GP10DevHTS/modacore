@@ -54,7 +54,7 @@
                 <div class="flex flex-wrap items-end gap-3">
                     <flux:field class="min-w-0 flex-1">
                         <flux:label>Item <span class="text-red-500">*</span></flux:label>
-                        <select wire:model="pickerItemId"
+                        <select wire:model.live="pickerItemId"
                             class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
                             <option value="">Select item</option>
                             @foreach($this->inventoryItems as $inv)
@@ -63,6 +63,18 @@
                         </select>
                         <flux:error name="pickerItemId" />
                     </flux:field>
+                    @if($this->selectedItemVariants->count() > 0)
+                        <flux:field class="w-40">
+                            <flux:label>Variant</flux:label>
+                            <select wire:model.live="pickerVariantId"
+                                class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
+                                <option value="">Any</option>
+                                @foreach($this->selectedItemVariants as $variant)
+                                    <option value="{{ $variant->id }}">{{ $variant->name }}</option>
+                                @endforeach
+                            </select>
+                        </flux:field>
+                    @endif
                     <flux:field class="w-24">
                         <flux:label>Qty</flux:label>
                         <flux:input wire:model="pickerQuantity" type="number" min="1" />
@@ -87,10 +99,25 @@
                     <div class="divide-y divide-zinc-100 dark:divide-zinc-700/50">
                         @foreach($lineItems as $index => $line)
                             <div class="flex items-center gap-4 px-5 py-3.5" wire:key="line-{{ $index }}">
-                                <div class="min-w-0 flex-1 font-medium text-zinc-900 dark:text-zinc-100">{{ $line['item_name'] }}</div>
-                                <div class="hidden w-32 text-right sm:block">
-                                    <div class="text-xs text-zinc-400 dark:text-zinc-500">Unit cost</div>
-                                    <div class="font-medium tabular-nums text-zinc-700 dark:text-zinc-300">UGX {{ number_format($line['unit_cost'], 0) }}</div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="font-medium text-zinc-900 dark:text-zinc-100">{{ $line['item_name'] }}</div>
+                                    @if(!empty($line['variant_name']))
+                                        <div class="mt-0.5 text-xs text-zinc-400 dark:text-zinc-500">{{ $line['variant_name'] }}</div>
+                                    @endif
+                                </div>
+                                <div class="hidden w-36 sm:block">
+                                    <div class="mb-1 text-xs text-zinc-400 dark:text-zinc-500">Unit cost</div>
+                                    <div class="flex items-center rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1 dark:border-zinc-700 dark:bg-zinc-800">
+                                        <span class="mr-1 text-xs text-zinc-400">UGX</span>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            step="1"
+                                            value="{{ $line['unit_cost'] }}"
+                                            wire:change="updateLineCost({{ $index }}, $event.target.value)"
+                                            class="w-full bg-transparent text-sm font-medium tabular-nums text-zinc-800 focus:outline-none dark:text-zinc-200"
+                                        />
+                                    </div>
                                 </div>
                                 <div class="flex items-center gap-1 rounded-lg border border-zinc-200 bg-zinc-50 p-1 dark:border-zinc-700 dark:bg-zinc-800">
                                     <button type="button" wire:click="updateLineQuantity({{ $index }}, {{ max(1, $line['quantity'] - 1) }})"

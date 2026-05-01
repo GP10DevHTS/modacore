@@ -250,15 +250,15 @@
                                                     Receipt
                                                 </a>
                                             @endif
-                                            @if($payment->is_deposit && $payment->availableForRefund() > 0)
-                                                @can('payments.create')
-                                                <button wire:click="openRefundForm({{ $payment->id }})"
-                                                    class="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/30 transition-colors">
-                                                    <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
-                                                    Refund
-                                                </button>
-                                                @endcan
-                                            @endif
+                                            {{-- @if($payment->is_deposit && $payment->availableForRefund() > 0) --}}
+                                            {{--     @can('payments.create') --}}
+                                            {{--     <button wire:click="openRefundForm({{ $payment->id }})" --}}
+                                            {{--         class="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/30 transition-colors"> --}}
+                                            {{--         <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg> --}}
+                                            {{--         Refund --}}
+                                            {{--     </button> --}}
+                                            {{--     @endcan --}}
+                                            {{-- @endif --}}
                                         </div>
                                     </td>
                                 </tr>

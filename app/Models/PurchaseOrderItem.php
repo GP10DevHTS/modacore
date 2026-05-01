@@ -14,7 +14,7 @@ class PurchaseOrderItem extends Model
     use HasFactory;
 
     protected $fillable = [
-        'purchase_order_id', 'inventory_item_id', 'quantity',
+        'purchase_order_id', 'inventory_item_id', 'inventory_variant_id', 'quantity',
         'received_quantity', 'invoiced_quantity', 'unit_cost', 'subtotal',
     ];
 
@@ -34,6 +34,11 @@ class PurchaseOrderItem extends Model
     public function inventoryItem(): BelongsTo
     {
         return $this->belongsTo(InventoryItem::class);
+    }
+
+    public function variant(): BelongsTo
+    {
+        return $this->belongsTo(InventoryVariant::class, 'inventory_variant_id');
     }
 
     public function goodsReceiptItems(): HasMany

@@ -25,6 +25,8 @@ class Create extends Component
 
     public string $pickerItemId = '';
 
+    public string $pickerVariantId = '';
+
     public string $pickerQuantity = '1';
 
     public string $pickerUnitCost = '';
@@ -46,10 +48,12 @@ class Create extends Component
             $this->notes = $purchaseOrder->notes ?? '';
             $this->lineItems = $purchaseOrder->items->map(fn ($item) => [
                 'inventory_item_id' => $item->inventory_item_id,
+                'inventory_variant_id' => $item->inventory_variant_id,
                 'quantity' => $item->quantity,
                 'unit_cost' => (float) $item->unit_cost,
                 'subtotal' => (float) $item->subtotal,
                 'item_name' => $item->inventoryItem->name,
+                'variant_name' => $item->variant?->name,
             ])->toArray();
         }
     }
@@ -72,10 +76,45 @@ class Create extends Component
         return collect($this->lineItems)->sum('subtotal');
     }
 
+    #[Computed]
+    public function selectedItemVariants()
+    {
+        if (! $this->pickerItemId) {
+            return collect();
+        }
+
+        return InventoryItem::find($this->pickerItemId)?->variants()->active()->orderBy('label')->orderBy('size')->orderBy('color')->get(['id', 'size', 'color', 'label', 'rental_price']) ?? collect();
+    }
+
     public function updatedPickerItemId(): void
     {
+        $this->pickerVariantId = '';
+        unset($this->selectedItemVariants);
         $item = InventoryItem::find($this->pickerItemId);
-        $this->pickerUnitCost = $item ? (string) $item->base_rental_price : '';
+        $this->pickerUnitCost = $item ? (string) ($item->cost_price ?? '') : '';
+    }
+
+    public function updatedPickerVariantId(): void
+    {
+        if (! $this->pickerVariantId || ! $this->pickerItemId) {
+            return;
+        }
+
+        $variant = InventoryItem::find($this->pickerItemId)?->variants()->find($this->pickerVariantId);
+        if ($variant) {
+            $effectiveCost = $variant->cost_price ?? $variant->item->cost_price ?? null;
+            if ($effectiveCost !== null) {
+                $this->pickerUnitCost = (string) $effectiveCost;
+            }
+        }
+    }
+
+    public function updateLineCost(int $index, string $cost): void
+    {
+        $unitCost = max(0, (float) $cost);
+        $this->lineItems[$index]['unit_cost'] = $unitCost;
+        $this->lineItems[$index]['subtotal'] = round($unitCost * $this->lineItems[$index]['quantity'], 2);
+        unset($this->totalAmount);
     }
 
     public function addLineItem(): void
@@ -87,9 +126,10 @@ class Create extends Component
         ]);
 
         $itemId = (int) $this->pickerItemId;
+        $variantId = $this->pickerVariantId ? (int) $this->pickerVariantId : null;
 
         foreach ($this->lineItems as $existing) {
-            if ($existing['inventory_item_id'] === $itemId) {
+            if ($existing['inventory_item_id'] === $itemId && $existing['inventory_variant_id'] === $variantId) {
                 Flux::toast(text: 'Item already in order. Update the quantity instead.', variant: 'danger');
 
                 return;
@@ -102,14 +142,17 @@ class Create extends Component
 
         $this->lineItems[] = [
             'inventory_item_id' => $itemId,
+            'inventory_variant_id' => $variantId,
             'quantity' => $qty,
             'unit_cost' => $unitCost,
             'subtotal' => round($unitCost * $qty, 2),
             'item_name' => $item->name,
+            'variant_name' => $variantId ? ($item->variants()->find($variantId)?->name) : null,
         ];
 
-        unset($this->totalAmount);
+        unset($this->totalAmount, $this->selectedItemVariants);
         $this->pickerItemId = '';
+        $this->pickerVariantId = '';
         $this->pickerQuantity = '1';
         $this->pickerUnitCost = '';
     }
@@ -168,6 +211,7 @@ class Create extends Component
         foreach ($this->lineItems as $lineItem) {
             $order->items()->create([
                 'inventory_item_id' => $lineItem['inventory_item_id'],
+                'inventory_variant_id' => $lineItem['inventory_variant_id'] ?? null,
                 'quantity' => $lineItem['quantity'],
                 'unit_cost' => $lineItem['unit_cost'],
                 'subtotal' => $lineItem['subtotal'],
