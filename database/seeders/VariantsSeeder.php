@@ -13,11 +13,11 @@ class VariantsSeeder extends Seeder
         $variants = [
             'size' => ["XS", "S", "M", "L", "XL", "XXL", "3XL"],
             'color' => ["Black", "White", "Red", "Blue", "Green", "Yellow", "Pink", "Grey", "Navy"],
-            'sleeve' => ["short", "long", "3/4"],
-            'fit' => ["slim", "regular", "loose"],
-            'material' => ["cotton", "linen", "silk", "polyester", "wool"],
-            'occasion' => ["casual", "formal", "wedding", "party", "traditional"],
-            'gender' => ["men", "women", "unisex"],
+//            'sleeve' => ["short", "long", "3/4"],
+//            'fit' => ["slim", "regular", "loose"],
+//            'material' => ["cotton", "linen", "silk", "polyester", "wool"],
+//            'occasion' => ["casual", "formal", "wedding", "party", "traditional"],
+//            'gender' => ["men", "women", "unisex"],
         ];
 
         foreach ($variants as $type => $values) {
