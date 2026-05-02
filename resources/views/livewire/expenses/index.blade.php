@@ -448,7 +448,7 @@
                 </flux:field>
                 <flux:field>
                     <flux:label>Amount (UGX) <span class="text-red-500">*</span></flux:label>
-                    <flux:input wire:model="billAmount" type="number" step="1" min="0" placeholder="0" />
+                    <flux:input wire:model="billAmount" type="text" x-mask:dynamic="$money($input)" placeholder="0" />
                     <flux:error name="billAmount" />
                 </flux:field>
             </div>
@@ -484,7 +484,7 @@
                             <div class="grid grid-cols-2 gap-3">
                                 <flux:field>
                                     <flux:label>Amount Paid (UGX) <span class="text-red-500">*</span></flux:label>
-                                    <flux:input wire:model="payAmount" type="number" step="1" min="0" placeholder="0" />
+                                    <flux:input wire:model="payAmount" type="text" x-mask:dynamic="$money($input)" placeholder="0" />
                                     <flux:error name="payAmount" />
                                 </flux:field>
                                 <flux:field>

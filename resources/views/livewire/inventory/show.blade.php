@@ -74,15 +74,15 @@
                         <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Variations</h2>
                         <p class="text-xs text-zinc-400 dark:text-zinc-500">Each variation is a unique combination of attribute values (e.g. Size: S + Color: Red)</p>
                     </div>
-                    @can('inventory.edit')
-                    @if($this->variantTypes->isNotEmpty())
-                    <button wire:click="openCreateVariant"
-                        class="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-black shadow-sm hover:bg-amber-400 transition-colors">
-                        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                        Add Variation
-                    </button>
-                    @endif
-                    @endcan
+                    {{-- @can('inventory.edit') --}}
+                    {{--     @if($this->variantTypes->isNotEmpty()) --}}
+                    {{--         <button wire:click="openCreateVariant" --}}
+                    {{--             class="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-black shadow-sm hover:bg-amber-400 transition-colors"> --}}
+                    {{--             <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg> --}}
+                    {{--             Add Variation --}}
+                    {{--         </button> --}}
+                    {{--     @endif --}}
+                    {{-- @endcan --}}
                 </div>
 
                 @if($this->variants->isEmpty())
@@ -330,13 +330,13 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Hire Price (UGX)</label>
-                    <flux:input wire:model="variantRentalPrice" type="number" min="0" step="1" placeholder="Leave blank to inherit" />
+                    <flux:input wire:model="variantRentalPrice" type="text" x-mask:dynamic="$money($input)" placeholder="Leave blank to inherit" />
                     <p class="mt-1 text-xs text-zinc-400">Base: UGX {{ number_format($item->base_rental_price, 0) }}</p>
                     <flux:error name="variantRentalPrice" />
                 </div>
                 <div>
                     <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Cost Price (UGX)</label>
-                    <flux:input wire:model="variantCostPrice" type="number" min="0" step="1" placeholder="Leave blank to inherit" />
+                    <flux:input wire:model="variantCostPrice" type="text" x-mask:dynamic="$money($input)" placeholder="Leave blank to inherit" />
                     @if($item->cost_price)
                         <p class="mt-1 text-xs text-zinc-400">Base: UGX {{ number_format($item->cost_price, 0) }}</p>
                     @endif

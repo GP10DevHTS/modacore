@@ -415,7 +415,7 @@
             <div class="space-y-4">
                 <div>
                     <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Amount <span class="text-red-500">*</span></label>
-                    <flux:input wire:model="paymentAmount" type="number" step="0.01" min="0.01" placeholder="0.00" />
+                    <flux:input wire:model="paymentAmount" type="text" x-mask:dynamic="$money($input)" placeholder="0.00" />
                     <flux:error name="paymentAmount" />
                 </div>
 
@@ -474,7 +474,7 @@
             <div class="space-y-4">
                 <div>
                     <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Refund Amount (UGX) <span class="text-red-500">*</span></label>
-                    <flux:input wire:model="refundAmount" type="number" step="0.01" min="0.01" placeholder="0.00" />
+                    <flux:input wire:model="refundAmount" type="text" x-mask:dynamic="$money($input)" placeholder="0.00" />
                     <flux:error name="refundAmount" />
                 </div>
                 <div>

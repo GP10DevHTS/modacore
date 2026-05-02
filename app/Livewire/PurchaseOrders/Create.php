@@ -68,7 +68,7 @@ class Create extends Component
     #[Computed]
     public function suppliers()
     {
-        return Supplier::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']);
+        return Supplier::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'contact_person', 'phone']);
     }
 
     #[Computed]
@@ -125,6 +125,7 @@ class Create extends Component
 
     public function updateLineCost(int $index, string $cost): void
     {
+        $cost = str_replace(',', '', trim($cost));
         $unitCost = max(0, (float) $cost);
         $this->lineItems[$index]['unit_cost'] = $unitCost;
         $this->lineItems[$index]['subtotal'] = round($unitCost * $this->lineItems[$index]['quantity'], 2);
@@ -133,6 +134,8 @@ class Create extends Component
 
     public function addLineItem(InventorySkuService $skuService): void
     {
+        $this->pickerUnitCost = (string) floatval(str_replace(',', '', trim($this->pickerUnitCost)));
+
         $this->validate([
             'pickerItemId' => ['required', 'exists:inventory_items,id'],
             'pickerQuantity' => ['required', 'integer', 'min:1'],

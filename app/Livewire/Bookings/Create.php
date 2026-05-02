@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\Customer;
 use App\Models\CustomerMeasurement;
 use App\Models\InventoryItem;
+use App\Models\InventoryVariant;
 use App\Services\AvailabilityService;
 use Flux\Flux;
 use Illuminate\Support\Carbon;
@@ -39,6 +40,8 @@ class Create extends Component
     public array $availabilityErrors = [];
 
     public string $pickerUnitPrice = '';
+
+    public string $searchSku = '';
 
     public function mount(?Booking $booking = null): void
     {
@@ -192,8 +195,30 @@ class Create extends Component
         }
     }
 
+    public function updatedSearchSku(string $sku): void
+    {
+        $variant = InventoryVariant::where('sku', $sku)->first();
+
+        if ($variant) {
+            $this->reset('pickerCompositionKey', 'pickerItemId', 'pickerVariantIds','pickerUnitPrice');
+
+            Flux::toast(
+                'SKU: '.$variant->sku.' - '.$variant->name ." found",
+            );
+
+            $this->pickerVariantIds[] = $variant->id;
+            $this->pickerCompositionKey = $variant->composition_key;
+            $this->pickerItemId = $variant->inventory_item_id;
+            $this->pickerUnitPrice = (string) $variant->effectiveRentalPrice();
+        } else {
+            $this->reset('pickerCompositionKey', 'pickerItemId', 'pickerVariantIds','pickerUnitPrice');
+        }
+    }
+
     public function addLineItem(): void
     {
+        $this->pickerUnitPrice = (string) floatval(str_replace(',', '', trim($this->pickerUnitPrice)));
+
         $this->validate([
             'pickerItemId' => ['required', 'exists:inventory_items,id'],
             'pickerQuantity' => ['required', 'integer', 'min:1'],
@@ -277,7 +302,7 @@ class Create extends Component
         $this->pickerVariantIds = [];
         $this->pickerQuantity = '1';
         $this->pickerUnitPrice = '';
-        unset($this->selectedItemVariants, $this->selectedItemCompositions, $this->selectedCompositionVariants);
+        unset($this->selectedItemVariants, $this->selectedItemCompositions, $this->selectedCompositionVariants, $this->searchSku);
     }
 
     public function removeLineItem(int $index): void
@@ -321,11 +346,14 @@ class Create extends Component
 
     public function updateLinePrice(int $index, string $price): void
     {
+        $price = str_replace(',', '', trim($price));
         $unitPrice = max(0, (float) $price);
         $this->lineItems[$index]['unit_price'] = $unitPrice;
         $this->lineItems[$index]['subtotal'] = round($unitPrice * $this->lineItems[$index]['quantity'], 2);
         unset($this->totalAmount);
     }
+
+
 
     public function save(string $status = 'draft'): void
     {

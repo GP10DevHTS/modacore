@@ -46,12 +46,16 @@ class InvoiceForm extends Component
     #[Computed]
     public function totalAmount(): float
     {
-        return collect($this->lines)->sum(fn ($l) => $l['quantity'] * $l['unit_cost']);
+        return collect($this->lines)->sum(fn ($l) => $l['quantity'] * floatval(str_replace(',','',$l['unit_cost'])));
     }
 
     public function save(PurchaseOrderService $service): void
     {
         abort_unless(auth()->user()->can('inventory.edit'), 403);
+
+        foreach ($this->lines as $index => $line) {
+            $this->lines[$index]['unit_cost'] = floatval(str_replace(',', '', trim((string) $line['unit_cost'])));
+        }
 
         $this->validate([
             'invoiceDate' => ['required', 'date'],

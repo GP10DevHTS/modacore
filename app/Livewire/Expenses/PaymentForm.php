@@ -33,6 +33,8 @@ class PaymentForm extends Component
     {
         abort_unless(auth()->user()->can('expenses.create'), 403);
 
+        $this->amount = (string) floatval(str_replace(',', '', trim($this->amount)));
+
         $this->validate([
             'amount' => ['required', 'numeric', 'min:0.01'],
             'paymentDate' => ['required', 'date'],

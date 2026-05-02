@@ -18,6 +18,7 @@ return new class extends Migration
         });
 
         Schema::table('expenses', function (Blueprint $table) {
+            $table->dropIndex('expenses_status_index');
             $table->dropColumn(['payment_method', 'status']);
         });
 
