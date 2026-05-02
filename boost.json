@@ -1,12 +1,16 @@
 {
     "agents": [
         "claude_code",
-        "cursor"
+        "cursor",
+        "codex"
     ],
     "cloud": false,
     "guidelines": true,
     "mcp": true,
-    "nightwatch_mcp": false,
+    "nightwatch": false,
+    "packages": [
+        "spatie/laravel-permission"
+    ],
     "sail": false,
     "skills": [
         "fortify-development",
@@ -14,6 +18,7 @@
         "fluxui-development",
         "livewire-development",
         "pest-testing",
-        "tailwindcss-development"
+        "tailwindcss-development",
+        "laravel-permission-development"
     ]
 }

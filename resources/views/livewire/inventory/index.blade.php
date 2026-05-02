@@ -186,6 +186,7 @@
                         <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Name</th>
                         <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Description</th>
                         <th class="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Items</th>
+                        <th class="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Code</th>
                         <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Actions</th>
                     </tr>
                 </thead>
@@ -197,6 +198,11 @@
                             <td class="px-5 py-3.5 text-center">
                                 <span class="inline-flex items-center justify-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-semibold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
                                     {{ $category->items_count }}
+                                </span>
+                            </td>
+                            <td class="px-5 py-3.5 text-center">
+                                <span class="inline-flex items-center justify-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-semibold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                                    {{ $category->code }}
                                 </span>
                             </td>
                             <td class="px-5 py-3.5 text-right">
@@ -395,22 +401,23 @@
                     <flux:input wire:model="name" placeholder="e.g. Wedding Gown" />
                     <flux:error name="name" />
                 </div>
-                <div>
+                <div class="sm:col-span-2">
                     <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Category <span class="text-red-500">*</span></label>
-                    <select wire:model="categoryId"
-                        class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
-                        <option value="">Select a category</option>
-                        @foreach($this->categories as $cat)
-                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                        @endforeach
-                    </select>
+{{--                    <select wire:model="categoryId"--}}
+{{--                        class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">--}}
+{{--                        <option value="">Select a category</option>--}}
+{{--                        @foreach($this->categories as $cat)--}}
+{{--                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>--}}
+{{--                        @endforeach--}}
+{{--                    </select>--}}
+                    <x-searchable-select :options="$this->categories" wire-model="categoryId" :selected-value="$categoryId" />
                     <flux:error name="categoryId" />
                 </div>
-                <div>
-                    <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">SKU</label>
-                    <flux:input wire:model="sku" placeholder="e.g. WG-001" />
-                    <flux:error name="sku" />
-                </div>
+{{--                <div>--}}
+{{--                    <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">SKU</label>--}}
+{{--                    <flux:input wire:model="sku" placeholder="e.g. WG-001" />--}}
+{{--                    <flux:error name="sku" />--}}
+{{--                </div>--}}
                 <div>
                     <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Hire Price (UGX) <span class="text-red-500">*</span></label>
                     <flux:input wire:model="baseRentalPrice" type="number" step="1" min="0" placeholder="0" />
@@ -421,11 +428,16 @@
                     <flux:input wire:model="costPrice" type="number" step="1" min="0" placeholder="Purchase cost" />
                     <flux:error name="costPrice" />
                 </div>
-                <div>
-                    <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Stock Quantity <span class="text-red-500">*</span></label>
-                    <flux:input wire:model="stockQuantity" type="number" min="0" step="1" placeholder="1" />
-                    <flux:error name="stockQuantity" />
-                </div>
+{{--                <div>--}}
+{{--                    <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Stock Quantity <span class="text-red-500">*</span></label>--}}
+{{--                    <flux:input wire:model="stockQuantity" type="number" min="0" step="1" placeholder="1" />--}}
+{{--                    <flux:error name="stockQuantity" />--}}
+{{--                </div>--}}
+{{--                <div>--}}
+{{--                    <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Available for Booking <span class="text-red-500">*</span></label>--}}
+{{--                    <flux:input wire:model="availableQuantity" type="number" min="0" step="1" placeholder="1" />--}}
+{{--                    <flux:error name="availableQuantity" />--}}
+{{--                </div>--}}
                 <div class="sm:col-span-2">
                     <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Description</label>
                     <flux:textarea wire:model="description" rows="2" placeholder="Optional description…" />

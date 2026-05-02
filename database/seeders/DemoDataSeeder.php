@@ -95,7 +95,7 @@ class DemoDataSeeder extends Seeder
                         'name' => $itemData['name'],
                         'category_id' => $category->id,
                         'base_rental_price' => $itemData['price'],
-                        'stock_quantity' => $itemData['stock'],
+                        'stock_quantity' => 0, // $itemData['stock'],
                         'is_active' => true,
                     ]
                 );

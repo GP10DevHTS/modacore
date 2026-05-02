@@ -51,8 +51,8 @@
             {{-- Add Item --}}
             <div class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700/60 dark:bg-zinc-900">
                 <h2 class="mb-4 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Add Item</h2>
-                <div class="flex flex-wrap items-end gap-3">
-                    <flux:field class="min-w-0 flex-1">
+                <div class="grid grid-cols-4 gap-4">
+                    <flux:field class="col-span-4">
                         <flux:label>Item <span class="text-red-500">*</span></flux:label>
                         <select wire:model.live="pickerItemId"
                             class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
@@ -63,24 +63,26 @@
                         </select>
                         <flux:error name="pickerItemId" />
                     </flux:field>
-                    @if($this->selectedItemVariants->count() > 0)
-                        <flux:field class="w-40">
-                            <flux:label>Variant</flux:label>
-                            <select wire:model.live="pickerVariantId"
-                                class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
-                                <option value="">Any</option>
-                                @foreach($this->selectedItemVariants as $variant)
-                                    <option value="{{ $variant->id }}">{{ $variant->name }}</option>
-                                @endforeach
-                            </select>
-                        </flux:field>
+                    @if($pickerItemId && $this->variantTypes->isNotEmpty())
+                        @foreach($this->variantTypes as $variantType)
+                            <flux:field class="col-span-1">
+                                <flux:label>{{ $variantType->name }}</flux:label>
+                                <x-searchable-select
+                                    class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+                                    :options="$variantType->values->map(fn($v) => ['id' => $v->id, 'name' => $v->label])"
+                                    wire-model="pickerVariantAttributes.{{ $variantType->id }}"
+                                    :selected-value="$pickerVariantAttributes[$variantType->id] ?? null"
+                                    placeholder="Any"
+                                />
+                            </flux:field>
+                        @endforeach
                     @endif
-                    <flux:field class="w-24">
+                    <flux:field class="col-span-2">
                         <flux:label>Qty</flux:label>
                         <flux:input wire:model="pickerQuantity" type="number" min="1" />
                         <flux:error name="pickerQuantity" />
                     </flux:field>
-                    <flux:field class="w-36">
+                    <flux:field class="col-span-2">
                         <flux:label>Unit Cost (UGX)</flux:label>
                         <flux:input wire:model="pickerUnitCost" type="number" min="0" step="100" placeholder="0" />
                         <flux:error name="pickerUnitCost" />

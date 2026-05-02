@@ -50,7 +50,12 @@
                     <tbody class="divide-y divide-zinc-100 dark:divide-zinc-700/50">
                         @foreach($lines as $i => $line)
                         <tr wire:key="line-{{ $i }}">
-                            <td class="px-5 py-3 font-medium text-zinc-900 dark:text-zinc-100">{{ $line['item_name'] }}</td>
+                            <td class="px-5 py-3">
+                                <div class="font-medium text-zinc-900 dark:text-zinc-100">{{ $line['item_name'] }}</div>
+                                @if(!empty($line['variant_name']))
+                                    <div class="mt-0.5 text-xs text-zinc-400 dark:text-zinc-500">{{ $line['variant_name'] }}</div>
+                                @endif
+                            </td>
                             <td class="px-5 py-3 text-right tabular-nums text-zinc-500 dark:text-zinc-400">{{ $line['ordered'] }}</td>
                             <td class="px-5 py-3 text-right tabular-nums {{ $line['pending'] > 0 ? 'text-amber-600 dark:text-amber-400 font-medium' : 'text-zinc-400' }}">{{ $line['pending'] }}</td>
                             <td class="px-5 py-3 text-right">

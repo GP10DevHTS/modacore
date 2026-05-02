@@ -342,21 +342,23 @@
                     @endif
                     <flux:error name="variantCostPrice" />
                 </div>
-                <div>
-                    <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Total Stock</label>
-                    <flux:input wire:model="variantStock" type="number" min="0" step="1" placeholder="0" />
-                    <flux:error name="variantStock" />
-                </div>
-                <div>
-                    <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Available for Booking</label>
-                    <flux:input wire:model="variantAvailableQty" type="number" min="0" step="1" placeholder="0" />
-                    <flux:error name="variantAvailableQty" />
-                </div>
-                <div class="col-span-2">
-                    <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">SKU <span class="text-zinc-400 text-xs font-normal">(auto-generated if left blank)</span></label>
-                    <flux:input wire:model="variantSku" placeholder="Leave blank to auto-generate" />
-                    <flux:error name="variantSku" />
-                </div>
+                @if(!$editingVariantId)
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Total Stock</label>
+                        <flux:input wire:model="variantStock" type="number" min="0" step="1" placeholder="0" />
+                        <flux:error name="variantStock" />
+                    </div>
+                @endif
+{{--                <div>--}}
+{{--                    <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Available for Booking</label>--}}
+{{--                    <flux:input wire:model="variantAvailableQty" type="number" min="0" step="1" placeholder="0" />--}}
+{{--                    <flux:error name="variantAvailableQty" />--}}
+{{--                </div>--}}
+{{--                <div class="col-span-2">--}}
+{{--                    <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">SKU <span class="text-zinc-400 text-xs font-normal">(auto-generated if left blank)</span></label>--}}
+{{--                    <flux:input wire:model="variantSku" placeholder="Leave blank to auto-generate" />--}}
+{{--                    <flux:error name="variantSku" />--}}
+{{--                </div>--}}
             </div>
 
             <div>

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\InventorySkuService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +15,7 @@ class InventoryItem extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name', 'description', 'category_id', 'sku',
+        'name', 'description', 'category_id', 'sku', 'code',
         'base_rental_price', 'cost_price', 'stock_quantity', 'available_quantity', 'image_path', 'is_active',
     ];
 
@@ -53,5 +54,21 @@ class InventoryItem extends Model
     public function variants(): HasMany
     {
         return $this->hasMany(InventoryVariant::class);
+    }
+
+    protected static function booted()
+    {
+        static::creating(function ($item) {
+            $item->stock_quantity ??= 0;
+            $item->available_quantity ??= 0;
+            if (! $item->category_id) {
+                return;
+            }
+
+            $category = InventoryCategory::findOrFail($item->category_id);
+            $skuService = app(InventorySkuService::class);
+            $item->code = $skuService->nextItemCode($category->id);
+            $item->sku = $skuService->itemSku($category, $item->code);
+        });
     }
 }
