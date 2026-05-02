@@ -641,9 +641,9 @@
         {{-- User Footer --}}
         <div class="erp-sidebar-footer">
             <flux:dropdown position="top" align="start">
-                <div class="erp-user-card">
+                <button class="erp-user-card">
                     <div class="erp-avatar">{{ auth()->user()->initials() }}</div>
-                    <div style="min-width:0; flex:1">
+                    <div>
                         <div class="erp-user-name">{{ auth()->user()->name }}</div>
                         <div class="erp-user-role">{{ auth()->user()->email }}</div>
                     </div>
@@ -654,7 +654,7 @@
                             </svg>
                         </div>
                     </div>
-                </div>
+                </button>
 
                 <flux:menu>
                     <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>
@@ -670,6 +670,7 @@
                     </form>
                 </flux:menu>
             </flux:dropdown>
+            {{-- <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />--}}
         </div>
     </aside>
 
@@ -761,9 +762,9 @@
 
                                     {{-- Step Text --}}
                                     <div class="flex flex-col">
-                            <span class="text-sm {{ $isComplete ? 'text-gray-400 line-through' : 'text-gray-800' }}">
-                                {{ $loop->iteration }}. {{ $step->title }}
-                            </span>
+                                        <span class="text-sm {{ $isComplete ? 'text-gray-400 line-through' : 'text-gray-800' }}">
+                                            {{ $loop->iteration }}. {{ $step->title }}
+                                        </span>
 
                                         @if(!$isComplete)
                                             <flux:link href="{{$step->link}}" size="sm">{{ $step->cta }}</flux:link>
