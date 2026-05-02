@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Booking;
+use App\Models\Customer;
 use App\Models\InventoryCategory;
 use App\Models\InventoryItem;
 use App\Models\PurchaseOrder;
@@ -68,10 +70,9 @@ class AppServiceProvider extends ServiceProvider
 
     private function onBoardUser()
     {
-
-        Onboard::addStep('Create Variant Types')
+        Onboard::addStep('Define Variant Types')
             ->link('/inventory')
-            ->cta('Add Now')
+            ->cta('Configure Types')
             ->completeIf(function (User $model) {
                 return VariantType::query()->exists();
             })
@@ -79,19 +80,19 @@ class AppServiceProvider extends ServiceProvider
                 return $model->cannot('inventory.create');
             });
 
-        Onboard::addStep('Add Variant Types Values')
+        Onboard::addStep('Configure Variant Values')
             ->link('/inventory')
-            ->cta('Add Now')
+            ->cta('Add Values')
             ->completeIf(function (User $model) {
-                return VariantTypeValue::query()->exists();
+                return VariantType::query()->exists() && VariantTypeValue::query()->exists();
             })
             ->excludeIf(function (User $model) {
                 return $model->cannot('inventory.create');
             });
 
-        Onboard::addStep('Add Inventory Categories')
+        Onboard::addStep('Create Inventory Categories')
             ->link('/inventory')
-            ->cta('Add Now')
+            ->cta('Add Categories')
             ->completeIf(function (User $model) {
                 return InventoryCategory::query()->exists();
             })
@@ -101,7 +102,7 @@ class AppServiceProvider extends ServiceProvider
 
         Onboard::addStep('Add Inventory Items')
             ->link('/inventory')
-            ->cta('Add Now')
+            ->cta('Register Items')
             ->completeIf(function (User $model) {
                 return InventoryItem::query()->exists();
             })
@@ -109,48 +110,44 @@ class AppServiceProvider extends ServiceProvider
                 return $model->cannot('inventory.create');
             });
 
-        Onboard::addStep('Add Supplier')
+        Onboard::addStep('Register Suppliers')
             ->link('/suppliers')
-            ->cta('Add Now')
+            ->cta('Add Suppliers')
             ->completeIf(function (User $model) {
-                return VariantTypeValue::query()->exists();
+                return Supplier::query()->exists();
             })
             ->excludeIf(function (User $model) {
-                return $model->cannot('inventory.create');
+                return $model->cannot('suppliers.create');
             });
 
-
-        Onboard::addStep('Add Purchase Order')
-            ->link('/inventory')
-            ->cta('Add Now')
-            ->completeIf(function (User $model) {
-                return PurchaseOrder::query()->exists();
-            })
-            ->excludeIf(function (User $model) {
-                return $model->cannot('inventory.create');
-            });
-
-        Onboard::addStep('Register a customer')
-            ->link('/inventory')
-            ->cta('Add Now')
+        Onboard::addStep('Initiate Purchase Orders')
+            ->link('/purchase-orders/create')
+            ->cta('Create Order')
             ->completeIf(function (User $model) {
                 return PurchaseOrder::query()->exists();
             })
             ->excludeIf(function (User $model) {
-                return $model->cannot('inventory.create');
+                return $model->cannot('procurement.create');
             });
 
-        Onboard::addStep('Add a customer booking')
-            ->link('/inventory')
-            ->cta('Add Now')
+        Onboard::addStep('Register Your First Customer')
+            ->link('/customers')
+            ->cta('Add Customer')
             ->completeIf(function (User $model) {
-                return PurchaseOrder::query()->exists();
+                return Customer::query()->exists();
             })
             ->excludeIf(function (User $model) {
-                return $model->cannot('inventory.create');
+                return $model->cannot('customers.create');
             });
 
-
-
+        Onboard::addStep('Create a Customer Booking')
+            ->link('/bookings/create')
+            ->cta('New Booking')
+            ->completeIf(function (User $model) {
+                return Booking::query()->exists();
+            })
+            ->excludeIf(function (User $model) {
+                return $model->cannot('bookings.create');
+            });
     }
 }
