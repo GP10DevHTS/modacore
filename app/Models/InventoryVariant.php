@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\InventorySkuService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class InventoryVariant extends Model
 {
     protected $fillable = [
-        'inventory_item_id', 'size', 'color', 'label',
+        'inventory_item_id', 'size', 'color', 'label', 'composition_key',
         'rental_price', 'cost_price', 'sku',
         'stock_quantity', 'available_quantity', 'is_active',
     ];
@@ -84,29 +85,10 @@ class InventoryVariant extends Model
     protected static function booted()
     {
         static::creating(function ($variant) {
-
-            $item = InventoryItem::find($variant->inventory_item_id);
-
-            if (!$item) {
-                throw new \Exception("Inventory item not found");
+            if (! $variant->sku) {
+                $item = InventoryItem::findOrFail($variant->inventory_item_id);
+                $variant->sku = app(InventorySkuService::class)->nextVariantSku($item);
             }
-
-            // Get last variant SKU for this item only
-            $lastVariant = self::where('inventory_item_id', $item->id)
-                ->orderByDesc('id')
-                ->value('sku');
-
-            // Extract last number safely
-            $nextNumber = 1;
-
-            if ($lastVariant) {
-                preg_match('/(\d+)$/', $lastVariant, $matches);
-                $nextNumber = isset($matches[1]) ? ((int) $matches[1]) + 1 : 1;
-            }
-
-            $variantCode = str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
-
-            $variant->sku = $item->sku . '-' . $variantCode;
         });
     }
 }

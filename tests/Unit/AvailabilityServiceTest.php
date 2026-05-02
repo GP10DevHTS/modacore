@@ -37,6 +37,8 @@ beforeEach(function () {
         $table->id();
         $table->foreignId('inventory_item_id');
         $table->string('label')->nullable();
+        $table->string('composition_key')->nullable();
+        $table->string('sku')->nullable();
         $table->unsignedInteger('stock_quantity')->default(0);
         $table->unsignedInteger('available_quantity')->default(0);
         $table->boolean('is_active')->default(true);

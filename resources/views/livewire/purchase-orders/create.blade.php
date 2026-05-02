@@ -63,17 +63,18 @@
                         </select>
                         <flux:error name="pickerItemId" />
                     </flux:field>
-                    @if($this->selectedItemVariants->count() > 0)
-                        <flux:field class="w-40">
-                            <flux:label>Variant</flux:label>
-                            <select wire:model.live="pickerVariantId"
-                                class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
-                                <option value="">Any</option>
-                                @foreach($this->selectedItemVariants as $variant)
-                                    <option value="{{ $variant->id }}">{{ $variant->name }}</option>
-                                @endforeach
-                            </select>
-                        </flux:field>
+                    @if($pickerItemId && $this->variantTypes->isNotEmpty())
+                        @foreach($this->variantTypes as $variantType)
+                            <flux:field class="w-40">
+                                <flux:label>{{ $variantType->name }}</flux:label>
+                                <x-searchable-select
+                                    :options="$variantType->values"
+                                    wire-model="pickerVariantAttributes.{{ $variantType->id }}"
+                                    :selected-value="$pickerVariantAttributes[$variantType->id] ?? null"
+                                    placeholder="Any"
+                                />
+                            </flux:field>
+                        @endforeach
                     @endif
                     <flux:field class="w-24">
                         <flux:label>Qty</flux:label>

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\InventorySkuService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,10 +28,7 @@ class InventoryCategory extends Model
     protected static function booted()
     {
         static::creating(function ($category) {
-
-            $lastCode = InventoryCategory::orderByDesc('code')->value('code');
-
-            $category->code = $lastCode ? ++$lastCode : 'A';
+            $category->code ??= app(InventorySkuService::class)->nextCategoryCode();
         });
     }
 }

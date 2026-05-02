@@ -30,6 +30,10 @@ class Create extends Component
 
     public string $pickerVariantId = '';
 
+    public string $pickerCompositionKey = '';
+
+    public array $pickerVariantIds = [];
+
     public string $pickerQuantity = '1';
 
     public array $availabilityErrors = [];
@@ -109,8 +113,42 @@ class Create extends Component
             ->orderBy('label')
             ->orderBy('size')
             ->orderBy('color')
-            ->get(['id', 'inventory_item_id', 'size', 'color', 'label', 'rental_price', 'stock_quantity'])
+            ->get(['id', 'inventory_item_id', 'size', 'color', 'label', 'composition_key', 'rental_price', 'stock_quantity', 'available_quantity', 'sku'])
             ?? collect();
+    }
+
+    #[Computed]
+    public function selectedItemCompositions()
+    {
+        return $this->selectedItemVariants
+            ->groupBy(fn ($variant) => $variant->composition_key ?: 'variant-'.$variant->id)
+            ->map(function ($variants) {
+                $first = $variants->first();
+                $compositionKey = $first->composition_key ?: 'variant-'.$first->id;
+
+                return [
+                    'id' => $compositionKey,
+                    'name' => $first->name.' ('.$variants->where('available_quantity', '>', 0)->count().' available)',
+                ];
+            })
+            ->values();
+    }
+
+    #[Computed]
+    public function selectedCompositionVariants()
+    {
+        if (! $this->pickerCompositionKey) {
+            return collect();
+        }
+
+        return $this->selectedItemVariants
+            ->filter(fn ($variant) => ($variant->composition_key ?: 'variant-'.$variant->id) === $this->pickerCompositionKey)
+            ->where('available_quantity', '>', 0)
+            ->map(fn ($variant) => [
+                'id' => $variant->id,
+                'name' => $variant->sku.' - '.$variant->name,
+            ])
+            ->values();
     }
 
     #[Computed]
@@ -122,8 +160,10 @@ class Create extends Component
     public function updatedPickerItemId(): void
     {
         $this->pickerVariantId = '';
+        $this->pickerCompositionKey = '';
+        $this->pickerVariantIds = [];
         $this->pickerUnitPrice = '';
-        unset($this->selectedItemVariants);
+        unset($this->selectedItemVariants, $this->selectedItemCompositions, $this->selectedCompositionVariants);
 
         if ($this->pickerItemId) {
             $item = InventoryItem::find($this->pickerItemId);
@@ -131,6 +171,13 @@ class Create extends Component
                 $this->pickerUnitPrice = (string) $item->base_rental_price;
             }
         }
+    }
+
+    public function updatedPickerCompositionKey(): void
+    {
+        $this->pickerVariantId = '';
+        $this->pickerVariantIds = [];
+        unset($this->selectedCompositionVariants);
     }
 
     public function updatedPickerVariantId(): void
@@ -156,13 +203,29 @@ class Create extends Component
         ]);
 
         $itemId = (int) $this->pickerItemId;
-        $variantId = $this->pickerVariantId ? (int) $this->pickerVariantId : null;
+        $selectedVariantIds = collect($this->pickerVariantIds)
+            ->filter()
+            ->map(fn ($id) => (int) $id)
+            ->values();
+        $variantId = $selectedVariantIds->isEmpty() && $this->pickerVariantId ? (int) $this->pickerVariantId : null;
 
-        foreach ($this->lineItems as $existing) {
-            if ($existing['inventory_item_id'] === $itemId && $existing['inventory_variant_id'] === $variantId) {
-                Flux::toast(text: 'This item is already in the booking. Update the quantity instead.', variant: 'danger');
+        if ($selectedVariantIds->isNotEmpty()) {
+            foreach ($selectedVariantIds as $selectedVariantId) {
+                foreach ($this->lineItems as $existing) {
+                    if ($existing['inventory_item_id'] === $itemId && $existing['inventory_variant_id'] === $selectedVariantId) {
+                        Flux::toast(text: 'One of the selected units is already in the booking.', variant: 'danger');
 
-                return;
+                        return;
+                    }
+                }
+            }
+        } else {
+            foreach ($this->lineItems as $existing) {
+                if ($existing['inventory_item_id'] === $itemId && $existing['inventory_variant_id'] === $variantId) {
+                    Flux::toast(text: 'This item is already in the booking. Update the quantity instead.', variant: 'danger');
+
+                    return;
+                }
             }
         }
 
@@ -170,7 +233,7 @@ class Create extends Component
         $hireTo = Carbon::parse($this->hireTo);
 
         $availability = app(AvailabilityService::class);
-        $qty = (int) $this->pickerQuantity;
+        $qty = $selectedVariantIds->isNotEmpty() ? 1 : (int) $this->pickerQuantity;
         $reason = $availability->unavailabilityReason($itemId, $variantId, $qty, $hireFrom, $hireTo, $this->editingBookingId);
 
         if ($reason) {
@@ -182,23 +245,39 @@ class Create extends Component
         $item = InventoryItem::find($itemId);
         $unitPrice = (float) $this->pickerUnitPrice;
 
-        $this->lineItems[] = [
-            'inventory_item_id' => $itemId,
-            'inventory_variant_id' => $variantId,
-            'quantity' => $qty,
-            'unit_price' => $unitPrice,
-            'subtotal' => round($unitPrice * $qty, 2),
-            'item_name' => $item->name,
-            'variant_name' => $variantId ? ($item->variants()->with('attributeValues')->find($variantId)?->name) : null,
-        ];
+        if ($selectedVariantIds->isNotEmpty()) {
+            $item->variants()->with('attributeValues')->whereKey($selectedVariantIds)->get()->each(function ($variant) use ($itemId, $item, $unitPrice) {
+                $this->lineItems[] = [
+                    'inventory_item_id' => $itemId,
+                    'inventory_variant_id' => $variant->id,
+                    'quantity' => 1,
+                    'unit_price' => $unitPrice,
+                    'subtotal' => round($unitPrice, 2),
+                    'item_name' => $item->name,
+                    'variant_name' => $variant->sku.' - '.$variant->name,
+                ];
+            });
+        } else {
+            $this->lineItems[] = [
+                'inventory_item_id' => $itemId,
+                'inventory_variant_id' => $variantId,
+                'quantity' => $qty,
+                'unit_price' => $unitPrice,
+                'subtotal' => round($unitPrice * $qty, 2),
+                'item_name' => $item->name,
+                'variant_name' => $variantId ? ($item->variants()->with('attributeValues')->find($variantId)?->name) : null,
+            ];
+        }
 
         unset($this->totalAmount);
 
         $this->pickerItemId = '';
         $this->pickerVariantId = '';
+        $this->pickerCompositionKey = '';
+        $this->pickerVariantIds = [];
         $this->pickerQuantity = '1';
         $this->pickerUnitPrice = '';
-        unset($this->selectedItemVariants);
+        unset($this->selectedItemVariants, $this->selectedItemCompositions, $this->selectedCompositionVariants);
     }
 
     public function removeLineItem(int $index): void

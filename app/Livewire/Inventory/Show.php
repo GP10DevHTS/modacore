@@ -6,9 +6,9 @@ use App\Models\BookingItem;
 use App\Models\InventoryItem;
 use App\Models\InventoryVariant;
 use App\Models\VariantType;
-use App\Models\VariantTypeValue;
+use App\Services\InventorySkuService;
 use Flux\Flux;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -53,6 +53,29 @@ class Show extends Component
     public function variants()
     {
         return $this->item->variants()->with('attributeValues.type')->orderBy('id')->get();
+    }
+
+    #[Computed]
+    public function variantCompositions()
+    {
+        return $this->variants
+            ->groupBy('composition_key')
+            ->map(function ($variants) {
+                $first = $variants->first();
+
+                return [
+                    'key' => $first->composition_key,
+                    'name' => $first->name,
+                    'sku_range' => $variants->pluck('sku')->filter()->join(', '),
+                    'stock_quantity' => $variants->sum('stock_quantity'),
+                    'available_quantity' => $variants->sum('available_quantity'),
+                    'is_active' => $variants->contains(fn ($variant) => $variant->is_active),
+                    'ids' => $variants->pluck('id')->all(),
+                    'first_id' => $first->id,
+                    'rental_price' => $first->rental_price,
+                ];
+            })
+            ->values();
     }
 
     #[Computed]
@@ -135,7 +158,7 @@ class Show extends Component
         $this->js('$flux.modal("variant-form").show()');
     }
 
-    public function saveVariant(): void
+    public function saveVariant(InventorySkuService $skuService): void
     {
         abort_unless(auth()->user()->can('inventory.edit'), 403);
 
@@ -148,21 +171,15 @@ class Show extends Component
         }
 
         $validated = $this->validate([
-//            'variantSku' => ['nullable', 'string', 'max:100', Rule::unique('inventory_variants', 'sku')->ignore($this->editingVariantId)],
             'variantRentalPrice' => ['nullable', 'numeric', 'min:0'],
             'variantCostPrice' => ['nullable', 'numeric', 'min:0'],
             'variantStock' => ['required', 'integer', 'min:0'],
-            'variantAvailableQty' => ['required', 'integer', 'min:0', 'lte:variantStock'],
             'variantIsActive' => ['boolean'],
         ]);
 
-//        $sku = $validated['variantSku'] ?: null;
-//        if (! $sku) {
-//            $sku = $this->generateSku($selectedValueIds);
-//        }
-
         $data = [
-//            'sku' => $sku,
+            'label' => $skuService->compositionLabel($selectedValueIds),
+            'composition_key' => $skuService->compositionKey($selectedValueIds),
             'rental_price' => $validated['variantRentalPrice'] !== '' && $validated['variantRentalPrice'] !== null ? $validated['variantRentalPrice'] : null,
             'cost_price' => $validated['variantCostPrice'] !== '' && $validated['variantCostPrice'] !== null ? $validated['variantCostPrice'] : null,
             'stock_quantity' => 1,
@@ -173,21 +190,25 @@ class Show extends Component
         if ($this->editingVariantId) {
             $variant = InventoryVariant::findOrFail($this->editingVariantId);
             $variant->update($data);
+            $variant->attributeValues()->sync($selectedValueIds);
         } else {
-            $x = $validated['variantStock'];
-            do{
-                $variant = $this->item->variants()->create($data);
-            } while($x);
-
-
+            DB::transaction(function () use ($skuService, $selectedValueIds, $validated) {
+                for ($unit = 0; $unit < $validated['variantStock']; $unit++) {
+                    $skuService->createTrackedVariant(
+                        $this->item,
+                        $selectedValueIds,
+                        $validated['variantRentalPrice'] !== '' && $validated['variantRentalPrice'] !== null ? (float) $validated['variantRentalPrice'] : null,
+                        $validated['variantCostPrice'] !== '' && $validated['variantCostPrice'] !== null ? (float) $validated['variantCostPrice'] : null,
+                        $validated['variantIsActive'],
+                    );
+                }
+            });
         }
-
-        $variant->attributeValues()->sync($selectedValueIds);
 
         Flux::toast($this->editingVariantId ? 'Variant updated.' : 'Variant created.');
         $this->js('$flux.modal("variant-form").close()');
         $this->resetVariantForm();
-        unset($this->variants, $this->effectiveStock, $this->effectiveAvailable);
+        unset($this->variants, $this->variantCompositions, $this->effectiveStock, $this->effectiveAvailable);
     }
 
     public function openDeleteVariant(int $id): void
@@ -216,25 +237,6 @@ class Show extends Component
         $variant = InventoryVariant::findOrFail($id);
         $variant->update(['is_active' => ! $variant->is_active]);
         unset($this->variants, $this->effectiveStock, $this->effectiveAvailable);
-    }
-
-    private function generateSku(array $valueIds): string
-    {
-        $prefix = $this->item->sku ?? 'ITEM-'.$this->item->id;
-
-        $labels = VariantTypeValue::whereIn('id', $valueIds)
-            ->orderBy('sort_order')
-            ->pluck('label');
-
-        $suffix = $labels->map(fn ($l) => strtoupper(substr(preg_replace('/\s+/', '', $l), 0, 4)))->join('-');
-
-        $candidate = $prefix.'-'.$suffix;
-
-        if (InventoryVariant::where('sku', $candidate)->where('id', '!=', $this->editingVariantId ?? 0)->exists()) {
-            $candidate = $candidate.'-'.rand(100, 999);
-        }
-
-        return $candidate;
     }
 
     private function resetVariantForm(): void

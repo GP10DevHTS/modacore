@@ -24,6 +24,8 @@ test('booking variant picker labels variations by selected attribute values', fu
         $table->id();
         $table->string('name');
         $table->decimal('base_rental_price', 10, 2)->default(0);
+        $table->unsignedInteger('stock_quantity')->default(0);
+        $table->unsignedInteger('available_quantity')->default(0);
         $table->boolean('is_active')->default(true);
         $table->timestamps();
         $table->softDeletes();
@@ -35,7 +37,10 @@ test('booking variant picker labels variations by selected attribute values', fu
         $table->string('size')->nullable();
         $table->string('color')->nullable();
         $table->string('label')->nullable();
+        $table->string('composition_key')->nullable();
+        $table->string('sku')->nullable();
         $table->integer('stock_quantity')->default(0);
+        $table->integer('available_quantity')->default(0);
         $table->boolean('is_active')->default(true);
         $table->decimal('rental_price', 10, 2)->nullable();
         $table->timestamps();
