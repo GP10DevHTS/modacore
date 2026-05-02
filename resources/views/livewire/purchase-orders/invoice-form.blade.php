@@ -63,13 +63,13 @@
                             <td class="px-5 py-3 font-medium text-zinc-900 dark:text-zinc-100">{{ $line['item_name'] }}</td>
                             <td class="px-5 py-3 text-right tabular-nums text-zinc-500 dark:text-zinc-400">{{ $line['pending'] }}</td>
                             <td class="px-5 py-3 text-right">
-                                <flux:input wire:model.live="lines.{{ $i }}.quantity" type="number" min="0" max="{{ $line['pending'] }}" class="w-20 text-right" />
+                               <flux:input wire:model.live="lines.{{ $i }}.quantity" type="number" min="0" max="{{ $line['pending'] }}" class="w-20 text-right" />
                             </td>
                             <td class="px-5 py-3 text-right">
                                 <flux:input wire:model.live="lines.{{ $i }}.unit_cost" type="text" x-mask:dynamic="$money($input)" class="w-28 text-right" />
                             </td>
                             <td class="px-5 py-3 text-right font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">
-                                UGX {{ number_format($line['quantity'] * $line['unit_cost'], 0) }}
+                                UGX {{ number_format($line['quantity'] * (floatval(str_replace(',','',$line['unit_cost']))), 0) }}
                             </td>
                         </tr>
                         @endforeach

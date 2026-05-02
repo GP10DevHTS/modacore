@@ -804,7 +804,7 @@
                     <flux:menu>
                         <flux:menu.item icon="clipboard-document-list" href="{{ route('bookings.create') }}" wire:navigate>Booking</flux:menu.item>
                         <flux:menu.item icon="cube" href="{{ route('purchase-orders.create') }}" wire:navigate>Purchase Order</flux:menu.item>
-                        <flux:menu.item icon="document-text" href="{{ route('expenses.index') }} wire:navigate">Bill</flux:menu.item>
+                        <flux:menu.item icon="document-text" href="{{ route('expenses.index') }}" wire:navigate>Bill</flux:menu.item>
                         <flux:menu.separator />
                         <flux:menu.item icon="user-plus" href="{{ route('employees.index') }}" wire:navigate>Employee</flux:menu.item>
                     </flux:menu>

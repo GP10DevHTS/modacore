@@ -80,7 +80,12 @@
 
             {{-- Add Item --}}
             <div class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700/60 dark:bg-zinc-900">
-                <h2 class="mb-4 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Add Item</h2>
+                <div class="flex flec-wrap justify-between">
+                    <h2 class="mb-4 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Add Item</h2>
+                    <div class="flex flec-wrap justify-end">
+                        <flux:input wire:model.live="searchSku" size="sm" icon="magnifying-glass" placeholder="Search item by sku" />
+                    </div>
+                </div>
                 <div class="grid grid-cols-2 items-end gap-3">
                     <div class="min-w-0 flex-1 col-span-2">
                         <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Item <span class="text-red-500">*</span></label>
