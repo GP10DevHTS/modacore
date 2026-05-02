@@ -12,7 +12,7 @@ class InventoryCategory extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'description', 'user_id'];
+    protected $fillable = ['name', 'description', 'user_id', 'code'];
 
     public function scopeOrdered(Builder $query): Builder
     {
@@ -22,5 +22,15 @@ class InventoryCategory extends Model
     public function items(): HasMany
     {
         return $this->hasMany(InventoryItem::class, 'category_id');
+    }
+
+    protected static function booted()
+    {
+        static::creating(function ($category) {
+
+            $lastCode = InventoryCategory::orderByDesc('code')->value('code');
+
+            $category->code = $lastCode ? ++$lastCode : 'A';
+        });
     }
 }

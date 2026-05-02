@@ -80,4 +80,33 @@ class InventoryVariant extends Model
     {
         return $query->where('is_active', true);
     }
+
+    protected static function booted()
+    {
+        static::creating(function ($variant) {
+
+            $item = InventoryItem::find($variant->inventory_item_id);
+
+            if (!$item) {
+                throw new \Exception("Inventory item not found");
+            }
+
+            // Get last variant SKU for this item only
+            $lastVariant = self::where('inventory_item_id', $item->id)
+                ->orderByDesc('id')
+                ->value('sku');
+
+            // Extract last number safely
+            $nextNumber = 1;
+
+            if ($lastVariant) {
+                preg_match('/(\d+)$/', $lastVariant, $matches);
+                $nextNumber = isset($matches[1]) ? ((int) $matches[1]) + 1 : 1;
+            }
+
+            $variantCode = str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+
+            $variant->sku = $item->sku . '-' . $variantCode;
+        });
+    }
 }

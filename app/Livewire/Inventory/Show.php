@@ -148,25 +148,25 @@ class Show extends Component
         }
 
         $validated = $this->validate([
-            'variantSku' => ['nullable', 'string', 'max:100', Rule::unique('inventory_variants', 'sku')->ignore($this->editingVariantId)],
+//            'variantSku' => ['nullable', 'string', 'max:100', Rule::unique('inventory_variants', 'sku')->ignore($this->editingVariantId)],
             'variantRentalPrice' => ['nullable', 'numeric', 'min:0'],
             'variantCostPrice' => ['nullable', 'numeric', 'min:0'],
             'variantStock' => ['required', 'integer', 'min:0'],
-            'variantAvailableQty' => ['required', 'integer', 'min:0'],
+            'variantAvailableQty' => ['required', 'integer', 'min:0', 'lte:variantStock'],
             'variantIsActive' => ['boolean'],
         ]);
 
-        $sku = $validated['variantSku'] ?: null;
-        if (! $sku) {
-            $sku = $this->generateSku($selectedValueIds);
-        }
+//        $sku = $validated['variantSku'] ?: null;
+//        if (! $sku) {
+//            $sku = $this->generateSku($selectedValueIds);
+//        }
 
         $data = [
-            'sku' => $sku,
+//            'sku' => $sku,
             'rental_price' => $validated['variantRentalPrice'] !== '' && $validated['variantRentalPrice'] !== null ? $validated['variantRentalPrice'] : null,
             'cost_price' => $validated['variantCostPrice'] !== '' && $validated['variantCostPrice'] !== null ? $validated['variantCostPrice'] : null,
-            'stock_quantity' => $validated['variantStock'],
-            'available_quantity' => $validated['variantAvailableQty'],
+            'stock_quantity' => 1,
+            'available_quantity' => 1,
             'is_active' => $validated['variantIsActive'],
         ];
 
@@ -174,7 +174,12 @@ class Show extends Component
             $variant = InventoryVariant::findOrFail($this->editingVariantId);
             $variant->update($data);
         } else {
-            $variant = $this->item->variants()->create($data);
+            $x = $validated['variantStock'];
+            do{
+                $variant = $this->item->variants()->create($data);
+            } while($x);
+
+
         }
 
         $variant->attributeValues()->sync($selectedValueIds);

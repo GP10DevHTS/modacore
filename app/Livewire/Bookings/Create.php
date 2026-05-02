@@ -39,7 +39,10 @@ class Create extends Component
     public function mount(?Booking $booking = null): void
     {
         if ($booking) {
-            $booking->load('items');
+            $booking->load([
+                'items.inventoryItem',
+                'items.variant.attributeValues',
+            ]);
 
             if (! $booking->isEditable()) {
                 $this->redirectRoute('bookings.show', $booking->id);
@@ -99,7 +102,15 @@ class Create extends Component
             return collect();
         }
 
-        return InventoryItem::find($this->pickerItemId)?->variants()->active()->orderBy('label')->orderBy('size')->orderBy('color')->get(['id', 'size', 'color', 'label', 'rental_price', 'stock_quantity']) ?? collect();
+        return InventoryItem::find($this->pickerItemId)
+            ?->variants()
+            ->with('attributeValues')
+            ->active()
+            ->orderBy('label')
+            ->orderBy('size')
+            ->orderBy('color')
+            ->get(['id', 'inventory_item_id', 'size', 'color', 'label', 'rental_price', 'stock_quantity'])
+            ?? collect();
     }
 
     #[Computed]
@@ -128,7 +139,7 @@ class Create extends Component
             return;
         }
 
-        $variant = InventoryItem::find($this->pickerItemId)?->variants()->find($this->pickerVariantId);
+        $variant = InventoryItem::find($this->pickerItemId)?->variants()->with('attributeValues')->find($this->pickerVariantId);
         if ($variant && $variant->rental_price !== null) {
             $this->pickerUnitPrice = (string) $variant->rental_price;
         }
@@ -159,7 +170,8 @@ class Create extends Component
         $hireTo = Carbon::parse($this->hireTo);
 
         $availability = app(AvailabilityService::class);
-        $reason = $availability->unavailabilityReason($itemId, $variantId, $hireFrom, $hireTo, $this->editingBookingId);
+        $qty = (int) $this->pickerQuantity;
+        $reason = $availability->unavailabilityReason($itemId, $variantId, $qty, $hireFrom, $hireTo, $this->editingBookingId);
 
         if ($reason) {
             Flux::toast(text: $reason, variant: 'danger');
@@ -168,7 +180,6 @@ class Create extends Component
         }
 
         $item = InventoryItem::find($itemId);
-        $qty = (int) $this->pickerQuantity;
         $unitPrice = (float) $this->pickerUnitPrice;
 
         $this->lineItems[] = [
@@ -178,7 +189,7 @@ class Create extends Component
             'unit_price' => $unitPrice,
             'subtotal' => round($unitPrice * $qty, 2),
             'item_name' => $item->name,
-            'variant_name' => $variantId ? ($item->variants()->find($variantId)?->name) : null,
+            'variant_name' => $variantId ? ($item->variants()->with('attributeValues')->find($variantId)?->name) : null,
         ];
 
         unset($this->totalAmount);
@@ -200,6 +211,28 @@ class Create extends Component
     {
         if ($quantity < 1) {
             return;
+        }
+
+        if (! isset($this->lineItems[$index])) {
+            return;
+        }
+
+        if ($this->hireFrom && $this->hireTo) {
+            $line = $this->lineItems[$index];
+            $reason = app(AvailabilityService::class)->unavailabilityReason(
+                $line['inventory_item_id'],
+                $line['inventory_variant_id'] ?? null,
+                $quantity,
+                Carbon::parse($this->hireFrom),
+                Carbon::parse($this->hireTo),
+                $this->editingBookingId,
+            );
+
+            if ($reason) {
+                Flux::toast(text: $reason, variant: 'danger');
+
+                return;
+            }
         }
 
         $this->lineItems[$index]['quantity'] = $quantity;
@@ -241,6 +274,7 @@ class Create extends Component
             array_map(fn ($item) => [
                 'inventory_item_id' => $item['inventory_item_id'],
                 'inventory_variant_id' => $item['inventory_variant_id'],
+                'quantity' => $item['quantity'],
             ], $this->lineItems),
             $hireFrom,
             $hireTo,

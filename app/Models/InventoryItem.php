@@ -14,7 +14,7 @@ class InventoryItem extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name', 'description', 'category_id', 'sku',
+        'name', 'description', 'category_id', 'sku', 'code',
         'base_rental_price', 'cost_price', 'stock_quantity', 'available_quantity', 'image_path', 'is_active',
     ];
 
@@ -53,5 +53,23 @@ class InventoryItem extends Model
     public function variants(): HasMany
     {
         return $this->hasMany(InventoryVariant::class);
+    }
+
+    protected static function booted()
+    {
+        static::creating(function ($item) {
+            $item->stock_quantity = 0;
+            $item->available_quantity = 0;
+            $categoryId = $item->category_id;
+
+            $lastCode = InventoryItem::where('category_id', $categoryId)
+                ->orderByDesc('code')
+                ->value('code');
+
+            $nextCode = $lastCode ? ++$lastCode : 'A';
+
+            $item->code = $nextCode;
+            $item->sku = $item->category?->code . $nextCode;
+        });
     }
 }

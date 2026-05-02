@@ -38,6 +38,8 @@ class Index extends Component
 
     public int $stockQuantity = 1;
 
+    public int $availableQuantity = 1;
+
     public bool $isActive = true;
 
     public ?int $editingId = null;
@@ -138,6 +140,7 @@ class Index extends Component
         $this->baseRentalPrice = (string) $item->base_rental_price;
         $this->costPrice = $item->cost_price !== null ? (string) $item->cost_price : '';
         $this->stockQuantity = $item->stock_quantity;
+        $this->availableQuantity = $item->available_quantity;
         $this->isActive = $item->is_active;
 
         $this->js('$flux.modal("item-form").show()');
@@ -155,6 +158,7 @@ class Index extends Component
             'baseRentalPrice' => ['required', 'numeric', 'min:0'],
             'costPrice' => ['nullable', 'numeric', 'min:0'],
             'stockQuantity' => ['required', 'integer', 'min:0'],
+            'availableQuantity' => ['required', 'integer', 'min:0', 'lte:stockQuantity'],
             'isActive' => ['boolean'],
         ]);
 
@@ -165,7 +169,8 @@ class Index extends Component
             'sku' => $validated['sku'] ?: null,
             'base_rental_price' => $validated['baseRentalPrice'],
             'cost_price' => $validated['costPrice'] ?: null,
-            'stock_quantity' => $validated['stockQuantity'],
+//            'stock_quantity' => $validated['stockQuantity'],
+//            'available_quantity' => $validated['availableQuantity'],
             'is_active' => $validated['isActive'],
         ];
 
@@ -415,8 +420,9 @@ class Index extends Component
         $this->baseRentalPrice = '';
         $this->costPrice = '';
         $this->stockQuantity = 1;
+        $this->availableQuantity = 1;
         $this->isActive = true;
-        $this->resetValidation(['name', 'description', 'categoryId', 'sku', 'baseRentalPrice', 'costPrice', 'stockQuantity', 'isActive']);
+        $this->resetValidation(['name', 'description', 'categoryId', 'sku', 'baseRentalPrice', 'costPrice', 'stockQuantity', 'availableQuantity', 'isActive']);
     }
 
     private function resetCategoryForm(): void

@@ -73,20 +73,26 @@ class Show extends Component
             return;
         }
 
+        $checkedOut = $item->inventory_variant_id
+            ? $item->variant?->newQuery()
+                ->where('id', $item->inventory_variant_id)
+                ->where('available_quantity', '>=', $item->quantity)
+                ->decrement('available_quantity', $item->quantity)
+            : $item->inventoryItem?->newQuery()
+                ->where('id', $item->inventory_item_id)
+                ->where('available_quantity', '>=', $item->quantity)
+                ->decrement('available_quantity', $item->quantity);
+
+        if (! $checkedOut) {
+            Flux::toast(text: 'Not enough available stock to check out this item.', variant: 'danger');
+
+            return;
+        }
+
         $item->update([
             'status' => 'checked_out',
             'checked_out_at' => now(),
         ]);
-
-        if ($item->inventory_variant_id) {
-            $item->variant?->newQuery()->where('id', $item->inventory_variant_id)
-                ->where('available_quantity', '>', 0)
-                ->decrement('available_quantity');
-        } else {
-            $item->inventoryItem?->newQuery()->where('id', $item->inventory_item_id)
-                ->where('available_quantity', '>', 0)
-                ->decrement('available_quantity');
-        }
 
         $this->booking->refresh()->load(['items.inventoryItem', 'items.variant']);
         Flux::toast('Item marked as checked out.');
@@ -128,9 +134,9 @@ class Show extends Component
         ]);
 
         if ($item->inventory_variant_id) {
-            $item->variant?->increment('available_quantity');
+            $item->variant?->increment('available_quantity', $item->quantity);
         } else {
-            $item->inventoryItem?->increment('available_quantity');
+            $item->inventoryItem?->increment('available_quantity', $item->quantity);
         }
 
         $this->booking->refresh()->load(['items.inventoryItem', 'items.variant']);
