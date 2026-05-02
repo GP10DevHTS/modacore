@@ -530,7 +530,7 @@
                             d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                     </svg>
                     Stock &amp; Materials
-                    <span class="erp-nav-badge">3</span>
+                    {{-- <span class="erp-nav-badge">3</span>--}}
                 </a>
                 <a href="{{ route('suppliers.index') }}" wire:navigate class="erp-nav-item {{ request()->routeIs('suppliers.*') ? 'active' : '' }}">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
