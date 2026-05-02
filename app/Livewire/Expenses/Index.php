@@ -222,6 +222,11 @@ class Index extends Component
             ? abort_unless(auth()->user()->can('expenses.edit'), 403)
             : abort_unless(auth()->user()->can('expenses.create'), 403);
 
+        $this->billAmount = (string) floatval(str_replace(',', '', trim($this->billAmount)));
+        if ($this->hasInitialPayment) {
+            $this->payAmount = (string) floatval(str_replace(',', '', trim($this->payAmount)));
+        }
+
         $rules = [
             'billTitle' => ['required', 'string', 'max:255'],
             'billItemId' => ['required', 'exists:expense_items,id'],

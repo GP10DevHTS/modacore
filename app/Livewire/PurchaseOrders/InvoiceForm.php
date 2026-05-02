@@ -53,6 +53,10 @@ class InvoiceForm extends Component
     {
         abort_unless(auth()->user()->can('inventory.edit'), 403);
 
+        foreach ($this->lines as $index => $line) {
+            $this->lines[$index]['unit_cost'] = floatval(str_replace(',', '', trim((string) $line['unit_cost'])));
+        }
+
         $this->validate([
             'invoiceDate' => ['required', 'date'],
             'dueDate' => ['nullable', 'date', 'after_or_equal:invoiceDate'],

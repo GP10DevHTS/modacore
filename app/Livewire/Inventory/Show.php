@@ -162,6 +162,9 @@ class Show extends Component
     {
         abort_unless(auth()->user()->can('inventory.edit'), 403);
 
+        $this->variantRentalPrice = (string) floatval(str_replace(',', '', trim($this->variantRentalPrice)));
+        $this->variantCostPrice = (string) floatval(str_replace(',', '', trim($this->variantCostPrice)));
+
         $selectedValueIds = array_filter(array_values($this->variantAttributes));
 
         if (empty($selectedValueIds)) {

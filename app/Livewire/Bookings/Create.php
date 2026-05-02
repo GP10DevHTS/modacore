@@ -194,6 +194,8 @@ class Create extends Component
 
     public function addLineItem(): void
     {
+        $this->pickerUnitPrice = (string) floatval(str_replace(',', '', trim($this->pickerUnitPrice)));
+
         $this->validate([
             'pickerItemId' => ['required', 'exists:inventory_items,id'],
             'pickerQuantity' => ['required', 'integer', 'min:1'],
@@ -321,6 +323,7 @@ class Create extends Component
 
     public function updateLinePrice(int $index, string $price): void
     {
+        $price = str_replace(',', '', trim($price));
         $unitPrice = max(0, (float) $price);
         $this->lineItems[$index]['unit_price'] = $unitPrice;
         $this->lineItems[$index]['subtotal'] = round($unitPrice * $this->lineItems[$index]['quantity'], 2);

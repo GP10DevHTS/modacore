@@ -84,7 +84,7 @@
                     </flux:field>
                     <flux:field class="col-span-2">
                         <flux:label>Unit Cost (UGX)</flux:label>
-                        <flux:input wire:model="pickerUnitCost" type="number" min="0" step="100" placeholder="0" />
+                        <flux:input wire:model="pickerUnitCost" type="text" x-mask:dynamic="$money($input)" placeholder="0" />
                         <flux:error name="pickerUnitCost" />
                     </flux:field>
                     <flux:button wire:click="addLineItem" variant="filled" icon="plus" class="shrink-0">Add</flux:button>
@@ -112,9 +112,8 @@
                                     <div class="flex items-center rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1 dark:border-zinc-700 dark:bg-zinc-800">
                                         <span class="mr-1 text-xs text-zinc-400">UGX</span>
                                         <input
-                                            type="number"
-                                            min="0"
-                                            step="1"
+                                            type="text"
+                                            x-mask:dynamic="$money($input)"
                                             value="{{ $line['unit_cost'] }}"
                                             wire:change="updateLineCost({{ $index }}, $event.target.value)"
                                             class="w-full bg-transparent text-sm font-medium tabular-nums text-zinc-800 focus:outline-none dark:text-zinc-200"

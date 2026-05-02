@@ -330,13 +330,13 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Hire Price (UGX)</label>
-                    <flux:input wire:model="variantRentalPrice" type="number" min="0" step="1" placeholder="Leave blank to inherit" />
+                    <flux:input wire:model="variantRentalPrice" type="text" x-mask:dynamic="$money($input)" placeholder="Leave blank to inherit" />
                     <p class="mt-1 text-xs text-zinc-400">Base: UGX {{ number_format($item->base_rental_price, 0) }}</p>
                     <flux:error name="variantRentalPrice" />
                 </div>
                 <div>
                     <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Cost Price (UGX)</label>
-                    <flux:input wire:model="variantCostPrice" type="number" min="0" step="1" placeholder="Leave blank to inherit" />
+                    <flux:input wire:model="variantCostPrice" type="text" x-mask:dynamic="$money($input)" placeholder="Leave blank to inherit" />
                     @if($item->cost_price)
                         <p class="mt-1 text-xs text-zinc-400">Base: UGX {{ number_format($item->cost_price, 0) }}</p>
                     @endif

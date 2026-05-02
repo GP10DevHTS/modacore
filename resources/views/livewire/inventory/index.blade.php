@@ -420,12 +420,12 @@
 {{--                </div>--}}
                 <div>
                     <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Hire Price (UGX) <span class="text-red-500">*</span></label>
-                    <flux:input wire:model="baseRentalPrice" type="number" step="1" min="0" placeholder="0" />
+                    <flux:input wire:model="baseRentalPrice" type="text" x-mask:dynamic="$money($input)" placeholder="0" />
                     <flux:error name="baseRentalPrice" />
                 </div>
                 <div>
                     <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Cost Price (UGX)</label>
-                    <flux:input wire:model="costPrice" type="number" step="1" min="0" placeholder="Purchase cost" />
+                    <flux:input wire:model="costPrice" type="text" x-mask:dynamic="$money($input)" placeholder="Purchase cost" />
                     <flux:error name="costPrice" />
                 </div>
 {{--                <div>--}}

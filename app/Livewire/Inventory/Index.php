@@ -150,6 +150,9 @@ class Index extends Component
     {
         abort_unless(auth()->user()->can($this->editingId ? 'inventory.edit' : 'inventory.create'), 403);
 
+        $this->baseRentalPrice = (string) floatval(str_replace(',', '', trim($this->baseRentalPrice)));
+        $this->costPrice = (string) floatval(str_replace(',', '', trim($this->costPrice)));
+
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
@@ -169,8 +172,8 @@ class Index extends Component
             'sku' => $validated['sku'] ?: null,
             'base_rental_price' => $validated['baseRentalPrice'],
             'cost_price' => $validated['costPrice'] ?: null,
-//            'stock_quantity' => $validated['stockQuantity'],
-//            'available_quantity' => $validated['availableQuantity'],
+            //            'stock_quantity' => $validated['stockQuantity'],
+            //            'available_quantity' => $validated['availableQuantity'],
             'is_active' => $validated['isActive'],
         ];
 

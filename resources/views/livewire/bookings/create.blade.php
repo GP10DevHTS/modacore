@@ -121,7 +121,7 @@
                     @endif
                     <div class="col-span-1">
                         <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Unit Price <span class="text-red-500">*</span></label>
-                        <flux:input wire:model="pickerUnitPrice" type="number" min="0" step="1" placeholder="0" />
+                        <flux:input wire:model="pickerUnitPrice" type="text" x-mask:dynamic="$money($input)" placeholder="0" />
                         <flux:error name="pickerUnitPrice" />
                     </div>
 {{--                    <div class="w-20">Add Item--}}
@@ -171,9 +171,8 @@
                                     <div class="flex items-center rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1 dark:border-zinc-700 dark:bg-zinc-800">
                                         <span class="mr-1 text-xs text-zinc-400">UGX</span>
                                         <input
-                                            type="number"
-                                            min="0"
-                                            step="1"
+                                            type="text"
+                                            x-mask:dynamic="$money($input)"
                                             value="{{ $line['unit_price'] }}"
                                             wire:change="updateLinePrice({{ $index }}, $event.target.value)"
                                             class="w-full bg-transparent text-sm font-medium tabular-nums text-zinc-800 focus:outline-none dark:text-zinc-200"

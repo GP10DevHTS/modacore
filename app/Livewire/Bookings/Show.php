@@ -159,6 +159,8 @@ class Show extends Component
     {
         abort_unless(auth()->user()->can('payments.create'), 403);
 
+        $this->paymentAmount = (string) floatval(str_replace(',', '', trim($this->paymentAmount)));
+
         $this->validate([
             'paymentAmount' => ['required', 'numeric', 'min:0.01'],
             'paymentMethod' => ['required', 'in:cash,card,mobile_money'],
@@ -220,6 +222,8 @@ class Show extends Component
         $payment = Payment::find($this->refundDepositId);
 
         abort_if(! $payment || $payment->booking_id !== $this->booking->id, 404);
+
+        $this->refundAmount = (string) floatval(str_replace(',', '', trim($this->refundAmount)));
 
         $maxRefund = $payment->availableForRefund();
 

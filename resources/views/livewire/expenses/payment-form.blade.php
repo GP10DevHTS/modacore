@@ -21,7 +21,7 @@
 
             <flux:field>
                 <flux:label>Amount (UGX) <span class="text-red-500">*</span></flux:label>
-                <flux:input wire:model="amount" type="number" min="0.01" step="100" placeholder="0" />
+                <flux:input wire:model="amount" type="text" x-mask:dynamic="$money($input)" placeholder="0" />
                 <flux:error name="amount" />
             </flux:field>
 
