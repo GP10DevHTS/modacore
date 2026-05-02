@@ -643,7 +643,7 @@
             <flux:dropdown position="top" align="start">
                 <button class="erp-user-card">
                     <div class="erp-avatar">{{ auth()->user()->initials() }}</div>
-                    <div>
+                    <div style="min-width:0; flex:1">
                         <div class="erp-user-name">{{ auth()->user()->name }}</div>
                         <div class="erp-user-role">{{ auth()->user()->email }}</div>
                     </div>
@@ -695,6 +695,9 @@
                 </div>
                 <span class="erp-brand-name">{{ config('app.name', 'ShopERP') }}</span>
             </div>
+
+            @include('partials.onboarding')
+
             <div style="margin-left:auto;display:flex;gap:0.25rem">
                 @livewire('notifications.bell', key('mobile-bell'))
             </div>
