@@ -69,7 +69,7 @@
                                 <flux:label>{{ $variantType->name }}</flux:label>
                                 <x-searchable-select
                                     class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
-                                    :options="$variantType->values"
+                                    :options="$variantType->values->map(fn($v) => ['id' => $v->id, 'name' => $v->label])"
                                     wire-model="pickerVariantAttributes.{{ $variantType->id }}"
                                     :selected-value="$pickerVariantAttributes[$variantType->id] ?? null"
                                     placeholder="Any"
