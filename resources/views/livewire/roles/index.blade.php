@@ -78,7 +78,13 @@
                     @else
                         <div class="flex flex-wrap gap-1.5">
                             @foreach($perms->sort() as $perm)
-                                <span class="rounded bg-zinc-100 px-2 py-0.5 font-mono text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">{{ $perm }}</span>
+                                <span class="rounded bg-zinc-100 px-2 py-0.5 font-mono text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+                                     @php
+                                         [$module, $action] = explode('.', $perm);
+                                         $label = ucfirst($action) . ' ' . ucfirst($module);
+                                     @endphp
+                                    {{ $label }}
+                                </span>
                             @endforeach
                         </div>
                     @endif
@@ -114,7 +120,13 @@
                                             wire:model="selectedPermissions"
                                             value="{{ $permission->name }}"
                                             class="size-3.5 rounded border-zinc-300 text-amber-500 focus:ring-amber-400 dark:border-zinc-600">
-                                        <span class="font-mono text-xs text-zinc-700 dark:text-zinc-300">{{ $permission->name }}</span>
+                                        <span class="font-mono text-xs text-zinc-700 dark:text-zinc-300">
+                                            @php
+                                                [$module, $action] = explode('.', $permission->name);
+                                                $label = ucfirst($action) . ' ' . ucfirst($module);
+                                            @endphp
+                                            {{ $label }}
+                                        </span>
                                     </label>
                                 @endforeach
                             </div>

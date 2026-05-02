@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
             SuperAdminSeeder::class,
             ExpenseCategoriesSeeder::class,
-            VariantsSeeder::class,
+//            VariantsSeeder::class,
         ]);
     }
 }
