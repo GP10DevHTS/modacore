@@ -20,6 +20,18 @@ class RolesAndPermissionsSeeder extends Seeder
             'inventory.edit',
             'inventory.delete',
 
+            // Suppliers
+            'suppliers.view',
+            'suppliers.create',
+            'suppliers.edit',
+            'suppliers.delete',
+
+            // Procurement
+            'procurement.view',
+            'procurement.create',
+            'procurement.edit',
+            'procurement.delete',
+
             // Customers
             'customers.view',
             'customers.create',
@@ -66,6 +78,8 @@ class RolesAndPermissionsSeeder extends Seeder
         $manager = Role::firstOrCreate(['name' => 'manager', 'guard_name' => 'web']);
         $manager->syncPermissions([
             'inventory.view', 'inventory.create', 'inventory.edit',
+            'suppliers.view', 'suppliers.create', 'suppliers.edit', 'suppliers.delete',
+            'procurement.view', 'procurement.create', 'procurement.edit', 'procurement.delete',
             'customers.view', 'customers.create', 'customers.edit',
             'bookings.view', 'bookings.create', 'bookings.edit', 'bookings.cancel', 'bookings.confirm', 'bookings.manage_status',
             'payments.view', 'payments.create',
@@ -78,6 +92,8 @@ class RolesAndPermissionsSeeder extends Seeder
         $staff = Role::firstOrCreate(['name' => 'staff', 'guard_name' => 'web']);
         $staff->syncPermissions([
             'inventory.view',
+            'suppliers.view',
+            'procurement.view',
             'customers.view', 'customers.create', 'customers.edit',
             'bookings.view', 'bookings.create', 'bookings.edit', 'bookings.cancel', 'bookings.confirm',
             'payments.view', 'payments.create',
@@ -88,6 +104,8 @@ class RolesAndPermissionsSeeder extends Seeder
         $viewer = Role::firstOrCreate(['name' => 'viewer', 'guard_name' => 'web']);
         $viewer->syncPermissions([
             'inventory.view',
+            'suppliers.view',
+            'procurement.view',
             'customers.view',
             'bookings.view',
             'payments.view',
