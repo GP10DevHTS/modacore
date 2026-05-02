@@ -9,6 +9,7 @@ use App\Models\GoodsReceiptItem;
 use App\Models\InventoryItem;
 use App\Models\PoAuditLog;
 use App\Models\PurchaseOrder;
+use App\Models\PurchaseOrderItem;
 use App\Models\SupplierInvoice;
 use App\Models\SupplierInvoiceItem;
 use App\Models\SupplierPayment;
@@ -73,6 +74,8 @@ class PurchaseOrderService
                     continue;
                 }
 
+                $purchaseOrderItem = PurchaseOrderItem::with('inventoryItem')->findOrFail($line['purchase_order_item_id']);
+
                 GoodsReceiptItem::create([
                     'goods_receipt_id' => $grn->id,
                     'purchase_order_item_id' => $line['purchase_order_item_id'],
@@ -89,6 +92,22 @@ class PurchaseOrderService
                 // Update physical stock
                 InventoryItem::where('id', $line['inventory_item_id'])
                     ->increment('stock_quantity', $line['quantity_received']);
+
+                InventoryItem::where('id', $line['inventory_item_id'])
+                    ->increment('available_quantity', $line['quantity_received']);
+
+                if (! empty($purchaseOrderItem->variant_value_ids)) {
+                    $skuService = app(InventorySkuService::class);
+
+                    for ($received = 0; $received < $line['quantity_received']; $received++) {
+                        $skuService->createTrackedVariant(
+                            $purchaseOrderItem->inventoryItem,
+                            $purchaseOrderItem->variant_value_ids,
+                            null,
+                            (float) $purchaseOrderItem->unit_cost,
+                        );
+                    }
+                }
             }
 
             $order->recomputeReceiptStatus();

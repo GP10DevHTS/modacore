@@ -6,6 +6,8 @@ use App\Enums\OrderStatus;
 use App\Models\InventoryItem;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
+use App\Models\VariantType;
+use App\Services\InventorySkuService;
 use App\Services\PurchaseOrderService;
 use Flux\Flux;
 use Livewire\Attributes\Computed;
@@ -26,6 +28,8 @@ class Create extends Component
     public string $pickerItemId = '';
 
     public string $pickerVariantId = '';
+
+    public array $pickerVariantAttributes = [];
 
     public string $pickerQuantity = '1';
 
@@ -49,11 +53,14 @@ class Create extends Component
             $this->lineItems = $purchaseOrder->items->map(fn ($item) => [
                 'inventory_item_id' => $item->inventory_item_id,
                 'inventory_variant_id' => $item->inventory_variant_id,
+                'variant_value_ids' => $item->variant_value_ids ?? [],
+                'variant_composition_key' => $item->variant_composition_key,
+                'variant_composition_label' => $item->variant_composition_label,
                 'quantity' => $item->quantity,
                 'unit_cost' => (float) $item->unit_cost,
                 'subtotal' => (float) $item->subtotal,
                 'item_name' => $item->inventoryItem->name,
-                'variant_name' => $item->variant?->name,
+                'variant_name' => $item->variant_composition_label ?? $item->variant?->name,
             ])->toArray();
         }
     }
@@ -83,12 +90,19 @@ class Create extends Component
             return collect();
         }
 
-        return InventoryItem::find($this->pickerItemId)?->variants()->active()->orderBy('label')->orderBy('size')->orderBy('color')->get(['id', 'size', 'color', 'label', 'rental_price']) ?? collect();
+        return InventoryItem::find($this->pickerItemId)?->variants()->with('attributeValues')->active()->orderBy('label')->orderBy('size')->orderBy('color')->get(['id', 'inventory_item_id', 'size', 'color', 'label', 'composition_key', 'rental_price', 'cost_price']) ?? collect();
+    }
+
+    #[Computed]
+    public function variantTypes()
+    {
+        return VariantType::with(['values' => fn ($q) => $q->ordered()])->ordered()->get();
     }
 
     public function updatedPickerItemId(): void
     {
         $this->pickerVariantId = '';
+        $this->pickerVariantAttributes = [];
         unset($this->selectedItemVariants);
         $item = InventoryItem::find($this->pickerItemId);
         $this->pickerUnitCost = $item ? (string) ($item->cost_price ?? '') : '';
@@ -117,7 +131,7 @@ class Create extends Component
         unset($this->totalAmount);
     }
 
-    public function addLineItem(): void
+    public function addLineItem(InventorySkuService $skuService): void
     {
         $this->validate([
             'pickerItemId' => ['required', 'exists:inventory_items,id'],
@@ -127,9 +141,16 @@ class Create extends Component
 
         $itemId = (int) $this->pickerItemId;
         $variantId = $this->pickerVariantId ? (int) $this->pickerVariantId : null;
+        $selectedValueIds = array_values(array_filter($this->pickerVariantAttributes));
+        $compositionKey = ! empty($selectedValueIds) ? $skuService->compositionKey($selectedValueIds) : null;
+        $compositionLabel = ! empty($selectedValueIds) ? $skuService->compositionLabel($selectedValueIds) : null;
 
         foreach ($this->lineItems as $existing) {
-            if ($existing['inventory_item_id'] === $itemId && $existing['inventory_variant_id'] === $variantId) {
+            if (
+                $existing['inventory_item_id'] === $itemId
+                && ($existing['inventory_variant_id'] ?? null) === $variantId
+                && ($existing['variant_composition_key'] ?? null) === $compositionKey
+            ) {
                 Flux::toast(text: 'Item already in order. Update the quantity instead.', variant: 'danger');
 
                 return;
@@ -143,16 +164,20 @@ class Create extends Component
         $this->lineItems[] = [
             'inventory_item_id' => $itemId,
             'inventory_variant_id' => $variantId,
+            'variant_value_ids' => array_map('intval', $selectedValueIds),
+            'variant_composition_key' => $compositionKey,
+            'variant_composition_label' => $compositionLabel,
             'quantity' => $qty,
             'unit_cost' => $unitCost,
             'subtotal' => round($unitCost * $qty, 2),
             'item_name' => $item->name,
-            'variant_name' => $variantId ? ($item->variants()->find($variantId)?->name) : null,
+            'variant_name' => $compositionLabel ?: ($variantId ? ($item->variants()->with('attributeValues')->find($variantId)?->name) : null),
         ];
 
         unset($this->totalAmount, $this->selectedItemVariants);
         $this->pickerItemId = '';
         $this->pickerVariantId = '';
+        $this->pickerVariantAttributes = [];
         $this->pickerQuantity = '1';
         $this->pickerUnitCost = '';
     }
@@ -212,6 +237,9 @@ class Create extends Component
             $order->items()->create([
                 'inventory_item_id' => $lineItem['inventory_item_id'],
                 'inventory_variant_id' => $lineItem['inventory_variant_id'] ?? null,
+                'variant_value_ids' => $lineItem['variant_value_ids'] ?? null,
+                'variant_composition_key' => $lineItem['variant_composition_key'] ?? null,
+                'variant_composition_label' => $lineItem['variant_composition_label'] ?? null,
                 'quantity' => $lineItem['quantity'],
                 'unit_cost' => $lineItem['unit_cost'],
                 'subtotal' => $lineItem['subtotal'],

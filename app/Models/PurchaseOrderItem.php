@@ -16,6 +16,7 @@ class PurchaseOrderItem extends Model
     protected $fillable = [
         'purchase_order_id', 'inventory_item_id', 'inventory_variant_id', 'quantity',
         'received_quantity', 'invoiced_quantity', 'unit_cost', 'subtotal',
+        'variant_value_ids', 'variant_composition_key', 'variant_composition_label',
     ];
 
     protected function casts(): array
@@ -23,6 +24,7 @@ class PurchaseOrderItem extends Model
         return [
             'unit_cost' => 'decimal:2',
             'subtotal' => 'decimal:2',
+            'variant_value_ids' => 'array',
         ];
     }
 

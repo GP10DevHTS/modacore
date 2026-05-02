@@ -81,8 +81,8 @@
             {{-- Add Item --}}
             <div class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700/60 dark:bg-zinc-900">
                 <h2 class="mb-4 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Add Item</h2>
-                <div class="flex flex-wrap items-end gap-3">
-                    <div class="min-w-0 flex-1">
+                <div class="grid grid-cols-2 items-end gap-3">
+                    <div class="min-w-0 flex-1 col-span-2">
                         <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Item <span class="text-red-500">*</span></label>
                         <select wire:model.live="pickerItemId"
                             class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
@@ -94,27 +94,41 @@
                         <flux:error name="pickerItemId" />
                     </div>
                     @if($this->selectedItemVariants->count() > 0)
-                        <div class="w-40">
-                            <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Variant</label>
-                            <select wire:model="pickerVariantId"
-                                class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
-                                <option value="">Any</option>
-                                @foreach($this->selectedItemVariants as $variant)
-                                    <option value="{{ $variant->id }}">{{ $variant->name }}</option>
-                                @endforeach
-                            </select>
+                        <div class="col-span-2">
+                            <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Composition</label>
+                            <x-searchable-select
+                                :options="$this->selectedItemCompositions"
+                                wire-model="pickerCompositionKey"
+                                :selected-value="$pickerCompositionKey"
+                                placeholder="Select composition"
+                                empty-message="No compositions available"
+                                :clearable="false"
+                            />
                         </div>
                     @endif
-                    <div class="w-28">
+                    @if($this->selectedCompositionVariants->count() > 0)
+                        <div class=" col-span-2">
+                            <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Tracked Units</label>
+                            <x-searchable-select
+                                :options="$this->selectedCompositionVariants"
+                                wire-model="pickerVariantIds"
+                                :selected-value="$pickerVariantIds"
+                                placeholder="Select units"
+                                empty-message="No units available"
+                                multiple
+                            />
+                        </div>
+                    @endif
+                    <div class="col-span-1">
                         <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Unit Price <span class="text-red-500">*</span></label>
                         <flux:input wire:model="pickerUnitPrice" type="number" min="0" step="1" placeholder="0" />
                         <flux:error name="pickerUnitPrice" />
                     </div>
-                    <div class="w-20">
-                        <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Qty</label>
-                        <flux:input wire:model="pickerQuantity" type="number" min="1" />
-                        <flux:error name="pickerQuantity" />
-                    </div>
+{{--                    <div class="w-20">Add Item--}}
+{{--                        <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Qty</label>--}}
+{{--                        <flux:input wire:model="pickerQuantity" type="number" min="1" />--}}
+{{--                        <flux:error name="pickerQuantity" />--}}
+{{--                    </div>--}}
                     <button wire:click="addLineItem"
                         class="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 transition-colors shrink-0">
                         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\InventorySkuService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class InventoryVariant extends Model
 {
     protected $fillable = [
-        'inventory_item_id', 'size', 'color', 'label',
+        'inventory_item_id', 'size', 'color', 'label', 'composition_key',
         'rental_price', 'cost_price', 'sku',
         'stock_quantity', 'available_quantity', 'is_active',
     ];
@@ -79,5 +80,15 @@ class InventoryVariant extends Model
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
+    }
+
+    protected static function booted()
+    {
+        static::creating(function ($variant) {
+            if (! $variant->sku) {
+                $item = InventoryItem::findOrFail($variant->inventory_item_id);
+                $variant->sku = app(InventorySkuService::class)->nextVariantSku($item);
+            }
+        });
     }
 }

@@ -25,13 +25,14 @@ class ReceiveGoods extends Component
         abort_unless(auth()->user()->can('inventory.edit'), 403);
         abort_if($purchaseOrder->order_status !== OrderStatus::Sent, 403);
 
-        $this->purchaseOrder = $purchaseOrder;
+        $this->purchaseOrder = $purchaseOrder->load('items.inventoryItem');
         $this->receivedDate = now()->format('Y-m-d');
 
-        $this->lines = $purchaseOrder->items->map(fn ($item) => [
+        $this->lines = $this->purchaseOrder->items->map(fn ($item) => [
             'purchase_order_item_id' => $item->id,
             'inventory_item_id' => $item->inventory_item_id,
             'item_name' => $item->inventoryItem->name,
+            'variant_name' => $item->variant_composition_label,
             'ordered' => $item->quantity,
             'pending' => $item->pendingReceiptQuantity(),
             'quantity_received' => $item->pendingReceiptQuantity(),
