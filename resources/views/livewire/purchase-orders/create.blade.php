@@ -27,13 +27,18 @@
                 <div class="space-y-4">
                     <flux:field>
                         <flux:label>Supplier <span class="text-red-500">*</span></flux:label>
-                        <select wire:model="supplierId"
-                            class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
-                            <option value="">Select a supplier</option>
-                            @foreach($this->suppliers as $supplier)
-                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
-                            @endforeach
-                        </select>
+{{--                        <select wire:model="supplierId"--}}
+{{--                            class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">--}}
+{{--                            <option value="">Select a supplier</option>--}}
+{{--                            @foreach($this->suppliers as $supplier)--}}
+{{--                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>--}}
+{{--                            @endforeach--}}
+{{--                        </select>--}}
+                        <x-searchable-select
+                            :options="$this->suppliers->map(fn($s) => ['id'=>$s->id, 'name' => $s->name .' ● ' . $s->contact_person .' ● ' . $s->phone ])"
+                            :selected-value="$supplierId"
+                            wire-model="supplierId"
+                        />
                         <flux:error name="supplierId" />
                     </flux:field>
                     <flux:field>
@@ -64,18 +69,20 @@
                         <flux:error name="pickerItemId" />
                     </flux:field>
                     @if($pickerItemId && $this->variantTypes->isNotEmpty())
-                        @foreach($this->variantTypes as $variantType)
-                            <flux:field class="col-span-1">
-                                <flux:label>{{ $variantType->name }}</flux:label>
-                                <x-searchable-select
-                                    class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
-                                    :options="$variantType->values->map(fn($v) => ['id' => $v->id, 'name' => $v->label])"
-                                    wire-model="pickerVariantAttributes.{{ $variantType->id }}"
-                                    :selected-value="$pickerVariantAttributes[$variantType->id] ?? null"
-                                    placeholder="Any"
-                                />
-                            </flux:field>
-                        @endforeach
+                        <div class="col-span-4 grid grid-cols-4">
+                            @foreach($this->variantTypes as $variantType)
+                                <flux:field class="col-span-1">
+                                    <flux:label>{{ $variantType->name }}</flux:label>
+                                    <x-searchable-select
+                                        class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+                                        :options="$variantType->values->map(fn($v) => ['id' => $v->id, 'name' => $v->label])"
+                                        wire-model="pickerVariantAttributes.{{ $variantType->id }}"
+                                        :selected-value="$pickerVariantAttributes[$variantType->id] ?? null"
+                                        placeholder="Any"
+                                    />
+                                </flux:field>
+                            @endforeach
+                        </div>
                     @endif
                     <flux:field class="col-span-2">
                         <flux:label>Qty</flux:label>
@@ -120,16 +127,19 @@
                                         />
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-1 rounded-lg border border-zinc-200 bg-zinc-50 p-1 dark:border-zinc-700 dark:bg-zinc-800">
-                                    <button type="button" wire:click="updateLineQuantity({{ $index }}, {{ max(1, $line['quantity'] - 1) }})"
-                                        class="flex size-6 items-center justify-center rounded text-zinc-500 hover:bg-white hover:text-zinc-700 dark:hover:bg-zinc-700 transition-colors">
-                                        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4"/></svg>
-                                    </button>
-                                    <span class="w-8 text-center text-sm font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">{{ $line['quantity'] }}</span>
-                                    <button type="button" wire:click="updateLineQuantity({{ $index }}, {{ $line['quantity'] + 1 }})"
-                                        class="flex size-6 items-center justify-center rounded text-zinc-500 hover:bg-white hover:text-zinc-700 dark:hover:bg-zinc-700 transition-colors">
-                                        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                                    </button>
+                                <div class="hidden w-36 sm:block">
+                                    <div class="mb-1 text-xs text-zinc-400 dark:text-zinc-500">Qty</div>
+                                    <div class="flex items-center gap-1 rounded-lg border border-zinc-200 bg-zinc-50 p-1 dark:border-zinc-700 dark:bg-zinc-800">
+                                        <button type="button" wire:click="updateLineQuantity({{ $index }}, {{ max(1, $line['quantity'] - 1) }})"
+                                            class="flex size-6 items-center justify-center rounded text-zinc-500 hover:bg-white hover:text-zinc-700 dark:hover:bg-zinc-700 transition-colors">
+                                            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4"/></svg>
+                                        </button>
+                                        <span class="w-8 text-center text-sm font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">{{ $line['quantity'] }}</span>
+                                        <button type="button" wire:click="updateLineQuantity({{ $index }}, {{ $line['quantity'] + 1 }})"
+                                            class="flex size-6 items-center justify-center rounded text-zinc-500 hover:bg-white hover:text-zinc-700 dark:hover:bg-zinc-700 transition-colors">
+                                            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="w-28 text-right font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">
                                     UGX {{ number_format($line['subtotal'], 0) }}

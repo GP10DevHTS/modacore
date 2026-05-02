@@ -68,7 +68,7 @@ class Create extends Component
     #[Computed]
     public function suppliers()
     {
-        return Supplier::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']);
+        return Supplier::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'contact_person', 'phone']);
     }
 
     #[Computed]
