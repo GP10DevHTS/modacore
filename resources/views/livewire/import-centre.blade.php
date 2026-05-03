@@ -1,74 +1,66 @@
-<div>
-    {{-- Order your soul. Reduce your wants. - Augustine --}}
-    <div class="mx-auto">
-        {{-- Header --}}
-        <div class="mb-6">
-            <h1 class="text-xl font-semibold text-zinc-800 dark:text-zinc-100">
-                Import Centre
-            </h1>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400">
-                Upload your initial stock using a formatted file. Download the template to get started.
-            </p>
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-2xl font-bold">Import Centre</h2>
+            <p class="text-gray-500">Manage initial stock imports and data templates.</p>
         </div>
-
-        {{-- Card --}}
-        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm p-6 space-y-6">
-
-            {{-- File Upload --}}
-            <div class="space-y-2">
-                <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                    Select File
-                </label>
-
-                <div class="flex items-center gap-4">
-                    <flux:input.file wire:model="file" class="flex-1" />
-
-                    <flux:button
-                        wire:click="getTemplate"
-                        variant="outline"
-                        class="shrink-0"
-                    >
-                        Download Template
-                    </flux:button>
-                </div>
-
-                @error('file')
-                <p class="text-xs text-red-500">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Progress Bar --}}
-            <div wire:loading wire:target="file" class="space-y-2">
-                <div class="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-2 overflow-hidden">
-                    <div class="bg-blue-500 h-2 animate-pulse w-full"></div>
-                </div>
-                <p class="text-xs text-zinc-500">preparing file...</p>
-            </div>
-
-            {{-- Actions --}}
-            <div class="flex items-center justify-end gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-800">
-                <flux:button
-                    wire:click="uploadFile"
-                    variant="primary"
-                    wire:loading.attr="disabled"
-                    wire:target="uploadFile"
-                >
-                <span wire:loading.remove wire:target="uploadFile">
-                    Upload File
-                </span>
-                    <span wire:loading wire:target="uploadFile">
-                    Processing...
-                </span>
-                </flux:button>
-            </div>
-
-            {{-- Helper Info --}}
-            <div class="text-xs text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800 p-3 rounded-lg">
-                • Ensure your file follows the template format
-                • Supported formats: CSV, XLSX
-                • Large files may take longer to process
-            </div>
-        </div>
+        <flux:button wire:click="getTemplate" icon="arrow-down-tray">Download Template</flux:button>
     </div>
-</div>
 
+    <flux:card class="space-y-4">
+        <h3 class="text-lg font-semibold">New Stock Import</h3>
+        <form wire:submit="uploadFile" class="flex items-end gap-4">
+            <div class="flex-1">
+                <flux:input type="file" wire:model="file" label="Select Excel/CSV File" />
+            </div>
+            <flux:button type="submit" variant="primary" icon="cloud-arrow-up" wire:loading.attr="disabled">
+                <span wire:loading.remove>Start Import</span>
+                <span wire:loading>Importing...</span>
+            </flux:button>
+        </form>
+    </flux:card>
+
+    <flux:card class="space-y-4">
+        <h3 class="text-lg font-semibold">Recent Imports</h3>
+        <flux:table>
+            <flux:columns>
+                <flux:column>Date</flux:column>
+                <flux:column>Filename</flux:column>
+                <flux:column>User</flux:column>
+                <flux:column>Status</flux:column>
+                <flux:column align="end">Actions</flux:column>
+            </flux:columns>
+            <flux:rows>
+                @foreach ($this->recentImports as $import)
+                    <flux:row>
+                        <flux:cell>{{ $import->created_at->format('M d, Y H:i') }}</flux:cell>
+                        <flux:cell>{{ $import->filename }}</flux:cell>
+                        <flux:cell>{{ $import->user->name }}</flux:cell>
+                        <flux:cell>
+                            @if ($import->status === 'completed')
+                                <flux:badge color="green" inset="none">Completed</flux:badge>
+                            @else
+                                <flux:badge color="gray" inset="none">Reversed</flux:badge>
+                            @endif
+                        </flux:cell>
+                        <flux:cell align="end">
+                            @if ($import->status === 'completed')
+                                <flux:button
+                                    size="sm"
+                                    variant="danger"
+                                    icon="arrow-path"
+                                    wire:click="reverseImport({{ $import->id }})"
+                                    wire:confirm="Are you sure you want to reverse this import? This will delete all records created by it."
+                                >
+                                    Reverse
+                                </flux:button>
+                            @else
+                                <span class="text-xs text-gray-400">Reversed at {{ $import->reversed_at->format('M d, H:i') }}</span>
+                            @endif
+                        </flux:cell>
+                    </flux:row>
+                @endforeach
+            </flux:rows>
+        </flux:table>
+    </flux:card>
+</div>

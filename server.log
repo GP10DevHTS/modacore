@@ -1,0 +1,47 @@
+
+   INFO  Server running on [http://127.0.0.1:8000].
+
+  Press Ctrl+C to stop the server
+
+  PHP Fatal error:  Uncaught Error: Call to undefined method ReflectionProperty::isVirtual() in /app/vendor/symfony/var-dumper/Caster/Caster.php:198
+  Stack trace:
+  #0 /app/vendor/symfony/var-dumper/Caster/Caster.php(69): Symfony\Component\VarDumper\Caster\Caster::getClassProperties()
+  #1 /app/vendor/symfony/var-dumper/Cloner/AbstractCloner.php(371): Symfony\Component\VarDumper\Caster\Caster::castObject()
+  #2 /app/vendor/symfony/var-dumper/Cloner/VarCloner.php(127): Symfony\Component\VarDumper\Cloner\AbstractCloner->castObject()
+  #3 /app/vendor/symfony/var-dumper/Cloner/AbstractCloner.php(316): Symfony\Component\VarDumper\Cloner\VarCloner->doClone()
+  #4 /app/vendor/symfony/error-handler/Exception/FlattenException.php(112): Symfony\Component\VarDumper\Cloner\AbstractCloner->cloneVar()
+  #5 /app/vendor/symfony/error-handler/ErrorRenderer/HtmlErrorRenderer.php(70): Symfony\Component\ErrorHandler\Exception\FlattenException::createWithDataRepresentation()
+  #6 /app/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(955): Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer->render()
+  #7 /app/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(929): Illuminate\Foundation\Exceptions\Handler->renderExceptionWithSymfony()
+  #8 /app/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(904): Illuminate\Foundation\Exceptions\Handler->renderExceptionContent()
+  #9 /app/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(883): Illuminate\Foundation\Exceptions\Handler->convertExceptionToResponse()
+  #10 /app/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(774): Illuminate\Foundation\Exceptions\Handler->prepareResponse()
+  #11 /app/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(661): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse()
+  #12 /app/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(221): Illuminate\Foundation\Exceptions\Handler->render()
+  #13 /app/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse()
+  #14 /app/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException()
+  #15 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}()
+  #16 {main}
+  thrown in /app/vendor/symfony/var-dumper/Caster/Caster.php on line 198
+  PHP Fatal error:  Uncaught Error: Call to undefined method ReflectionProperty::isVirtual() in /app/vendor/symfony/var-dumper/Caster/Caster.php:198
+  Stack trace:
+  #0 /app/vendor/symfony/var-dumper/Caster/Caster.php(69): Symfony\Component\VarDumper\Caster\Caster::getClassProperties()
+  #1 /app/vendor/symfony/var-dumper/Cloner/AbstractCloner.php(371): Symfony\Component\VarDumper\Caster\Caster::castObject()
+  #2 /app/vendor/symfony/var-dumper/Cloner/VarCloner.php(127): Symfony\Component\VarDumper\Cloner\AbstractCloner->castObject()
+  #3 /app/vendor/symfony/var-dumper/Cloner/AbstractCloner.php(316): Symfony\Component\VarDumper\Cloner\VarCloner->doClone()
+  #4 /app/vendor/symfony/error-handler/Exception/FlattenException.php(112): Symfony\Component\VarDumper\Cloner\AbstractCloner->cloneVar()
+  #5 /app/vendor/symfony/error-handler/ErrorRenderer/HtmlErrorRenderer.php(70): Symfony\Component\ErrorHandler\Exception\FlattenException::createWithDataRepresentation()
+  #6 /app/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(955): Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer->render()
+  #7 /app/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(929): Illuminate\Foundation\Exceptions\Handler->renderExceptionWithSymfony()
+  #8 /app/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(904): Illuminate\Foundation\Exceptions\Handler->renderExceptionContent()
+  #9 /app/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(883): Illuminate\Foundation\Exceptions\Handler->convertExceptionToResponse()
+  #10 /app/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(774): Illuminate\Foundation\Exceptions\Handler->prepareResponse()
+  #11 /app/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(661): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse()
+  #12 /app/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(221): Illuminate\Foundation\Exceptions\Handler->render()
+  #13 /app/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse()
+  #14 /app/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(234): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException()
+  #15 /app/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleShutdown()
+  #16 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}()
+  #17 {main}
+  thrown in /app/vendor/symfony/var-dumper/Caster/Caster.php on line 198
+  2026-05-03 07:24:47 /login ..................................... ~ 501.48ms

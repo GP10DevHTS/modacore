@@ -13,40 +13,44 @@ class InitialStockTemplate implements FromArray, ShouldAutoSize, WithHeadings, W
 {
     public function array(): array
     {
-        $variantValues = VariantType::with('values')
-            ->get()
-            ->map(fn ($type) => $type->values->first()?->label)
-            ->filter()
-            ->implode(', ');
+        $types = VariantType::with('values')->orderBy('sort_order')->get();
 
-        return [
-            // optional sample row
-            ['Sample Item', 'Category A',
-                $variantValues, 10, 5000, 8000],
+        $sampleRow = [
+            'Sample Item', // Item
+            'Sample Category', // Category
         ];
+
+        foreach ($types as $type) {
+            $sampleRow[] = $type->values->first()?->label ?? 'Value';
+        }
+
+        $sampleRow[] = 10; // Quantity
+        $sampleRow[] = 50.00; // Cost Price
+        $sampleRow[] = 80.00; // Rental Price
+
+        return [$sampleRow];
     }
 
     public function headings(): array
     {
-        $variantTypes = VariantType::pluck('name')->implode(', ');
+        $headings = ['Item', 'Category'];
 
-        return [
-            'Item',
-            'Category',
-            $variantTypes,
-            'Quantity',
-            'Cost Price (Each)',
-            'Rental Price (Each)',
-        ];
+        $types = VariantType::orderBy('sort_order')->pluck('name')->toArray();
+        foreach ($types as $type) {
+            $headings[] = $type;
+        }
+
+        $headings[] = 'Quantity';
+        $headings[] = 'Cost Price (Each)';
+        $headings[] = 'Rental Price (Each)';
+
+        return $headings;
     }
 
     public function styles(Worksheet $sheet)
     {
         return [
-            // Row 1 = headings
-            1 => [
-                'font' => ['bold' => true],
-            ],
+            1 => ['font' => ['bold' => true]],
         ];
     }
 }
