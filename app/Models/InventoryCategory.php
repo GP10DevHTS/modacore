@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class InventoryCategory extends Model
 {
@@ -29,6 +30,10 @@ class InventoryCategory extends Model
     {
         static::creating(function ($category) {
             $category->code ??= app(InventorySkuService::class)->nextCategoryCode();
+
+            if(Auth::check()) {
+                $category->user_id = Auth::id();
+            }
         });
     }
 }

@@ -641,7 +641,7 @@
         {{-- User Footer --}}
         <div class="erp-sidebar-footer">
             <flux:dropdown position="top" align="start">
-                <div class="erp-user-card">
+                <button class="erp-user-card">
                     <div class="erp-avatar">{{ auth()->user()->initials() }}</div>
                     <div style="min-width:0; flex:1">
                         <div class="erp-user-name">{{ auth()->user()->name }}</div>
@@ -654,9 +654,12 @@
                             </svg>
                         </div>
                     </div>
-                </div>
+                </button>
 
                 <flux:menu>
+                    <flux:menu.item :href="route('imports.point')" icon="arrow-up-on-square-stack" wire:navigate>
+                        {{ __('Import Centre') }}
+                    </flux:menu.item>
                     <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>
                         {{ __('Settings') }}
                     </flux:menu.item>
@@ -670,6 +673,7 @@
                     </form>
                 </flux:menu>
             </flux:dropdown>
+            {{-- <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />--}}
         </div>
     </aside>
 
@@ -694,6 +698,9 @@
                 </div>
                 <span class="erp-brand-name">{{ config('app.name', 'ShopERP') }}</span>
             </div>
+
+            @include('partials.onboarding')
+
             <div style="margin-left:auto;display:flex;gap:0.25rem">
                 @livewire('notifications.bell', key('mobile-bell'))
             </div>
@@ -761,9 +768,9 @@
 
                                     {{-- Step Text --}}
                                     <div class="flex flex-col">
-                            <span class="text-sm {{ $isComplete ? 'text-gray-400 line-through' : 'text-gray-800' }}">
-                                {{ $loop->iteration }}. {{ $step->title }}
-                            </span>
+                                        <span class="text-sm {{ $isComplete ? 'text-gray-400 line-through' : 'text-gray-800' }}">
+                                            {{ $loop->iteration }}. {{ $step->title }}
+                                        </span>
 
                                         @if(!$isComplete)
                                             <flux:link href="{{$step->link}}" size="sm">{{ $step->cta }}</flux:link>
