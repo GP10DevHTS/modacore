@@ -657,6 +657,9 @@
                 </button>
 
                 <flux:menu>
+                    <flux:menu.item :href="route('imports.point')" icon="arrow-up-on-square-stack" wire:navigate>
+                        {{ __('Import Centre') }}
+                    </flux:menu.item>
                     <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>
                         {{ __('Settings') }}
                     </flux:menu.item>
