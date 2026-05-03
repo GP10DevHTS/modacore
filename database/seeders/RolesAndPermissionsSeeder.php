@@ -65,6 +65,11 @@ class RolesAndPermissionsSeeder extends Seeder
 
             // Reports
             'reports.view',
+
+            // Imports
+            'imports.view',
+            'imports.create',
+            'imports.revert',
         ];
 
         foreach ($permissions as $perm) {
@@ -86,6 +91,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'employees.view',
             'expenses.view', 'expenses.create', 'expenses.edit', 'expenses.delete',
             'reports.view',
+            'imports.view', 'imports.create', 'imports.revert',
         ]);
 
         // Staff — front desk operations

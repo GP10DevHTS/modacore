@@ -618,6 +618,14 @@
 
             <div class="erp-nav-section">
                 <div class="erp-nav-label">System</div>
+                @can('imports.view')
+                    <a href="{{ route('imports.index') }}" wire:navigate class="erp-nav-item {{ request()->routeIs('imports.*') ? 'active' : '' }}">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                        </svg>
+                        Import Centre
+                    </a>
+                @endcan
                 <a href="{{ route('notifications.index') }}" wire:navigate
                    class="erp-nav-item {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">

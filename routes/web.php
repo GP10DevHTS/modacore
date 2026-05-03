@@ -5,6 +5,7 @@ use App\Livewire\Analytics\Dashboard as AnalyticsDashboard;
 use App\Livewire\Bookings\Create as BookingCreate;
 use App\Livewire\Bookings\Index as BookingsIndex;
 use App\Livewire\Bookings\Show as BookingShow;
+use App\Livewire\ImportCentre;
 use App\Livewire\Customers\Index as CustomersIndex;
 use App\Livewire\Customers\Show as CustomerShow;
 use App\Livewire\Employees\Attendance;
@@ -74,6 +75,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Reports & Analytics
     Route::get('/reports', ReportsIndex::class)->name('reports.index');
+
+    // Imports
+    Route::get('/import-centre', ImportCentre::class)->name('imports.index');
     Route::get('/analytics', AnalyticsDashboard::class)->name('analytics.dashboard');
 
     // Expenses
