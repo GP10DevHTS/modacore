@@ -13,6 +13,7 @@ use App\Livewire\Employees\Index as EmployeesIndex;
 use App\Livewire\Expenses\Index as ExpensesIndex;
 use App\Livewire\Expenses\PaymentForm as ExpensePaymentForm;
 use App\Livewire\Expenses\Show as ExpenseShow;
+use App\Livewire\ImportCentre;
 use App\Livewire\Inventory\Index as InventoryIndex;
 use App\Livewire\Inventory\Show as InventoryShow;
 use App\Livewire\Invoices\Index as InvoicesIndex;
@@ -87,6 +88,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Notifications
     Route::get('/notifications', NotificationsCenter::class)->name('notifications.index');
+
+    // imports
+    Route::get('/imports-point', ImportCentre::class)->name('imports.point');
 });
 
 require __DIR__.'/settings.php';
