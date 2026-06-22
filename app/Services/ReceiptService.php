@@ -29,9 +29,18 @@ class ReceiptService
             ? 'Security deposit for booking '.$booking->booking_number
             : 'Payment for booking '.$booking->booking_number;
 
-        $item = InvoiceItem::make($description)
-            ->pricePerUnit((float) $payment->amount)
-            ->quantity(1);
+//        $item = InvoiceItem::make($description)
+//            ->pricePerUnit((float) $payment->amount)
+//            ->quantity(1);
+
+        $items = [];
+        foreach ($payment->booking?->items as $item) {
+            $items[] = InvoiceItem::make(
+                $item->inventoryItem->name . ( $item->variant ? "(".$item->variant->name.")"  : "")
+                )
+                ->pricePerUnit((float) $item->unit_price)
+                ->quantity($item->quantity );
+        }
 
         $notes = collect([
             'Booking: '.$booking->booking_number,
@@ -43,10 +52,11 @@ class ReceiptService
         $invoice = Invoice::make($type)
             ->template('receipt')
             ->serialNumberFormat('{SERIES}')
+            ->payUntilDays(3)
             ->series($payment->receipt_number)
             ->buyer($buyer)
             ->date($payment->paid_at)
-            ->addItem($item)
+            ->addItems($items)
             ->notes($notes)
             ->filename($payment->receipt_number);
 

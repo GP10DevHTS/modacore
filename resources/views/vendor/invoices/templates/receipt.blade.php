@@ -9,16 +9,11 @@
             margin: 3mm;
         }
 
-        * {
-            box-sizing: border-box;
-        }
-
         body {
             font-family: "DejaVu Sans Mono", monospace;
             font-size: 10px;
-            line-height: 1.3;
+            line-height: 1.4;
             color: #000;
-            width: 100%;
             margin: 0;
             padding: 0;
         }
@@ -27,16 +22,17 @@
             text-align: center;
         }
 
-        .right {
-            text-align: right;
-        }
-
         .bold {
             font-weight: bold;
         }
 
         .large {
             font-size: 14px;
+            font-weight: bold;
+        }
+
+        .amount {
+            font-size: 13px;
             font-weight: bold;
         }
 
@@ -50,47 +46,82 @@
             margin: 6px 0;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        td {
-            vertical-align: top;
-            padding: 1px 0;
-            word-break: break-word;
-        }
-
-        .label {
-            width: 40%;
-            font-weight: bold;
-        }
-
-        .amount {
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        .item-row td {
-            padding: 2px 0;
-        }
-
         img {
             max-width: 120px;
+            margin-bottom: 5px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-top: 5px;
+            margin-bottom: 3px;
+        }
+
+        .line {
+            margin-bottom: 2px;
         }
     </style>
 </head>
 <body>
 
-{{-- LOGO --}}
+{{-- Logo --}}
 @if($invoice->logo)
     <div class="center">
         <img src="{{ $invoice->getLogo() }}" alt="logo">
     </div>
 @endif
 
-{{-- TITLE --}}
-<div class="center">
+@if($invoice->seller)
+
+    @if($invoice->seller->name)
+        <div class="large" style="font-size: 20px;">
+            <strong>
+            {{ $invoice->seller->name }}
+            </strong>
+        </div>
+    @endif
+
+    @if($invoice->seller->address)
+        <div class="line">
+            <strong>
+            {{ $invoice->seller->address }}
+            </strong>
+        </div>
+    @endif
+
+    @if($invoice->seller->code)
+        <div class="line">
+            {{ $invoice->seller->code }}
+        </div>
+    @endif
+
+    @if($invoice->seller->vat)
+        <div class="line">
+            <strong>VAT:</strong>
+            {{ $invoice->seller->vat }}
+        </div>
+    @endif
+
+    @if($invoice->seller->phone)
+        <div class="line">
+            <strong>
+            {{ $invoice->seller->phone }}
+            </strong>
+        </div>
+    @endif
+
+    @foreach($invoice->seller->custom_fields as $key => $value)
+        <div class="line">
+            <strong>{{ ucfirst($key) }}:</strong>
+            {{ $value }}
+        </div>
+    @endforeach
+
+@endif
+
+<div class="divider-bold"></div>
+{{-- Title --}}
+<div >
     <div class="large">{{ strtoupper($invoice->name) }}</div>
 
     @if($invoice->status)
@@ -102,246 +133,210 @@
 
 <div class="divider-bold"></div>
 
-{{-- HEADER --}}
-<table>
-    <tr>
-        <td class="label">Serial</td>
-        <td>{{ $invoice->getSerialNumber() }}</td>
-    </tr>
+{{-- Header --}}
+<div class="line">
+    <strong>Serial:</strong>
+    {{ $invoice->getSerialNumber() }}
+</div>
 
-    <tr>
-        <td class="label">Date</td>
-        <td>{{ $invoice->getDate() }}</td>
-    </tr>
+<div class="line">
+    <strong>Date:</strong>
+    {{ $invoice->getDate() }}
+</div>
 
-    @if(method_exists($invoice,'getPayUntilDate') && $invoice->getPayUntilDate())
-        <tr>
-            <td class="label">Pay Until</td>
-            <td>{{ $invoice->getPayUntilDate() }}</td>
-        </tr>
-    @endif
-</table>
-
-<div class="divider"></div>
-
-{{-- SELLER --}}
-<div class="bold center">SELLER</div>
-
-@if($invoice->seller)
-
-    @if($invoice->seller->name)
-        <div><strong>{{ $invoice->seller->name }}</strong></div>
-    @endif
-
-    @if($invoice->seller->address)
-        <div>Address: {{ $invoice->seller->address }}</div>
-    @endif
-
-    @if($invoice->seller->code)
-        <div>Code: {{ $invoice->seller->code }}</div>
-    @endif
-
-    @if($invoice->seller->vat)
-        <div>VAT: {{ $invoice->seller->vat }}</div>
-    @endif
-
-    @if($invoice->seller->phone)
-        <div>Phone: {{ $invoice->seller->phone }}</div>
-    @endif
-
-    @foreach($invoice->seller->custom_fields as $key => $value)
-        <div>{{ ucfirst($key) }}: {{ $value }}</div>
-    @endforeach
-
+@if(method_exists($invoice,'getPayUntilDate') && $invoice->getPayUntilDate())
+    <div class="line">
+        <strong>Return By:</strong>
+        {{ $invoice->getPayUntilDate() }}
+    </div>
 @endif
 
 <div class="divider"></div>
 
-{{-- BUYER --}}
-<div class="bold center">BUYER</div>
+{{-- Seller --}}
+{{--<div class="section-title">SELLER</div>--}}
+
+
+
+<div class="divider"></div>
+
+{{-- Buyer --}}
+<div class="section-title">CUSTOMER</div>
 
 @if($invoice->buyer)
 
     @if($invoice->buyer->name)
-        <div><strong>{{ $invoice->buyer->name }}</strong></div>
+        <div class="line">
+            <strong>Name:</strong>
+            {{ $invoice->buyer->name }}
+        </div>
     @endif
 
     @if($invoice->buyer->address)
-        <div>Address: {{ $invoice->buyer->address }}</div>
+        <div class="line">
+            <strong>Address:</strong>
+            {{ $invoice->buyer->address }}
+        </div>
     @endif
 
     @if($invoice->buyer->code)
-        <div>Code: {{ $invoice->buyer->code }}</div>
+        <div class="line">
+            <strong>Code:</strong>
+            {{ $invoice->buyer->code }}
+        </div>
     @endif
 
     @if($invoice->buyer->vat)
-        <div>VAT: {{ $invoice->buyer->vat }}</div>
+        <div class="line">
+            <strong>VAT:</strong>
+            {{ $invoice->buyer->vat }}
+        </div>
     @endif
 
     @if($invoice->buyer->phone)
-        <div>Phone: {{ $invoice->buyer->phone }}</div>
+        <div class="line">
+            <strong>Phone:</strong>
+            {{ $invoice->buyer->phone }}
+        </div>
     @endif
 
     @foreach($invoice->buyer->custom_fields as $key => $value)
-        <div>{{ ucfirst($key) }}: {{ $value }}</div>
+        <div class="line">
+            <strong>{{ ucfirst($key) }}:</strong>
+            {{ $value }}
+        </div>
     @endforeach
 
 @endif
 
 <div class="divider"></div>
 
-{{-- ITEMS --}}
-<div class="bold center">ITEMS</div>
+{{-- Items --}}
+<div class="section-title">ITEMS</div>
 
 @foreach($invoice->items as $item)
 
-    <table class="item-row">
-        <tr>
-            <td colspan="2">
-                <strong>{{ $item->title }}</strong>
-            </td>
-        </tr>
+    <div class="line">
+        <strong>{{ $item->title }}</strong>
+    </div>
 
-        @if($item->description)
-            <tr>
-                <td colspan="2">
-                    {{ $item->description }}
-                </td>
-            </tr>
-        @endif
+    @if($item->description)
+        <div class="line">
+            {{ $item->description }}
+        </div>
+    @endif
 
-        <tr>
-            <td>Qty</td>
-            <td class="right">{{ $item->quantity }}</td>
-        </tr>
+    <div class="line">
+        <strong>Quantity:</strong>
+        {{ $item->quantity }}
+    </div>
 
-        @if($invoice->hasItemUnits)
-            <tr>
-                <td>Units</td>
-                <td class="right">{{ $item->units }}</td>
-            </tr>
-        @endif
+    @if($invoice->hasItemUnits)
+        <div class="line">
+            <strong>Units:</strong>
+            {{ $item->units }}
+        </div>
+    @endif
 
-        <tr>
-            <td>Unit Price</td>
-            <td class="right">
-                {{ $invoice->formatCurrency($item->price_per_unit) }}
-            </td>
-        </tr>
+    <div class="line">
+        <strong>Hire Price:</strong>
+        {{ $invoice->formatCurrency($item->price_per_unit) }}
+    </div>
 
-        @if($invoice->hasItemDiscount)
-            <tr>
-                <td>Discount</td>
-                <td class="right">
-                    {{ $invoice->formatCurrency($item->discount) }}
-                </td>
-            </tr>
-        @endif
+    @if($invoice->hasItemDiscount)
+        <div class="line">
+            <strong>Discount:</strong>
+            {{ $invoice->formatCurrency($item->discount) }}
+        </div>
+    @endif
 
-        @if($invoice->hasItemTax)
-            <tr>
-                <td>Tax</td>
-                <td class="right">
-                    {{ $invoice->formatCurrency($item->tax) }}
-                </td>
-            </tr>
-        @endif
+    @if($invoice->hasItemTax)
+        <div class="line">
+            <strong>Tax:</strong>
+            {{ $invoice->formatCurrency($item->tax) }}
+        </div>
+    @endif
 
-        <tr>
-            <td><strong>Subtotal</strong></td>
-            <td class="right">
-                <strong>
-                    {{ $invoice->formatCurrency($item->sub_total_price) }}
-                </strong>
-            </td>
-        </tr>
-    </table>
+    <div class="line">
+        <strong>Subtotal:</strong>
+        {{ $invoice->formatCurrency($item->sub_total_price) }}
+    </div>
 
     <div class="divider"></div>
 
 @endforeach
 
-{{-- SUMMARY --}}
-<table>
+{{-- Summary --}}
+<div class="section-title">SUMMARY</div>
 
-    @if($invoice->hasItemOrInvoiceDiscount())
-        <tr>
-            <td>Total Discount</td>
-            <td class="right">
-                {{ $invoice->formatCurrency($invoice->total_discount) }}
-            </td>
-        </tr>
-    @endif
+@if($invoice->hasItemOrInvoiceDiscount())
+    <div class="line">
+        <strong>Total Discount:</strong>
+        {{ $invoice->formatCurrency($invoice->total_discount) }}
+    </div>
+@endif
 
-    @if($invoice->taxable_amount)
-        <tr>
-            <td>Taxable Amount</td>
-            <td class="right">
-                {{ $invoice->formatCurrency($invoice->taxable_amount) }}
-            </td>
-        </tr>
-    @endif
+@if($invoice->taxable_amount)
+    <div class="line">
+        <strong>Taxable Amount:</strong>
+        {{ $invoice->formatCurrency($invoice->taxable_amount) }}
+    </div>
+@endif
 
-    @if($invoice->tax_rate)
-        <tr>
-            <td>Tax Rate</td>
-            <td class="right">
-                {{ $invoice->tax_rate }}%
-            </td>
-        </tr>
-    @endif
+@if($invoice->tax_rate)
+    <div class="line">
+        <strong>Tax Rate:</strong>
+        {{ $invoice->tax_rate }}%
+    </div>
+@endif
 
-    @if($invoice->hasItemOrInvoiceTax())
-        <tr>
-            <td>Total Taxes</td>
-            <td class="right">
-                {{ $invoice->formatCurrency($invoice->total_taxes) }}
-            </td>
-        </tr>
-    @endif
+@if($invoice->hasItemOrInvoiceTax())
+    <div class="line">
+        <strong>Total Taxes:</strong>
+        {{ $invoice->formatCurrency($invoice->total_taxes) }}
+    </div>
+@endif
 
-    @if($invoice->shipping_amount)
-        <tr>
-            <td>Shipping</td>
-            <td class="right">
-                {{ $invoice->formatCurrency($invoice->shipping_amount) }}
-            </td>
-        </tr>
-    @endif
-
-</table>
+@if($invoice->shipping_amount)
+    <div class="line">
+        <strong>Shipping:</strong>
+        {{ $invoice->formatCurrency($invoice->shipping_amount) }}
+    </div>
+@endif
 
 <div class="divider-bold"></div>
 
-<table>
-    <tr>
-        <td class="amount">TOTAL</td>
-        <td class="right amount">
-            {{ $invoice->formatCurrency($invoice->total_amount) }}
-        </td>
-    </tr>
-</table>
+<div class="amount">
+    TOTAL:
+    {{ $invoice->formatCurrency($invoice->total_amount) }}
+</div>
 
 <div class="divider-bold"></div>
 
-{{-- NOTES --}}
+{{-- Notes --}}
 @if($invoice->notes)
-    <div class="bold">NOTES</div>
-    <div>{!! nl2br($invoice->notes) !!}</div>
+    <div class="section-title">NOTES</div>
+
+    <div>
+        {!! nl2br($invoice->notes) !!}
+    </div>
 
     <div class="divider"></div>
 @endif
 
-{{-- AMOUNT IN WORDS --}}
+{{-- Amount In Words --}}
 @if(method_exists($invoice, 'getTotalAmountInWords'))
-    <div class="bold">AMOUNT IN WORDS</div>
-    <div>{{ $invoice->getTotalAmountInWords() }}</div>
+    <div class="section-title">AMOUNT IN WORDS</div>
+
+    <div>
+        {{ $invoice->getTotalAmountInWords() }}
+    </div>
 
     <div class="divider"></div>
 @endif
 
-<div class="center">
-    <strong>THANK YOU</strong>
+<div>
+    <strong>THANK YOU FOR CHOOSING US!</strong>
 </div>
 
 </body>

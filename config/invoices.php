@@ -8,12 +8,12 @@ return [
         /*
          * Carbon date format
          */
-        'format' => 'Y-m-d',
+        'format' => 'D d M Y',
 
         /*
          * Due date for payment since invoice's date.
          */
-        'pay_until_days' => 7,
+        'pay_until_days' => 3,
     ],
 
     'serial_number' => [
@@ -83,8 +83,8 @@ return [
          */
         'attributes' => [
             'name' => env('APP_NAME', 'ModaCore'),
-            'address' => env('COMPANY_ADDRESS', ''),
-            'phone' => env('COMPANY_PHONE', ''),
+            'address' => env('COMPANY_ADDRESS', '4matic Mall, Kiwatule'),
+            'phone' => env('COMPANY_PHONE', '0706 701617 | 0778 280731'),
             'custom_fields' => [],
         ],
     ],
