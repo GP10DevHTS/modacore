@@ -41,6 +41,7 @@ class ReceiptService
         ])->filter()->implode("\n");
 
         $invoice = Invoice::make($type)
+            ->template('receipt')
             ->serialNumberFormat('{SERIES}')
             ->series($payment->receipt_number)
             ->buyer($buyer)

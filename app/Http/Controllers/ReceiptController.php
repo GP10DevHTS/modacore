@@ -6,12 +6,13 @@ use App\Models\DepositRefund;
 use App\Models\Payment;
 use App\Services\ReceiptService;
 use Illuminate\Http\Response;
+use Illuminate\View\View;
 
 class ReceiptController extends Controller
 {
     public function __construct(private readonly ReceiptService $receiptService) {}
 
-    public function payment(Payment $payment): Response
+    public function payment(Payment $payment): Response|View
     {
         abort_unless(auth()->user()->can('payments.create'), 403);
 
