@@ -110,6 +110,9 @@ class VariationsImport implements ToCollection
                     $costPrice,
                     $isActive,
                 );
+
+                $item->increment('stock_quantity');
+                $item->increment('available_quantity');
             }
         }
     }
