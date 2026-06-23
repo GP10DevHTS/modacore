@@ -135,7 +135,7 @@ class Show extends Component
 
     public function openCreateVariant(): void
     {
-        abort_unless(auth()->user()->can('inventory.edit'), 403);
+//        abort_unless(auth()->user()->can('inventory.edit'), 403);
         $this->resetVariantForm();
         $this->variantStock = 1;
         $this->variantRentalPrice = $this->item->base_rental_price;
