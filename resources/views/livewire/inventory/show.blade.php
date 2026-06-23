@@ -302,6 +302,7 @@
     {{-- Variant Form Modal --}}
     <flux:modal name="variant-form" class="md:w-[34rem]">
         <form wire:submit="saveVariant" class="space-y-5">
+            @csrf
             <div class="border-b border-zinc-100 pb-4 dark:border-zinc-700">
                 <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">{{ $editingVariantId ? 'Edit Variation' : 'New Variation' }}</h3>
                 <p class="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">Select one value per attribute type to define this variation.</p>
