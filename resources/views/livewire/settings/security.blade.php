@@ -218,7 +218,7 @@
                                             <flux:icon.check
                                                 x-show="copied"
                                                 variant="solid"
-                                                class="text-green-500"
+                                                class="text-zinc-500"
                                             ></flux:icon>
                                         </button>
                                     @endempty

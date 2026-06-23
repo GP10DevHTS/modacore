@@ -3,12 +3,12 @@
 <head>
     @include('partials.head')
     <style>
-        /* ─── ERP Design System ─── */
+        /* ─── Enterprise Design System ─── */
         :root {
             --erp-sidebar-w: 15rem;
-            --erp-accent:      #3d7a69;
-            --erp-accent-dim:  #2d5c4d;
-            --erp-accent-glow: rgba(61, 122, 105, 0.12);
+            --erp-accent:      #52525b;
+            --erp-accent-dim:  #3f3f46;
+            --erp-accent-glow: rgba(82, 82, 91, 0.12);
             --erp-border:      rgba(113, 113, 122, 0.2);
             --erp-radius:      0.375rem;
             --erp-transition:  150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -16,62 +16,62 @@
 
         /* Light mode */
         html:not(.dark) {
-            --erp-bg-canvas:    #edf2f0;
-            --erp-bg-sidebar:   #a8c2b8;
+            --erp-bg-canvas:    #f4f4f5;
+            --erp-bg-sidebar:   #18181b;
             --erp-bg-surface:   #ffffff;
-            --erp-bg-hover:     rgba(0, 0, 0, 0.07);
-            --erp-text-primary: #18181b;
-            --erp-text-muted:   #71717a;
-            --erp-border:       rgba(26, 48, 40, 0.15);
-            --erp-shadow:       0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.05);
+            --erp-bg-hover:     rgba(255, 255, 255, 0.08);
+            --erp-text-primary: #fafafa;
+            --erp-text-muted:   #a1a1aa;
+            --erp-border:       rgba(255, 255, 255, 0.1);
+            --erp-shadow:       0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
         }
 
         /* Dark mode */
         html.dark {
-            --erp-bg-canvas:    #0f1a17;
-            --erp-bg-sidebar:   #1a2e28;
-            --erp-bg-surface:   #1c2320;
-            --erp-bg-hover:     rgba(168, 194, 184, 0.08);
-            --erp-text-primary: #e8f0ed;
-            --erp-text-muted:   #7fa99b;
-            --erp-border:       rgba(168, 194, 184, 0.12);
+            --erp-bg-canvas:    #09090b;
+            --erp-bg-sidebar:   #18181b;
+            --erp-bg-surface:   #27272a;
+            --erp-bg-hover:     rgba(255, 255, 255, 0.08);
+            --erp-text-primary: #fafafa;
+            --erp-text-muted:   #a1a1aa;
+            --erp-border:       rgba(255, 255, 255, 0.08);
             --erp-shadow:       0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
         }
 
-        /* ─── Light sidebar contrast (#a8c2b8 bg) ─── */
-        html:not(.dark) .erp-sidebar .erp-nav-label         { color: #4a7a6a; }
-        html:not(.dark) .erp-sidebar .erp-nav-item          { color: #2d5c4d; }
-        html:not(.dark) .erp-sidebar .erp-nav-item:hover    { background: rgba(0,0,0,0.07); color: #1a3028; }
-        html:not(.dark) .erp-sidebar .erp-nav-item.active   { color: #1a3028; background: rgba(0,0,0,0.1); }
-        html:not(.dark) .erp-sidebar .erp-nav-item.active::before { background: #1a3028; }
-        html:not(.dark) .erp-sidebar .erp-brand-name        { color: #1a3028; }
-        html:not(.dark) .erp-sidebar .erp-brand-sub         { color: #3d7a69; }
-        html:not(.dark) .erp-sidebar .erp-nav-badge         { background: #1a3028; color: #fff; }
-        html:not(.dark) .erp-sidebar .erp-avatar            { background: #1a3028; color: #fff; }
-        html:not(.dark) .erp-sidebar .erp-user-name         { color: #1a3028; }
-        html:not(.dark) .erp-sidebar .erp-user-role         { color: #2d5c4d; }
-        html:not(.dark) .erp-sidebar .erp-icon-btn          { color: #2d5c4d; }
-        html:not(.dark) .erp-sidebar .erp-icon-btn:hover    { background: rgba(0,0,0,0.07); color: #1a3028; }
-        html:not(.dark) .erp-sidebar .erp-user-card:hover   { background: rgba(0,0,0,0.07); }
-        html:not(.dark) .erp-sidebar                        { border-right-color: rgba(26,48,40,0.15); }
-        html:not(.dark) .erp-status-bar   { background: rgba(61,122,105,0.07); border-bottom-color: rgba(26,48,40,0.1); }
-        html:not(.dark) .erp-status-text  { color: #4a7a6a; }
-        html:not(.dark) .erp-topbar       { border-bottom-color: rgba(26,48,40,0.15); }
-        html:not(.dark) .erp-mobile-topbar { border-bottom-color: rgba(26,48,40,0.15); }
-        html:not(.dark) .erp-breadcrumb         { color: #4a7a6a; }
-        html:not(.dark) .erp-breadcrumb-active  { color: #1a3028; font-weight: 600; }
-        html:not(.dark) .erp-notif-btn          { color: #2d5c4d; }
-        html:not(.dark) .erp-notif-btn:hover    { background: rgba(0,0,0,0.07); border-color: rgba(26,48,40,0.15); color: #1a3028; }
-        html:not(.dark) .erp-theme-toggle       { border-color: rgba(26,48,40,0.18); background: rgba(0,0,0,0.04); color: #2d5c4d; }
-        html:not(.dark) .erp-notif-count        { border-color: #a8c2b8; }
-        html:not(.dark) .erp-mobile-menu-btn    { color: #2d5c4d; }
+        /* ─── Light sidebar contrast (#18181b bg) ─── */
+        html:not(.dark) .erp-sidebar .erp-nav-label         { color: #a1a1aa; }
+        html:not(.dark) .erp-sidebar .erp-nav-item          { color: #d4d4d4; }
+        html:not(.dark) .erp-sidebar .erp-nav-item:hover    { background: rgba(255,255,255,0.06); color: #fafafa; }
+        html:not(.dark) .erp-sidebar .erp-nav-item.active   { color: #fafafa; background: rgba(255,255,255,0.1); }
+        html:not(.dark) .erp-sidebar .erp-nav-item.active::before { background: #ffffff; }
+        html:not(.dark) .erp-sidebar .erp-brand-name        { color: #fafafa; }
+        html:not(.dark) .erp-sidebar .erp-brand-sub         { color: #a1a1aa; }
+        html:not(.dark) .erp-sidebar .erp-nav-badge         { background: rgba(255,255,255,0.15); color: #fafafa; }
+        html:not(.dark) .erp-sidebar .erp-avatar            { background: #3f3f46; color: #fff; }
+        html:not(.dark) .erp-sidebar .erp-user-name         { color: #fafafa; }
+        html:not(.dark) .erp-sidebar .erp-user-role         { color: #a1a1aa; }
+        html:not(.dark) .erp-sidebar .erp-icon-btn          { color: #a1a1aa; }
+        html:not(.dark) .erp-sidebar .erp-icon-btn:hover    { background: rgba(255,255,255,0.06); color: #fafafa; }
+        html:not(.dark) .erp-sidebar .erp-user-card:hover   { background: rgba(255,255,255,0.06); }
+        html:not(.dark) .erp-sidebar                        { border-right-color: rgba(255,255,255,0.1); }
+        html:not(.dark) .erp-status-bar   { background: rgba(82,82,91,0.15); border-bottom-color: rgba(255,255,255,0.08); }
+        html:not(.dark) .erp-status-text  { color: #a1a1aa; }
+        html:not(.dark) .erp-topbar       { border-bottom-color: rgba(255,255,255,0.1); }
+        html:not(.dark) .erp-mobile-topbar { border-bottom-color: rgba(255,255,255,0.1); }
+        html:not(.dark) .erp-breadcrumb         { color: #a1a1aa; }
+        html:not(.dark) .erp-breadcrumb-active  { color: #fafafa; font-weight: 600; }
+        html:not(.dark) .erp-notif-btn          { color: #a1a1aa; }
+        html:not(.dark) .erp-notif-btn:hover    { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); color: #fafafa; }
+        html:not(.dark) .erp-theme-toggle       { border-color: rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); color: #a1a1aa; }
+        html:not(.dark) .erp-notif-count        { border-color: #18181b; }
+        html:not(.dark) .erp-mobile-menu-btn    { color: #a1a1aa; }
 
-        /* ─── Dark sidebar contrast (#1a2e28 bg) ─── */
-        html.dark .erp-sidebar .erp-nav-item.active         { color: #a8c2b8; background: rgba(168,194,184,0.1); }
-        html.dark .erp-sidebar .erp-nav-item.active::before { background: #a8c2b8; }
-        html.dark .erp-sidebar .erp-nav-badge               { background: rgba(168,194,184,0.15); color: #a8c2b8; }
-        html.dark .erp-sidebar .erp-avatar                  { background: #2d5c4d; color: #fff; }
-        html.dark .erp-sidebar .erp-brand-sub               { color: #7fa99b; }
+        /* ─── Dark sidebar contrast (#18181b bg) ─── */
+        html.dark .erp-sidebar .erp-nav-item.active         { color: #fafafa; background: rgba(255,255,255,0.1); }
+        html.dark .erp-sidebar .erp-nav-item.active::before { background: #ffffff; }
+        html.dark .erp-sidebar .erp-nav-badge               { background: rgba(255,255,255,0.15); color: #fafafa; }
+        html.dark .erp-sidebar .erp-avatar                  { background: #3f3f46; color: #fff; }
+        html.dark .erp-sidebar .erp-brand-sub               { color: #a1a1aa; }
 
         /* ─── Base ─── */
         body {
@@ -104,12 +104,12 @@
         }
         .erp-brand-icon {
             width: 2rem; height: 2rem;
-            background: #1a3028;
+            background: #3f3f46;
             border-radius: 0.375rem;
             display: grid; place-items: center;
             flex-shrink: 0;
         }
-        .erp-brand-icon svg { width: 1.125rem; height: 1.125rem; color: #a8c2b8; }
+        .erp-brand-icon svg { width: 1.125rem; height: 1.125rem; color: #d4d4d4; }
         .erp-brand-name {
             font-size: 0.875rem;
             font-weight: 600;
@@ -121,7 +121,7 @@
             font-size: 0.625rem;
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            color: #7fa99b;
+            color: #a1a1aa;
             font-weight: 500;
             line-height: 1;
             margin-top: 0.125rem;
@@ -138,7 +138,7 @@
         }
         .erp-status-dot {
             width: 0.375rem; height: 0.375rem;
-            background: #22c55e;
+            background: #52525b;
             border-radius: 50%;
             animation: pulse-dot 2s ease-in-out infinite;
         }
@@ -692,7 +692,7 @@
             </button>
             <div style="display:flex;align-items:center;gap:0.5rem">
                 <div class="erp-brand-icon" style="width:1.5rem;height:1.5rem">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" style="width:0.875rem;height:0.875rem;color:#a8c2b8">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" style="width:0.875rem;height:0.875rem;color:#d4d4d4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                     </svg>
                 </div>
@@ -760,7 +760,7 @@
                                     {{-- Icon --}}
                                     <div>
                                         @if($isComplete)
-                                            <flux:icon name="check-circle" class="text-green-500 w-5 h-5"/>
+                                            <flux:icon name="check-circle" class="text-zinc-400 w-5 h-5"/>
                                         @else
                                             <flux:icon name="clock" class="text-gray-400 w-5 h-5"/>
                                         @endif

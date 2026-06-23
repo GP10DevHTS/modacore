@@ -34,7 +34,7 @@
             <flux:field>
                 <flux:label>Payment Method <span class="text-red-500">*</span></flux:label>
                 <select wire:model="paymentMethod"
-                    class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-[#3d7a69] focus:outline-none focus:ring-2 focus:ring-[#3d7a69]/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
+                    class="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
                     <option value="cash">Cash</option>
                     <option value="card">Card</option>
                     <option value="mobile_money">Mobile Money</option>

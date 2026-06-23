@@ -9,7 +9,7 @@
         @if($activeTab === 'bills')
             @can('expenses.create')
                 <button wire:click="openCreate"
-                    class="inline-flex items-center gap-1.5 rounded-lg bg-[#3d7a69] px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2d5c4d] transition-colors">
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-zinc-700 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-zinc-600 transition-colors">
                     <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                     Record Bill
                 </button>
@@ -17,7 +17,7 @@
         @elseif($activeTab === 'items')
             @can('expenses.create')
                 <button wire:click="openCreateItem"
-                    class="inline-flex items-center gap-1.5 rounded-lg bg-[#3d7a69] px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2d5c4d] transition-colors">
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-zinc-700 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-zinc-600 transition-colors">
                     <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                     Add Item
                 </button>
@@ -25,7 +25,7 @@
         @elseif($activeTab === 'categories')
             @can('expenses.create')
                 <button wire:click="openCreateCategory"
-                    class="inline-flex items-center gap-1.5 rounded-lg bg-[#3d7a69] px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2d5c4d] transition-colors">
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-zinc-700 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-zinc-600 transition-colors">
                     <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                     Add Category
                 </button>
@@ -39,7 +39,7 @@
             <button wire:click="setActiveTab('bills')"
                 class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors
                     {{ $activeTab === 'bills'
-                        ? 'border-[#3d7a69] text-[#3d7a69] dark:border-[#a8c2b8] dark:text-[#a8c2b8]'
+                        ? 'border-zinc-700 text-zinc-700 dark:border-zinc-400 dark:text-zinc-300'
                         : 'border-transparent text-zinc-500 hover:text-zinc-700 hover:border-zinc-300 dark:text-zinc-400 dark:hover:text-zinc-200' }}">
                 <div class="flex items-center gap-2">
                     <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -56,7 +56,7 @@
             <button wire:click="setActiveTab('items')"
                 class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors
                     {{ $activeTab === 'items'
-                        ? 'border-[#3d7a69] text-[#3d7a69] dark:border-[#a8c2b8] dark:text-[#a8c2b8]'
+                        ? 'border-zinc-700 text-zinc-700 dark:border-zinc-400 dark:text-zinc-300'
                         : 'border-transparent text-zinc-500 hover:text-zinc-700 hover:border-zinc-300 dark:text-zinc-400 dark:hover:text-zinc-200' }}">
                 <div class="flex items-center gap-2">
                     <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -68,7 +68,7 @@
             <button wire:click="setActiveTab('categories')"
                 class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors
                     {{ $activeTab === 'categories'
-                        ? 'border-[#3d7a69] text-[#3d7a69] dark:border-[#a8c2b8] dark:text-[#a8c2b8]'
+                        ? 'border-zinc-700 text-zinc-700 dark:border-zinc-400 dark:text-zinc-300'
                         : 'border-transparent text-zinc-500 hover:text-zinc-700 hover:border-zinc-300 dark:text-zinc-400 dark:hover:text-zinc-200' }}">
                 <div class="flex items-center gap-2">
                     <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -99,10 +99,10 @@
                 <p class="text-xs font-medium text-red-700 dark:text-red-400">Outstanding</p>
                 <p class="mt-1 text-lg font-bold tabular-nums text-red-700 dark:text-red-300">UGX {{ number_format($this->summaryStats['balance'], 0) }}</p>
             </div>
-            <div class="rounded-xl border border-[#a8c2b8]/50 bg-[#a8c2b8]/10 p-4 shadow-sm dark:border-[#a8c2b8]/20 dark:bg-[#a8c2b8]/5">
-                <p class="text-xs font-medium text-[#2d5c4d] dark:text-[#a8c2b8]">Unpaid Bills</p>
-                <p class="mt-1 text-lg font-bold tabular-nums text-[#2d5c4d] dark:text-[#a8c2b8]">{{ $this->summaryStats['unpaid_count'] + $this->summaryStats['partial_count'] }}</p>
-                <p class="mt-0.5 text-xs text-[#3d7a69]/70 dark:text-[#7fa99b]">{{ $this->summaryStats['partial_count'] }} partial</p>
+            <div class="rounded-xl border border-zinc-200 bg-zinc-50 p-4 shadow-sm dark:border-zinc-700/60 dark:bg-zinc-800/40">
+                <p class="text-xs font-medium text-zinc-600 dark:text-zinc-400">Unpaid Bills</p>
+                <p class="mt-1 text-lg font-bold tabular-nums text-zinc-700 dark:text-zinc-300">{{ $this->summaryStats['unpaid_count'] + $this->summaryStats['partial_count'] }}</p>
+                <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-500">{{ $this->summaryStats['partial_count'] }} partial</p>
             </div>
         </div>
 
@@ -116,7 +116,7 @@
             ] as $val => [$label, $classes])
                 <button wire:click="$set('statusFilter', '{{ $val }}')"
                     class="rounded-full px-3 py-1 text-xs font-semibold transition-all
-                        {{ $statusFilter === $val ? $classes.' ring-2 ring-offset-1 ring-[#3d7a69] dark:ring-[#a8c2b8]' : 'bg-zinc-50 text-zinc-500 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700' }}">
+                        {{ $statusFilter === $val ? $classes.' ring-2 ring-offset-1 ring-zinc-500 dark:ring-zinc-400' : 'bg-zinc-50 text-zinc-500 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700' }}">
                     {{ $label }}
                 </button>
             @endforeach
@@ -125,7 +125,7 @@
                 <div class="relative">
                     <svg class="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search bills…"
-                        class="w-44 rounded-lg border border-zinc-200 bg-white py-1.5 pl-8 pr-3 text-sm text-zinc-900 placeholder-zinc-400 shadow-sm focus:border-[#3d7a69] focus:outline-none focus:ring-2 focus:ring-[#3d7a69]/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100" />
+                        class="w-44 rounded-lg border border-zinc-200 bg-white py-1.5 pl-8 pr-3 text-sm text-zinc-900 placeholder-zinc-400 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100" />
                 </div>
                 <x-searchable-select
                     :options="$this->allCategories"
@@ -162,7 +162,7 @@
                         <tr class="group hover:bg-zinc-50/60 dark:hover:bg-zinc-800/30 transition-colors" wire:key="bill-{{ $bill->id }}">
                             <td class="px-5 py-3.5">
                                 <a href="{{ route('expenses.show', $bill->id) }}" wire:navigate class="hover:underline">
-                                    <span class="font-mono text-xs font-semibold text-[#2d4f43] dark:text-[#a8c2b8]">{{ $bill->expense_number }}</span>
+                                    <span class="font-mono text-xs font-semibold text-zinc-500 dark:text-zinc-400">{{ $bill->expense_number }}</span>
                                     <p class="mt-0.5 text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ $bill->title }}</p>
                                 </a>
                                 @if($bill->item)
@@ -229,7 +229,7 @@
                                 </svg>
                                 <p class="text-sm font-medium text-zinc-400 dark:text-zinc-500">No bills recorded yet.</p>
                                 @can('expenses.create')
-                                    <button wire:click="openCreate" class="mt-2 text-xs text-[#2d4f43] hover:underline dark:text-[#a8c2b8]">Record your first bill</button>
+                                    <button wire:click="openCreate" class="mt-2 text-xs text-zinc-500 hover:text-zinc-700 hover:underline dark:text-zinc-400 dark:hover:text-zinc-200">Record your first bill</button>
                                 @endcan
                             </td>
                         </tr>
@@ -255,7 +255,7 @@
             <div class="relative">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                 <input wire:model.live.debounce.300ms="searchItems" type="text" placeholder="Search items…"
-                    class="w-52 rounded-lg border border-zinc-200 bg-white py-2 pl-8 pr-3 text-sm text-zinc-900 placeholder-zinc-400 shadow-sm focus:border-[#3d7a69] focus:outline-none focus:ring-2 focus:ring-[#3d7a69]/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100" />
+                    class="w-52 rounded-lg border border-zinc-200 bg-white py-2 pl-8 pr-3 text-sm text-zinc-900 placeholder-zinc-400 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100" />
             </div>
             <span class="text-xs text-zinc-400 dark:text-zinc-500">{{ $this->items->count() }} {{ Str::plural('item', $this->items->count()) }}</span>
         </div>
@@ -264,13 +264,13 @@
         <div class="flex flex-wrap items-center gap-2">
             <button wire:click="$set('selectedCategoryId', null)"
                 class="rounded-full px-3 py-1 text-xs font-medium transition-colors
-                    {{ is_null($selectedCategoryId) ? 'bg-[#a8c2b8] text-[#1a3028]' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-700 dark:text-zinc-300' }}">
+                    {{ is_null($selectedCategoryId) ? 'bg-zinc-700 text-white' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-700 dark:text-zinc-300' }}">
                 All Categories
             </button>
             @foreach($this->allCategories as $cat)
                 <button wire:click="$set('selectedCategoryId', {{ $cat->id }})"
                     class="rounded-full px-3 py-1 text-xs font-medium transition-colors
-                        {{ $selectedCategoryId == $cat->id ? 'bg-[#a8c2b8] text-[#1a3028]' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-700 dark:text-zinc-300' }}">
+                        {{ $selectedCategoryId == $cat->id ? 'bg-zinc-700 text-white' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-700 dark:text-zinc-300' }}">
                     {{ $cat->name }}
                     <span class="ml-1 opacity-60">{{ $cat->items_count }}</span>
                 </button>
@@ -332,7 +332,7 @@
                                     {{ $searchItems ? 'No items match your search.' : 'No expense items yet.' }}
                                 </p>
                                 @can('expenses.create')
-                                    <button wire:click="openCreateItem" class="mt-2 text-xs text-[#2d4f43] hover:underline dark:text-[#a8c2b8]">Add your first item</button>
+                                    <button wire:click="openCreateItem" class="mt-2 text-xs text-zinc-500 hover:text-zinc-700 hover:underline dark:text-zinc-400 dark:hover:text-zinc-200">Add your first item</button>
                                 @endcan
                             </td>
                         </tr>
@@ -354,7 +354,7 @@
             <div class="relative">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                 <input wire:model.live.debounce.300ms="searchCategories" type="text" placeholder="Search categories…"
-                    class="w-52 rounded-lg border border-zinc-200 bg-white py-2 pl-8 pr-3 text-sm text-zinc-900 placeholder-zinc-400 shadow-sm focus:border-[#3d7a69] focus:outline-none focus:ring-2 focus:ring-[#3d7a69]/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100" />
+                    class="w-52 rounded-lg border border-zinc-200 bg-white py-2 pl-8 pr-3 text-sm text-zinc-900 placeholder-zinc-400 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100" />
             </div>
             <span class="text-xs text-zinc-400 dark:text-zinc-500">{{ $this->categories->count() }} {{ Str::plural('category', $this->categories->count()) }}</span>
         </div>
@@ -379,7 +379,7 @@
                             </td>
                             <td class="px-5 py-3.5 text-right tabular-nums">
                                 <button wire:click="setActiveTab('items'); $set('selectedCategoryId', {{ $cat->id }})"
-                                    class="text-xs text-[#2d4f43] hover:underline dark:text-[#a8c2b8]">
+                                    class="text-xs text-zinc-500 hover:text-zinc-700 hover:underline dark:text-zinc-400 dark:hover:text-zinc-200">
                                     {{ $cat->items_count }} {{ Str::plural('item', $cat->items_count) }} →
                                 </button>
                             </td>
@@ -411,7 +411,7 @@
                                     {{ $searchCategories ? 'No categories match your search.' : 'No expense categories yet.' }}
                                 </p>
                                 @can('expenses.create')
-                                    <button wire:click="openCreateCategory" class="mt-2 text-xs text-[#2d4f43] hover:underline dark:text-[#a8c2b8]">Add your first category</button>
+                                    <button wire:click="openCreateCategory" class="mt-2 text-xs text-zinc-500 hover:text-zinc-700 hover:underline dark:text-zinc-400 dark:hover:text-zinc-200">Add your first category</button>
                                 @endcan
                             </td>
                         </tr>
@@ -474,7 +474,7 @@
                 <div class="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800/40">
                     <label class="flex cursor-pointer items-center gap-3">
                         <input wire:model.live="hasInitialPayment" type="checkbox"
-                            class="size-4 rounded border-zinc-300 text-[#3d7a69] focus:ring-[#3d7a69]" />
+                            class="size-4 rounded border-zinc-300 text-zinc-700 focus:ring-zinc-500" />
                         <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Was a payment made at the time of this bill?</span>
                     </label>
 

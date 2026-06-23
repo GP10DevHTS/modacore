@@ -39,7 +39,7 @@
                         {{-- Icon --}}
                         <div>
                             @if($isComplete)
-                                <flux:icon name="check-circle" class="text-green-500 w-5 h-5"/>
+                                <flux:icon name="check-circle" class="text-zinc-400 w-5 h-5"/>
                             @else
                                 <flux:icon name="clock" class="text-gray-400 w-5 h-5"/>
                             @endif

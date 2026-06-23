@@ -27,7 +27,7 @@
                     <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Revenue Overview</h2>
                     <div class="h-px flex-1 bg-zinc-200 dark:bg-zinc-700/60"></div>
                     <a href="{{ route('reports.index') }}" wire:navigate
-                        class="text-xs text-[#3d7a69] hover:underline dark:text-[#a8c2b8]">Full report →</a>
+                        class="text-xs text-zinc-500 hover:text-zinc-700 hover:underline dark:text-zinc-400 dark:hover:text-zinc-200">Full report →</a>
                 </div>
                 @livewire('dashboard.revenue-summary')
             </div>
@@ -40,7 +40,7 @@
                     <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Expenses</h2>
                     <div class="h-px flex-1 bg-zinc-200 dark:bg-zinc-700/60"></div>
                     <a href="{{ route('expenses.index') }}" wire:navigate
-                        class="text-xs text-[#3d7a69] hover:underline dark:text-[#a8c2b8]">Manage bills →</a>
+                        class="text-xs text-zinc-500 hover:text-zinc-700 hover:underline dark:text-zinc-400 dark:hover:text-zinc-200">Manage bills →</a>
                 </div>
                 @livewire('dashboard.expenses-summary')
             </div>
@@ -53,7 +53,7 @@
                     <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Procurement</h2>
                     <div class="h-px flex-1 bg-zinc-200 dark:bg-zinc-700/60"></div>
                     <a href="{{ route('procurement.dashboard') }}" wire:navigate
-                        class="text-xs text-[#3d7a69] hover:underline dark:text-[#a8c2b8]">Full view →</a>
+                        class="text-xs text-zinc-500 hover:text-zinc-700 hover:underline dark:text-zinc-400 dark:hover:text-zinc-200">Full view →</a>
                 </div>
                 @livewire('purchase-orders.procurement-dashboard')
             </div>
@@ -75,7 +75,7 @@
                         <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Audit Log</h2>
                         <div class="h-px flex-1 bg-zinc-200 dark:bg-zinc-700/60"></div>
                         <a href="{{ route('procurement.dashboard') }}" wire:navigate
-                            class="text-xs text-[#3d7a69] hover:underline dark:text-[#a8c2b8]">Procurement →</a>
+                            class="text-xs text-zinc-500 hover:text-zinc-700 hover:underline dark:text-zinc-400 dark:hover:text-zinc-200">Procurement →</a>
                     </div>
                     @livewire('dashboard.audit-summary')
                 </div>
