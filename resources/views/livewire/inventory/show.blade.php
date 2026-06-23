@@ -81,11 +81,10 @@
                     </div>
                      @can('inventory.edit')
                          @if($this->variantTypes->isNotEmpty())
-                             <button wire:click="openCreateVariant"
+                             <flux:button wire:click="openCreateVariant"
                                  class="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-black shadow-sm hover:bg-amber-400 transition-colors">
-                                 <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                                 Add Variation
-                             </button>
+                                 <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg> Add Variation
+                             </flux:button>
                          @endif
                      @endcan
                 </div>
