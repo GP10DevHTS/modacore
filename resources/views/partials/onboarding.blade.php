@@ -4,8 +4,8 @@
     <div class="erp-search">
         <flux:dropdown>
             {{-- Trigger Button --}}
-            <flux:button variant="ghost" size="sm" icon:trailing="chevron-down" class="flex items-center gap-2">
-                <span class="hidden md:block">Complete Setup</span>
+            <flux:button variant="ghost" size="sm" icon:trailing="chevron-down" class="flex items-center gap-2 text-white">
+                <span class="hidden md:block text-white">Complete Setup</span>
 
                 <flux:badge color="purple" size="sm">
                     {{ Auth::user()->onboarding()->percentageCompleted() }}%

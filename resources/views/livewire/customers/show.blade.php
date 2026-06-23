@@ -73,9 +73,9 @@
                 <form wire:submit="saveMeasurements" class="p-5">
                     <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
                         <div>
-                            <label class="mb-1.5 block text-xs font-medium text-zinc-600 dark:text-zinc-400">Chest</label>
-                            <flux:input wire:model="chest" type="number" step="0.1" min="0" placeholder="—" />
-                            <flux:error name="chest" />
+                            <label class="mb-1.5 block text-xs font-medium text-zinc-600 dark:text-zinc-400">Size</label>
+                            <flux:input wire:model="size" type="number" step="0.1" min="0" placeholder="—" />
+                            <flux:error name="size" />
                         </div>
                         <div>
                             <label class="mb-1.5 block text-xs font-medium text-zinc-600 dark:text-zinc-400">Waist</label>
@@ -251,12 +251,12 @@
             </div>
 
             {{-- Measurements Summary --}}
-            @if($customer->measurements && collect([$customer->measurements->chest, $customer->measurements->waist, $customer->measurements->hips, $customer->measurements->height])->filter()->isNotEmpty())
+            @if($customer->measurements && collect([$customer->measurements->size, $customer->measurements->waist, $customer->measurements->hips, $customer->measurements->height])->filter()->isNotEmpty())
             <div class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700/60 dark:bg-zinc-900">
                 <h2 class="mb-3 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Measurements Summary</h2>
                 <div class="grid grid-cols-2 gap-2 text-xs">
                     @foreach([
-                        'Chest' => $customer->measurements->chest,
+                        'Size' => $customer->measurements->size,
                         'Waist' => $customer->measurements->waist,
                         'Hips' => $customer->measurements->hips,
                         'Height' => $customer->measurements->height,

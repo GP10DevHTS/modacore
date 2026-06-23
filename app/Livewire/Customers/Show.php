@@ -13,7 +13,7 @@ class Show extends Component
     public Customer $customer;
 
     // Measurement form
-    public string $chest = '';
+    public string $size = '';
 
     public string $waist = '';
 
@@ -38,7 +38,7 @@ class Show extends Component
     private function fillMeasurements(): void
     {
         $m = $this->customer->measurements;
-        $this->chest = $m?->chest ? (string) $m->chest : '';
+        $this->size = $m?->size ? (string) $m->size : '';
         $this->waist = $m?->waist ? (string) $m->waist : '';
         $this->hips = $m?->hips ? (string) $m->hips : '';
         $this->shoulderWidth = $m?->shoulder_width ? (string) $m->shoulder_width : '';
@@ -77,7 +77,7 @@ class Show extends Component
         abort_unless(auth()->user()->can('customers.edit'), 403);
 
         $this->validate([
-            'chest' => ['nullable', 'numeric', 'min:0'],
+            'size' => ['nullable', 'numeric', 'min:0'],
             'waist' => ['nullable', 'numeric', 'min:0'],
             'hips' => ['nullable', 'numeric', 'min:0'],
             'shoulderWidth' => ['nullable', 'numeric', 'min:0'],
@@ -88,7 +88,7 @@ class Show extends Component
         ]);
 
         $data = [
-            'chest' => $this->chest ?: null,
+            'size' => $this->size ?: null,
             'waist' => $this->waist ?: null,
             'hips' => $this->hips ?: null,
             'shoulder_width' => $this->shoulderWidth ?: null,

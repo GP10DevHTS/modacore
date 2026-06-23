@@ -131,7 +131,7 @@
     @endif
 </div>
 
-<div class="divider-bold"></div>
+{{--<div class="divider-bold"></div>--}}
 
 {{-- Header --}}
 <div class="line">
@@ -144,21 +144,22 @@
     {{ $invoice->getDate() }}
 </div>
 
-@if(method_exists($invoice,'getPayUntilDate') && $invoice->getPayUntilDate())
-    <div class="line">
-        <strong>Return By:</strong>
-        {{ $invoice->getPayUntilDate() }}
-    </div>
-@endif
+{{--@if(method_exists($invoice,'getPayUntilDate') && $invoice->getPayUntilDate())--}}
+{{--    <div class="line">--}}
+{{--        <strong>Return By:</strong>--}}
+{{--        {{ $invoice->getPayUntilDate() }}--}}
+{{--    </div>--}}
+{{--@endif--}}
 
-<div class="divider"></div>
+
+{{--<div class="divider"></div>--}}
 
 {{-- Seller --}}
 {{--<div class="section-title">SELLER</div>--}}
 
 
 
-<div class="divider"></div>
+<div class="divider-bold"></div>
 
 {{-- Buyer --}}
 <div class="section-title">CUSTOMER</div>
@@ -307,10 +308,32 @@
 <div class="divider-bold"></div>
 
 <div class="amount">
-    TOTAL:
+    Current Amount:
     {{ $invoice->formatCurrency($invoice->total_amount) }}
 </div>
 
+@if($invoice->custom_fields)
+    @foreach($invoice->custom_fields as $title => $value)
+        <div class="line">
+            <strong>{{ \Illuminate\Support\Str::headline($title) }}:</strong>
+            UGX {{ number_format($value,2) }}
+        </div>
+    @endforeach
+@endif
+
+
+
+
+{{-- Amount In Words --}}
+@if(method_exists($invoice, 'getTotalAmountInWords'))
+    <div class="section-title">AMOUNT IN WORDS</div>
+
+    <div>
+        {{ $invoice->getTotalAmountInWords() }}
+    </div>
+
+{{--    <div class="divider"></div>--}}
+@endif
 <div class="divider-bold"></div>
 
 {{-- Notes --}}
@@ -319,17 +342,6 @@
 
     <div>
         {!! nl2br($invoice->notes) !!}
-    </div>
-
-    <div class="divider"></div>
-@endif
-
-{{-- Amount In Words --}}
-@if(method_exists($invoice, 'getTotalAmountInWords'))
-    <div class="section-title">AMOUNT IN WORDS</div>
-
-    <div>
-        {{ $invoice->getTotalAmountInWords() }}
     </div>
 
     <div class="divider"></div>

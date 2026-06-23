@@ -9,7 +9,7 @@ class CustomerMeasurement extends Model
 {
     protected $fillable = [
         'customer_id',
-        'chest',
+        'size',
         'waist',
         'hips',
         'shoulder_width',
@@ -20,7 +20,7 @@ class CustomerMeasurement extends Model
     ];
 
     protected $casts = [
-        'chest' => 'decimal:2',
+        'size' => 'decimal:2',
         'waist' => 'decimal:2',
         'hips' => 'decimal:2',
         'shoulder_width' => 'decimal:2',

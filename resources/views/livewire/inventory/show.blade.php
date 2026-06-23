@@ -1,24 +1,29 @@
 <div class="space-y-6">
 
     {{-- Page Header --}}
-    <div class="flex items-center gap-3">
-        <a href="{{ route('inventory.index') }}" wire:navigate
-            class="flex size-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500 shadow-sm hover:bg-zinc-50 hover:text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors">
-            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-        </a>
-        <div class="min-w-0 flex-1">
-            <div class="flex items-center gap-2">
-                <h1 class="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">{{ $item->name }}</h1>
-                <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold
-                    {{ $item->is_active ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400' : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400' }}">
-                    <span class="size-1.5 rounded-full {{ $item->is_active ? 'bg-emerald-500' : 'bg-zinc-400' }}"></span>
-                    {{ $item->is_active ? 'Active' : 'Inactive' }}
-                </span>
+    <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <a href="{{ route('inventory.index') }}" wire:navigate
+                class="flex size-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500 shadow-sm hover:bg-zinc-50 hover:text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors">
+                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            </a>
+            <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                    <h1 class="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">{{ $item->name }}</h1>
+                    <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold
+                        {{ $item->is_active ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400' : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400' }}">
+                        <span class="size-1.5 rounded-full {{ $item->is_active ? 'bg-emerald-500' : 'bg-zinc-400' }}"></span>
+                        {{ $item->is_active ? 'Active' : 'Inactive' }}
+                    </span>
+                </div>
+                <p class="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">
+                    {{ $item->category?->name ?? 'Uncategorised' }}
+                    @if($item->sku) &middot; <code class="text-xs">{{ $item->sku }}</code> @endif
+                </p>
             </div>
-            <p class="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">
-                {{ $item->category?->name ?? 'Uncategorised' }}
-                @if($item->sku) &middot; <code class="text-xs">{{ $item->sku }}</code> @endif
-            </p>
+        </div>
+        <div>
+            <flux:button wire:click="exportForAjjiScan">Export for AjjiScan</flux:button>
         </div>
     </div>
 

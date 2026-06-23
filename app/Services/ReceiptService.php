@@ -44,6 +44,8 @@ class ReceiptService
 
         $notes = collect([
             'Booking: '.$booking->booking_number,
+            'Book From: '.$booking->hire_from->format('D d M Y'),
+            'Return Date: '.$booking->hire_to->format('D d M Y'),
             'Method: '.ucwords(str_replace('_', ' ', $payment->payment_method)),
             $payment->reference ? 'Reference: '.$payment->reference : null,
             $payment->notes ? 'Notes: '.$payment->notes : null,
@@ -52,13 +54,21 @@ class ReceiptService
         $invoice = Invoice::make($type)
             ->template('receipt')
             ->serialNumberFormat('{SERIES}')
-            ->payUntilDays(3)
+//            ->payUntilDays(3)
             ->series($payment->receipt_number)
             ->buyer($buyer)
             ->date($payment->paid_at)
             ->addItems($items)
+            ->totalAmount($payment->amount)
             ->notes($notes)
             ->filename($payment->receipt_number);
+
+        $invoice->custom_fields = [
+            'invoice_total' => $payment->booking?->total_amount ?? '0.00',
+            'previous_payment' => $payment->booking?->payments()->where('id', '<', $payment->id)->sum('amount') ?? '0.00',
+//            'payment_received' => $payment->amount,
+            'balance_due' => max(0, $payment->booking?->total_amount - $payment->booking?->payments()->sum('amount')),
+        ];
 
         return $invoice->stream();
     }

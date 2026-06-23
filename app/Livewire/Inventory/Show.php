@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Inventory;
 
+use App\Exports\AjjiScanVariantExport;
 use App\Models\BookingItem;
 use App\Models\InventoryItem;
 use App\Models\InventoryVariant;
@@ -9,9 +10,11 @@ use App\Models\VariantType;
 use App\Services\InventorySkuService;
 use Flux\Flux;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Maatwebsite\Excel\Facades\Excel;
 
 #[Title('Product Detail')]
 class Show extends Component
@@ -134,6 +137,9 @@ class Show extends Component
     {
         abort_unless(auth()->user()->can('inventory.edit'), 403);
         $this->resetVariantForm();
+        $this->variantStock = 1;
+        $this->variantRentalPrice = $this->item->base_rental_price;
+        $this->variantCostPrice = $this->item->cost_price;
         $this->js('$flux.modal("variant-form").show()');
     }
 
@@ -176,7 +182,7 @@ class Show extends Component
         $validated = $this->validate([
             'variantRentalPrice' => ['nullable', 'numeric', 'min:0'],
             'variantCostPrice' => ['nullable', 'numeric', 'min:0'],
-            'variantStock' => ['required', 'integer', 'min:0'],
+            'variantStock' => ['required', 'integer', 'min:1'],
             'variantIsActive' => ['boolean'],
         ]);
 
@@ -204,6 +210,10 @@ class Show extends Component
                         $validated['variantCostPrice'] !== '' && $validated['variantCostPrice'] !== null ? (float) $validated['variantCostPrice'] : null,
                         $validated['variantIsActive'],
                     );
+
+                    // increate item stock
+                    $this->item->increment('stock_quantity');
+                    $this->item->increment('available_quantity');
                 }
             });
         }
@@ -253,6 +263,11 @@ class Show extends Component
         $this->variantIsActive = true;
         $this->editingVariantId = null;
         $this->resetValidation();
+    }
+
+    public function exportForAjjiScan(){
+        Flux::toast('Exporting for AjjiScan...');
+        return Excel::download(new AjjiScanVariantExport($this->item->id), Str::slug($this->item->name).'-ajji-scan-variants-'.date('ymdHis').'.xlsx');
     }
 
     public function render()

@@ -70,5 +70,10 @@ class InventoryItem extends Model
             $item->code = $skuService->nextItemCode($category->id);
             $item->sku = $skuService->itemSku($category, $item->code);
         });
+
+        static::created(function ($item) {
+            $item->sku =  $item->sku . '-' . str_pad($item->id, 4, '0', STR_PAD_LEFT);
+            $item->save();
+        });
     }
 }

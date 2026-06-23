@@ -11,7 +11,7 @@ class VariantsSeeder extends Seeder
     public function run(): void
     {
         $variants = [
-            'size' => ["XS", "S", "M", "L", "XL", "XXL", "3XL"],
+            'size' => ["12", "14","18", "XS", "S", "M", "L", "XL", "XXL", "3XL"],
             'color' => ["Black", "White", "Red", "Blue", "Green", "Yellow", "Pink", "Grey", "Navy"],
 //            'sleeve' => ["short", "long", "3/4"],
 //            'fit' => ["slim", "regular", "loose"],

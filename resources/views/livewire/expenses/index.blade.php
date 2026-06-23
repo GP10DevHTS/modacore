@@ -197,7 +197,7 @@
                                 @if($balance > 0) UGX {{ number_format($balance, 0) }} @else <span class="text-emerald-500">✓</span> @endif
                             </td>
                             <td class="px-5 py-3.5">
-                                <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div class="flex items-center justify-end gap-1 opacity-100 group-hover:opacity-100 transition-opacity">
                                     <a href="{{ route('expenses.show', $bill->id) }}" wire:navigate
                                         class="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-700 dark:hover:text-zinc-300 transition-colors"
                                         title="View details">

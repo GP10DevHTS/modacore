@@ -46,7 +46,7 @@
                             <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Body Measurements (cm)</p>
                             <div class="flex flex-wrap gap-x-4 gap-y-1.5 text-xs">
                                 @foreach([
-                                    'Chest' => $m->chest, 'Waist' => $m->waist, 'Hips' => $m->hips,
+                                    'Size' => $m->size, 'Waist' => $m->waist, 'Hips' => $m->hips,
                                     'Shoulder' => $m->shoulder_width, 'Sleeve' => $m->sleeve_length,
                                     'Inseam' => $m->inseam, 'Neck' => $m->neck, 'Height' => $m->height,
                                 ] as $label => $val)

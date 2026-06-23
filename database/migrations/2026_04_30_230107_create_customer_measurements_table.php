@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('customer_measurements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('customer_id')->constrained()->cascadeOnDelete();
-            $table->decimal('chest', 6, 2)->nullable();
+            $table->decimal('size', 6, 2)->nullable();
             $table->decimal('waist', 6, 2)->nullable();
             $table->decimal('hips', 6, 2)->nullable();
             $table->decimal('shoulder_width', 6, 2)->nullable();
