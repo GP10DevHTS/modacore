@@ -125,8 +125,25 @@ class Create extends Component
     public function updatedCustomerId(): void
     {
         unset($this->selectedCustomerMeasurements);
+        // set the dates if not already set
+        $this->hireFrom = $this->hireFrom ?: now()->toDateTimeString();
+        $this->hireTo = $this->hireTo ?: now()->addDays(3)->toDateTimeString();
     }
 
+    public function updatedHireFrom(): void
+    {
+        if (! $this->hireFrom) {
+            return;
+        }
+
+        $minimumHireTo = Carbon::parse($this->hireFrom)
+            ->addDays(3)
+            ->toDateTimeString();
+
+        if (! $this->hireTo || Carbon::parse($this->hireTo)->lt($minimumHireTo)) {
+            $this->hireTo = $minimumHireTo;
+        }
+    }
     public function saveNewCustomer(): void
     {
         $this->validate([
@@ -191,7 +208,7 @@ class Create extends Component
     #[Computed]
     public function inventoryItems()
     {
-        return InventoryItem::query()->active()->orderBy('name')->get(['id', 'name', 'base_rental_price']);
+        return InventoryItem::query()->active()->with('category')->orderBy('name')->get(['id', 'name', 'category_id', 'base_rental_price']);
     }
 
     #[Computed]
