@@ -10,6 +10,7 @@ use App\Models\InventoryVariant;
 use App\Services\AvailabilityService;
 use Flux\Flux;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -42,6 +43,36 @@ class Create extends Component
     public string $pickerUnitPrice = '';
 
     public string $searchSku = '';
+
+    // New Customer form
+    public string $newCustomerName = '';
+
+    public string $newCustomerPhone = '';
+
+    public string $newCustomerEmail = '';
+
+    public string $newCustomerIdNumber = '';
+
+    public string $newCustomerAddress = '';
+
+    public string $newCustomerNotes = '';
+
+    // New Customer Measurements
+    public string $newCustomerSize = '';
+
+    public string $newCustomerWaist = '';
+
+    public string $newCustomerHips = '';
+
+    public string $newCustomerShoulderWidth = '';
+
+    public string $newCustomerSleeveLength = '';
+
+    public string $newCustomerInseam = '';
+
+    public string $newCustomerNeck = '';
+
+    public string $newCustomerHeight = '';
 
     public function mount(?Booking $booking = null): void
     {
@@ -94,6 +125,67 @@ class Create extends Component
     public function updatedCustomerId(): void
     {
         unset($this->selectedCustomerMeasurements);
+    }
+
+    public function saveNewCustomer(): void
+    {
+        $this->validate([
+            'newCustomerName' => ['required', 'string', 'max:255'],
+            'newCustomerPhone' => ['required', 'string', 'max:50', 'unique:customers,phone'],
+            'newCustomerEmail' => ['nullable', 'email', 'max:255', Rule::unique('customers', 'email')->where(fn ($query) => $query->whereNull('deleted_at'))],
+            'newCustomerIdNumber' => ['nullable', 'string', 'max:100', Rule::unique('customers', 'id_number')->where(fn ($query) => $query->whereNull('deleted_at'))],
+            'newCustomerAddress' => ['nullable', 'string', 'max:500'],
+            'newCustomerNotes' => ['nullable', 'string', 'max:1000'],
+            'newCustomerSize' => ['nullable', 'numeric', 'min:0'],
+            'newCustomerWaist' => ['nullable', 'numeric', 'min:0'],
+            'newCustomerHips' => ['nullable', 'numeric', 'min:0'],
+            'newCustomerShoulderWidth' => ['nullable', 'numeric', 'min:0'],
+            'newCustomerSleeveLength' => ['nullable', 'numeric', 'min:0'],
+            'newCustomerInseam' => ['nullable', 'numeric', 'min:0'],
+            'newCustomerNeck' => ['nullable', 'numeric', 'min:0'],
+            'newCustomerHeight' => ['nullable', 'numeric', 'min:0'],
+        ]);
+
+        $customer = Customer::create([
+            'name' => $this->newCustomerName,
+            'phone' => $this->newCustomerPhone,
+            'email' => $this->newCustomerEmail ?: null,
+            'id_number' => $this->newCustomerIdNumber ?: null,
+            'address' => $this->newCustomerAddress ?: null,
+            'notes' => $this->newCustomerNotes ?: null,
+            'created_by' => auth()->id(),
+        ]);
+
+        $measurementData = array_filter([
+            'size' => $this->newCustomerSize ?: null,
+            'waist' => $this->newCustomerWaist ?: null,
+            'hips' => $this->newCustomerHips ?: null,
+            'shoulder_width' => $this->newCustomerShoulderWidth ?: null,
+            'sleeve_length' => $this->newCustomerSleeveLength ?: null,
+            'inseam' => $this->newCustomerInseam ?: null,
+            'neck' => $this->newCustomerNeck ?: null,
+            'height' => $this->newCustomerHeight ?: null,
+        ], fn ($val) => $val !== null);
+
+        if (! empty($measurementData)) {
+            $customer->measurements()->create($measurementData);
+        }
+
+        // Reset new customer form
+        $this->reset([
+            'newCustomerName', 'newCustomerPhone', 'newCustomerEmail',
+            'newCustomerIdNumber', 'newCustomerAddress', 'newCustomerNotes',
+            'newCustomerSize', 'newCustomerWaist', 'newCustomerHips',
+            'newCustomerShoulderWidth', 'newCustomerSleeveLength',
+            'newCustomerInseam', 'newCustomerNeck', 'newCustomerHeight',
+        ]);
+
+        // Auto-select the new customer
+        $this->customerId = (string) $customer->id;
+        unset($this->customers, $this->selectedCustomerMeasurements);
+
+        Flux::toast(text: 'Customer registered successfully.', variant: 'success');
+        Flux::modal('new-customer-modal')->close();
     }
 
     #[Computed]

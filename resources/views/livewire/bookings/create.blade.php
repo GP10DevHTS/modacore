@@ -25,7 +25,117 @@
 
             {{-- Booking Details --}}
             <div class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700/60 dark:bg-zinc-900">
-                <h2 class="mb-4 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Booking Details</h2>
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <h2 class="mb-4 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Booking Details</h2>
+                    <div>
+                        <flux:modal.trigger name="new-customer-modal">
+                            <flux:button type="button" size="sm" color="zinc" class="flex items-center gap-1.5">New Customer</flux:button>
+                        </flux:modal.trigger>
+                        <flux:modal name="new-customer-modal" flyout>
+                            <div class="border-b border-zinc-100 pb-4 dark:border-zinc-700">
+                                <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                                    {{ 'Register Customer' }}
+                                </h3>
+                                <p class="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">
+                                    {{'Fill in the form to register a new customer with measurements.' }}
+                                </p>
+                            </div>
+
+                            <div class="mt-4 space-y-4">
+                                {{-- Customer Details --}}
+                                <div>
+                                    <h4 class="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Customer Details</h4>
+                                    <div class="space-y-3">
+                                        <flux:field>
+                                            <flux:label>Full Name <span class="text-red-500">*</span></flux:label>
+                                            <flux:input wire:model="newCustomerName" placeholder="e.g. Jane Doe" />
+                                            <flux:error name="newCustomerName" />
+                                        </flux:field>
+                                        <flux:field>
+                                            <flux:label>Phone <span class="text-red-500">*</span></flux:label>
+                                            <flux:input wire:model="newCustomerPhone" placeholder="+256 700 000 000" />
+                                            <flux:error name="newCustomerPhone" />
+                                        </flux:field>
+                                        <flux:field>
+                                            <flux:label>Email</flux:label>
+                                            <flux:input wire:model="newCustomerEmail" type="email" placeholder="jane@example.com" />
+                                            <flux:error name="newCustomerEmail" />
+                                        </flux:field>
+                                        <flux:field>
+                                            <flux:label>ID / Passport</flux:label>
+                                            <flux:input wire:model="newCustomerIdNumber" placeholder="e.g. CM123456" />
+                                            <flux:error name="newCustomerIdNumber" />
+                                        </flux:field>
+                                        <flux:field>
+                                            <flux:label>Address</flux:label>
+                                            <flux:input wire:model="newCustomerAddress" placeholder="Physical address" />
+                                            <flux:error name="newCustomerAddress" />
+                                        </flux:field>
+                                        <flux:field>
+                                            <flux:label>Notes</flux:label>
+                                            <flux:textarea wire:model="newCustomerNotes" rows="2" placeholder="Any additional notes…" />
+                                            <flux:error name="newCustomerNotes" />
+                                        </flux:field>
+                                    </div>
+                                </div>
+
+                                {{-- Body Measurements --}}
+                                <div class="border-t border-zinc-100 pt-4 dark:border-zinc-700">
+                                    <h4 class="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Body Measurements (cm)</h4>
+                                    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                                        <flux:field>
+                                            <flux:label>Size</flux:label>
+                                            <flux:input wire:model="newCustomerSize" type="number" step="0.01" placeholder="0.00" />
+                                            <flux:error name="newCustomerSize" />
+                                        </flux:field>
+                                        <flux:field>
+                                            <flux:label>Waist</flux:label>
+                                            <flux:input wire:model="newCustomerWaist" type="number" step="0.01" placeholder="0.00" />
+                                            <flux:error name="newCustomerWaist" />
+                                        </flux:field>
+                                        <flux:field>
+                                            <flux:label>Hips</flux:label>
+                                            <flux:input wire:model="newCustomerHips" type="number" step="0.01" placeholder="0.00" />
+                                            <flux:error name="newCustomerHips" />
+                                        </flux:field>
+                                        <flux:field>
+                                            <flux:label>Shoulder</flux:label>
+                                            <flux:input wire:model="newCustomerShoulderWidth" type="number" step="0.01" placeholder="0.00" />
+                                            <flux:error name="newCustomerShoulderWidth" />
+                                        </flux:field>
+                                        <flux:field>
+                                            <flux:label>Sleeve</flux:label>
+                                            <flux:input wire:model="newCustomerSleeveLength" type="number" step="0.01" placeholder="0.00" />
+                                            <flux:error name="newCustomerSleeveLength" />
+                                        </flux:field>
+                                        <flux:field>
+                                            <flux:label>Inseam</flux:label>
+                                            <flux:input wire:model="newCustomerInseam" type="number" step="0.01" placeholder="0.00" />
+                                            <flux:error name="newCustomerInseam" />
+                                        </flux:field>
+                                        <flux:field>
+                                            <flux:label>Neck</flux:label>
+                                            <flux:input wire:model="newCustomerNeck" type="number" step="0.01" placeholder="0.00" />
+                                            <flux:error name="newCustomerNeck" />
+                                        </flux:field>
+                                        <flux:field>
+                                            <flux:label>Height</flux:label>
+                                            <flux:input wire:model="newCustomerHeight" type="number" step="0.01" placeholder="0.00" />
+                                            <flux:error name="newCustomerHeight" />
+                                        </flux:field>
+                                    </div>
+                                </div>
+
+                                {{-- Actions --}}
+                                <div class="border-t border-zinc-100 pt-4 dark:border-zinc-700">
+                                    <flux:button wire:click="saveNewCustomer" variant="primary" class="w-full">
+                                        Save Customer
+                                    </flux:button>
+                                </div>
+                            </div>
+                        </flux:modal>
+                    </div>
+                </div>
                 <div class="space-y-4">
                     <div>
                         <label class="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Customer <span class="text-red-500">*</span></label>

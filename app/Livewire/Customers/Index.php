@@ -73,7 +73,7 @@ class Index extends Component
         $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
-            'phone' => ['required', 'string', 'max:50'],
+            'phone' => ['required', 'string', 'max:50', 'unique:customers,phone'],
             'address' => ['nullable', 'string', 'max:500'],
             'idNumber' => ['nullable', 'string', 'max:50'],
             'notes' => ['nullable', 'string'],

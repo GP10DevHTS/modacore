@@ -33,7 +33,8 @@ class Booking extends Model
     public static function generateBookingNumber(): string
     {
         $prefix = 'BK-'.now()->format('Ymd').'-';
-        $last = static::where('booking_number', 'like', $prefix.'%')
+//        $last = static::where('booking_number', 'like', $prefix.'%')
+        $last = static::query()
             ->orderByDesc('booking_number')
             ->value('booking_number');
 
@@ -41,6 +42,18 @@ class Booking extends Model
 
         return $prefix.str_pad($sequence, 4, '0', STR_PAD_LEFT);
     }
+
+    protected static function booted()
+    {
+        static::created(function ($booking) {
+            $booking->booking_number = 'BK-' .
+                now()->format('Ymd') . '-' .
+                str_pad($booking->id, 4, '0', STR_PAD_LEFT);
+
+            $booking->save();
+        });
+    }
+
 
     public function scopeActive(Builder $query): Builder
     {
