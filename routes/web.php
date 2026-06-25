@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BarCodeController;
 use App\Http\Controllers\ReceiptController;
 use App\Livewire\Analytics\Dashboard as AnalyticsDashboard;
 use App\Livewire\Bookings\Create as BookingCreate;
@@ -37,6 +38,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/inventory', InventoryIndex::class)->name('inventory.index');
     Route::get('/inventory/{inventoryItem}', InventoryShow::class)->name('inventory.show');
+
+    Route::get('/inventory/variation-bar-code/{variation}', [BarCodeController::class, 'index'])->name('inventory.variation-bar-code');
 
     Route::get('/customers', CustomersIndex::class)->name('customers.index');
     Route::get('/customers/{customer}', CustomerShow::class)->name('customers.show');
