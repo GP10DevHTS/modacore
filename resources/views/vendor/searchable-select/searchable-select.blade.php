@@ -87,13 +87,13 @@
         options: {{ json_encode($alpineOptions) }},
         selectedValues: {{ json_encode(array_map(fn($v) => is_numeric($v) ? (int) $v : $v, $selectedValues)) }},
         labelsMap: {{ json_encode((object) $labelsMap) }},
-    
+
         get flatOptions() {
             @if ($grouped) return this.filteredOptions.flatMap(g => g.items);
         @else
             return this.filteredOptions; @endif
         },
-    
+
         get filteredOptions() {
             if (!this.search) return this.options;
             const query = this.search.toLowerCase();
@@ -104,15 +104,15 @@
         @else
             return this.options.filter(opt => opt.label.toLowerCase().includes(query)); @endif
         },
-    
+
         getLabel(value) {
             return this.labelsMap[value] || value;
         },
-    
+
         isSelected(value) {
             return this.selectedValues.includes(value);
         },
-    
+
         openDropdown() {
             if (this.disabled) return;
             this.open = true;
@@ -121,17 +121,17 @@
                 if (this.$refs.searchInput) this.$refs.searchInput.focus();
             });
         },
-    
+
         closeDropdown() {
             this.open = false;
             this.search = '';
             this.highlightedIndex = -1;
         },
-    
+
         toggleDropdown() {
             this.open ? this.closeDropdown() : this.openDropdown();
         },
-    
+
         handleKeydown(e) {
             if (!this.open) {
                 if (['Enter', ' ', 'ArrowDown'].includes(e.key)) {
@@ -164,14 +164,14 @@
                     break;
             }
         },
-    
+
         scrollToHighlighted() {
             this.$nextTick(() => {
                 const el = this.$refs.optionsList?.querySelector('[data-highlighted=true]');
                 if (el) el.scrollIntoView({ block: 'nearest' });
             });
         },
-    
+
         toggleSelection(value) {
             if (this.multiple) {
                 const index = this.selectedValues.indexOf(value);
@@ -187,7 +187,7 @@
                 this.closeDropdown();
             }
         },
-    
+
         removeSelection(value) {
             const index = this.selectedValues.indexOf(value);
             if (index > -1) {
@@ -195,13 +195,13 @@
                 $wire.set('{{ $wireModel }}', this.multiple ? [...this.selectedValues] : null);
             }
         },
-    
+
         clearAll() {
             this.selectedValues = [];
             $wire.set('{{ $wireModel }}', this.multiple ? [] : null);
             this.search = '';
         },
-    
+
         async searchApi() {
             if (!{{ $apiUrl ? 'true' : 'false' }}) return;
             this.loading = true;
@@ -226,10 +226,12 @@
 
         {{-- Trigger --}}
         <div @click="toggleDropdown()"
-            {{ $attributes->except(['options', 'wireModel', 'placeholder', 'searchPlaceholder', 'disabled', 'emptyMessage', 'selectedValue', 'optionValue', 'optionLabel', 'multiple', 'clearable', 'apiUrl', 'apiSearchParam', 'grouped', 'groupLabel', 'groupOptions', 'theme'])->merge(['class' => 'w-full text-left border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-zinc-800 text-gray-900 dark:text-white cursor-pointer select-none transition-shadow']) }}
+            {{ $attributes->except(['options', 'wireModel', 'placeholder', 'searchPlaceholder', 'disabled', 'emptyMessage', 'selectedValue', 'optionValue', 'optionLabel', 'multiple', 'clearable', 'apiUrl', 'apiSearchParam', 'grouped', 'groupLabel', 'groupOptions', 'theme'])->merge([
+            'class' => 'w-full text-left border border-zinc-300 dark:border-zinc-600 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 cursor-pointer select-none transition-shadow'
+        ]) }}
             :class="{
                 'opacity-50 cursor-not-allowed': disabled,
-                'ring-2 ring-blue-500 border-blue-500': open
+                'ring-2 ring-accent border-accent': open
             }"
             role="combobox" aria-haspopup="listbox" :aria-expanded="open" tabindex="0">
             <div class="flex items-center gap-2 px-3 py-2 min-h-[42px]">
@@ -240,10 +242,10 @@
                         <div class="flex flex-wrap gap-1.5">
                             <template x-for="val in selectedValues" :key="val">
                                 <span
-                                    class="inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 max-w-full">
+                                    class="inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded text-xs font-medium bg-zinc-100 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300 max-w-full">
                                     <span class="truncate" x-text="getLabel(val)"></span>
                                     <span @click.stop="removeSelection(val)"
-                                        class="flex-shrink-0 inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 cursor-pointer transition-colors"
+                                        class="flex-shrink-0 inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-600 cursor-pointer transition-colors"
                                         role="button" aria-label="Remove">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                             stroke-width="2.5">
@@ -264,7 +266,7 @@
 
                     {{-- Placeholder --}}
                     <template x-if="selectedValues.length === 0">
-                        <span class="block truncate text-gray-400 dark:text-gray-500">{{ $placeholder }}</span>
+                        <span class="block truncate text-zinc-400 dark:text-zinc-500">{{ $placeholder }}</span>
                     </template>
                 </div>
 
@@ -272,16 +274,16 @@
                 <div class="flex items-center gap-1 flex-shrink-0">
                     {{-- Clear button --}}
                     <span x-show="clearable && selectedValues.length > 0 && !disabled" x-cloak @click.stop="clearAll()"
-                        class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+                        class="p-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 cursor-pointer transition-colors"
                         role="button" aria-label="Clear selection" title="Clear">
-                        <svg class="w-4 h-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" fill="none"
+                        <svg class="w-4 h-4 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </span>
 
                     {{-- Dropdown arrow --}}
-                    <svg class="w-5 h-5 text-gray-400 flex-shrink-0 transition-transform duration-200"
+                    <svg class="w-5 h-5 text-zinc-400 flex-shrink-0 transition-transform duration-200"
                         :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
@@ -294,20 +296,20 @@
             x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
             x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-95"
-            class="absolute z-50 w-full mt-1 bg-white dark:bg-zinc-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden"
+            class="absolute z-50 w-full mt-1 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-600 rounded-lg shadow-lg overflow-hidden"
             role="listbox" :aria-multiselectable="multiple">
 
             {{-- Search input --}}
             <input type="text" x-ref="searchInput" x-model="search" @input.debounce.300ms="searchApi()" @click.stop
                 placeholder="{{ $searchPlaceholder }}"
-                class="w-full px-3 py-2.5 border-b border-gray-300 dark:border-gray-600 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:outline-none text-sm"
+                class="w-full px-3 py-2.5 border-b border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none text-sm"
                 aria-label="Search options">
 
             {{-- Options list --}}
             <div class="max-h-60 overflow-auto overscroll-contain" x-ref="optionsList">
 
                 {{-- Loading spinner --}}
-                <div x-show="loading" class="px-3 py-3 text-center text-gray-500">
+                <div x-show="loading" class="px-3 py-3 text-center text-zinc-500">
                     <svg class="inline w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                             stroke-width="4"></circle>
@@ -320,24 +322,24 @@
                 @if ($grouped)
                     <template x-for="group in filteredOptions" :key="group.group">
                         <div>
-                            <div class="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-zinc-900 uppercase tracking-wider"
+                            <div class="px-3 py-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900 uppercase tracking-wider"
                                 x-text="group.group"></div>
                             <template x-for="option in group.items" :key="option.value">
                                 <div @click="toggleSelection(option.value)"
                                     class="px-3 py-2.5 cursor-pointer flex items-center justify-between transition-colors"
                                     :class="{
-                                        'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300': isSelected(
+                                        'bg-zinc-100 dark:bg-zinc-700 text-accent-content dark:text-zinc-200': isSelected(
                                             option
                                             .value),
-                                        'hover:bg-gray-100 dark:hover:bg-gray-700': !isSelected(option.value),
-                                        'bg-gray-100 dark:bg-gray-700': flatOptions[highlightedIndex]?.value === option
+                                        'text-zinc-900 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-700/50': !isSelected(option.value),
+                                        'bg-zinc-100 dark:bg-zinc-700': flatOptions[highlightedIndex]?.value === option
                                             .value
                                     }"
                                     :data-highlighted="flatOptions[highlightedIndex]?.value === option.value"
                                     role="option" :aria-selected="isSelected(option.value)">
                                     <span x-text="option.label" class="truncate"></span>
                                     <svg x-show="isSelected(option.value)"
-                                        class="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0 ml-2"
+                                        class="w-4 h-4 text-accent flex-shrink-0 ml-2"
                                         fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -348,7 +350,7 @@
                         </div>
                     </template>
                     <div x-show="filteredOptions.length === 0 && !loading"
-                        class="px-3 py-3 text-gray-500 dark:text-gray-400 text-sm text-center">
+                        class="px-3 py-3 text-zinc-500 dark:text-zinc-400 text-sm text-center">
                         {{ $emptyMessage }}
                     </div>
                 @else
@@ -356,16 +358,16 @@
                         <div @click="toggleSelection(option.value)"
                             class="px-3 py-2.5 cursor-pointer flex items-center justify-between transition-colors"
                             :class="{
-                                'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300': isSelected(option
+                                        'bg-zinc-100 dark:bg-zinc-700 text-accent-content dark:text-zinc-200': isSelected(option
                                     .value),
-                                'hover:bg-gray-100 dark:hover:bg-gray-700': !isSelected(option.value),
-                                'bg-gray-100 dark:bg-gray-700': highlightedIndex === index
-                            }"
+                                        'text-zinc-900 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-700/50': !isSelected(option.value),
+                                        'bg-zinc-100 dark:bg-zinc-700': highlightedIndex === index
+                                    }"
                             :data-highlighted="highlightedIndex === index" role="option"
                             :aria-selected="isSelected(option.value)">
                             <span x-text="option.label" class="truncate"></span>
                             <svg x-show="isSelected(option.value)"
-                                class="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0 ml-2"
+                                class="w-4 h-4 text-accent flex-shrink-0 ml-2"
                                 fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -374,7 +376,7 @@
                         </div>
                     </template>
                     <div x-show="filteredOptions.length === 0 && !loading"
-                        class="px-3 py-3 text-gray-500 dark:text-gray-400 text-sm text-center">
+                        class="px-3 py-3 text-zinc-500 dark:text-zinc-400 text-sm text-center">
                         {{ $emptyMessage }}
                     </div>
                 @endif
