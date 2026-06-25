@@ -22,8 +22,17 @@
                 </p>
             </div>
         </div>
-        <div>
+        <div class="flex items-center justify-end gap-2">
             <flux:button wire:click="exportForAjjiScan">Export for AjjiScan</flux:button>
+
+            @can('inventory.edit')
+                @if($this->variantTypes->isNotEmpty())
+                    <flux:button wire:click="openCreateVariant" icon="plus"
+                                 class="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-black shadow-sm hover:bg-amber-400 transition-colors">
+                        Add Variation
+                    </flux:button>
+                @endif
+            @endcan
         </div>
     </div>
 
@@ -79,14 +88,14 @@
                         <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Variations</h2>
                         <p class="text-xs text-zinc-400 dark:text-zinc-500">Each variation is a unique combination of attribute values (e.g. Size: S + Color: Red)</p>
                     </div>
-                     @can('inventory.edit')
-                         @if($this->variantTypes->isNotEmpty())
-                             <flux:button wire:click="openCreateVariant" icon="plus"
-                                 class="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-black shadow-sm hover:bg-amber-400 transition-colors">
-                                 Add Variation
-                             </flux:button>
-                         @endif
-                     @endcan
+{{--                     @can('inventory.edit')--}}
+{{--                         @if($this->variantTypes->isNotEmpty())--}}
+{{--                             <flux:button wire:click="openCreateVariant" icon="plus"--}}
+{{--                                 class="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-black shadow-sm hover:bg-amber-400 transition-colors">--}}
+{{--                                 Add Variation--}}
+{{--                             </flux:button>--}}
+{{--                         @endif--}}
+{{--                     @endcan--}}
                 </div>
 
                 @if($this->variants->isEmpty())
