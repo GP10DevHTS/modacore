@@ -159,7 +159,7 @@
                                     </td>
                                     <td class="px-5 py-3.5 text-right">
                                         <div class="flex items-center justify-end gap-1 opacity-100 transition-opacity group-hover:opacity-100">
-                                            <flux:button href="{{ route('inventory.variation-bar-code', $variant->id) }}" icon="printer" size="xs" tooltip="Print Bar Code" variant="ghost"/>
+                                            <flux:button href="{{ route('inventory.variation-bar-code', $variant->id) }}" target="_blank" icon="printer" size="xs" tooltip="Print Bar Code" variant="ghost"/>
                                             @can('inventory.edit')
                                             <button wire:click="openEditVariant({{ $variant->id }})"
                                                 class="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-700 dark:hover:text-zinc-300 transition-colors" title="Edit">
