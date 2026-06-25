@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Picqer\Barcode\BarcodeGeneratorPNG;
+use Picqer\Barcode\BarcodeGeneratorSVG;
 
 class InventoryVariant extends Model
 {
@@ -101,6 +102,19 @@ class InventoryVariant extends Model
              $generator::TYPE_CODE_128
          // $generator::TYPE_EAN_13
          );
-         return 'data:image/png;base64,' . base64_encode($barcodeData);
+//         return 'data:image/png;base64,' . base64_encode($barcodeData);
+         return  base64_encode($barcodeData);
+    }
+
+
+
+    public function getBarcodeSvg(): string
+    {
+        $generator = new BarcodeGeneratorSVG();
+
+        return $generator->getBarcode(
+            $this->sku,
+            $generator::TYPE_CODE_128
+        );
     }
 }

@@ -68,9 +68,9 @@
             : $variationValue->sku }}
     </div>
 
-    <img src="{{ $variationValue->getBarcodeImageUrl() }}"
-         alt="{{ $variationValue->sku }}" />
-
+{{--    <img src="{{ $variationValue->getBarcodeImageUrl() }}"--}}
+{{--         alt="{{ $variationValue->sku }}" />--}}
+    {!! $variationValue->getBarcodeSvg() !!}
     <div class="code">
         {{ $variationValue->sku }}
     </div>
