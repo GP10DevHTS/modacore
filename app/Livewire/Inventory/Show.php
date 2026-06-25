@@ -140,7 +140,8 @@ class Show extends Component
         $this->variantStock = 1;
         $this->variantRentalPrice = $this->item->base_rental_price;
         $this->variantCostPrice = $this->item->cost_price;
-        $this->js('$flux.modal("variant-form").show()');
+//        $this->js('$flux.modal("variant-form").show()');
+        Flux::toast('Create variant');
     }
 
     public function openEditVariant(int $id): void
