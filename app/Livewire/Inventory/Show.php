@@ -133,7 +133,7 @@ class Show extends Component
             ->get();
     }
 
-    public function openCreateVariant(): void
+    public function openCreateVariantModal(): void
     {
 //        abort_unless(auth()->user()->can('inventory.edit'), 403);
         $this->resetVariantForm();
