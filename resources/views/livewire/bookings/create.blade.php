@@ -147,7 +147,7 @@
 {{--                            @endforeach--}}
 {{--                        </select>--}}
                         <x-searchable-select wire-model="customerId"
-                            :options="$this->customers->map(fn($customer) => ['id' => $customer->id, 'name' => $customer->name . ' — ' . $customer->phone])"
+                            :options="$this->customers->map(fn($customer) => ['id' => $customer->id, 'name' => $customer->name . ' ( ' . ($customer->phone ?? 'no phone') . ' ) - ' . ($customer->id_number ?? 'no ID' )])"
                                              placeholder="Select a customer"
                                              class="text-black"
                             />

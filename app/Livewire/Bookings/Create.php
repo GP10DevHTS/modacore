@@ -109,7 +109,7 @@ class Create extends Component
     #[Computed]
     public function customers()
     {
-        return Customer::query()->orderBy('name')->get(['id', 'name', 'phone']);
+        return Customer::query()->orderBy('name')->get(['id', 'name', 'phone', 'id_number']);
     }
 
     #[Computed]
