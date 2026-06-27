@@ -19,6 +19,7 @@ use App\Livewire\Inventory\Show as InventoryShow;
 use App\Livewire\Invoices\Index as InvoicesIndex;
 use App\Livewire\Invoices\Show as InvoiceShow;
 use App\Livewire\Notifications\Center as NotificationsCenter;
+use App\Livewire\CleaningLogs\Index as CleaningLogsIndex;
 use App\Livewire\RentalOperations\Index as RentalOperationsIndex;
 use App\Livewire\PurchaseOrders\Create as PurchaseOrderCreate;
 use App\Livewire\PurchaseOrders\Index as PurchaseOrdersIndex;
@@ -58,6 +59,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/refunds/{refund}/receipt', [ReceiptController::class, 'refund'])->name('receipts.refund');
 
     Route::get('/suppliers', SuppliersIndex::class)->name('suppliers.index');
+
+    // Cleaning Logs
+    Route::get('/cleaning-logs', CleaningLogsIndex::class)->name('cleaning-logs.index');
 
     // Rental Operations
     Route::get('/rental-operations/checked-out', RentalOperationsIndex::class)->name('rental-operations.checked-out');

@@ -4,6 +4,7 @@ namespace App\Livewire\Bookings;
 
 use App\Models\Booking;
 use App\Models\BookingItem;
+use App\Models\CleaningLog;
 use App\Models\DepositRefund;
 use App\Models\Payment;
 use Flux\Flux;
@@ -116,6 +117,16 @@ class Show extends Component
 
         $item->update(['status' => 'in_cleaning']);
 
+        CleaningLog::create([
+            'booking_item_id' => $item->id,
+            'inventory_item_id' => $item->inventory_item_id,
+            'inventory_variant_id' => $item->inventory_variant_id,
+            'booking_id' => $item->booking_id,
+            'quantity' => $item->quantity,
+            'sent_to_cleaning_at' => now(),
+            'created_by' => auth()->id(),
+        ]);
+
         $this->booking->refresh()->load(['items.inventoryItem', 'items.variant']);
         Flux::toast('Item sent for cleaning.');
     }
@@ -132,10 +143,18 @@ class Show extends Component
             return;
         }
 
+        $wasInCleaning = $item->status === 'in_cleaning';
+
         $item->update([
             'status' => 'returned',
             'returned_at' => now(),
         ]);
+
+        if ($wasInCleaning) {
+            CleaningLog::where('booking_item_id', $item->id)
+                ->whereNull('returned_from_cleaning_at')
+                ->update(['returned_from_cleaning_at' => now()]);
+        }
 
         if ($item->inventory_variant_id) {
             $item->variant?->increment('available_quantity', $item->quantity);
