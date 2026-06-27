@@ -8,7 +8,7 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class AjjiScanVariantExport implements FromCollection, WithHeadings, ShouldAutoSize
+class AjjiScanVariantExport implements FromCollection, ShouldAutoSize, WithHeadings
 {
     public function __construct(
         protected int $itemId

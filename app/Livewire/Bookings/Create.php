@@ -159,6 +159,7 @@ class Create extends Component
             $this->hireTo = $minimumHireTo;
         }
     }
+
     public function saveNewCustomer(): void
     {
         $this->validate([
@@ -364,10 +365,10 @@ class Create extends Component
         $variant = InventoryVariant::where('sku', $sku)->first();
 
         if ($variant) {
-            $this->reset('pickerCompositionKey', 'pickerItemId', 'pickerVariantIds','pickerUnitPrice');
+            $this->reset('pickerCompositionKey', 'pickerItemId', 'pickerVariantIds', 'pickerUnitPrice');
 
             Flux::toast(
-                'SKU: '.$variant->sku.' - '.$variant->name ." found",
+                'SKU: '.$variant->sku.' - '.$variant->name.' found',
             );
 
             $this->pickerVariantIds[] = $variant->id;
@@ -375,7 +376,7 @@ class Create extends Component
             $this->pickerItemId = $variant->inventory_item_id;
             $this->pickerUnitPrice = (string) $variant->effectiveRentalPrice();
         } else {
-            $this->reset('pickerCompositionKey', 'pickerItemId', 'pickerVariantIds','pickerUnitPrice');
+            $this->reset('pickerCompositionKey', 'pickerItemId', 'pickerVariantIds', 'pickerUnitPrice');
         }
     }
 
@@ -516,8 +517,6 @@ class Create extends Component
         $this->lineItems[$index]['subtotal'] = round($unitPrice * $this->lineItems[$index]['quantity'], 2);
         unset($this->totalAmount);
     }
-
-
 
     public function save(string $status = 'draft'): void
     {

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Booking;
+use App\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,8 +22,8 @@ class BookingFactory extends Factory
         $hireTo = fake()->dateTimeBetween($hireFrom, '+40 days');
 
         return [
-            'booking_number' => 'BK-' . now()->format('Ymd') . '-' . str_pad(fake()->unique()->numberBetween(1, 9999), 4, '0', STR_PAD_LEFT),
-            'customer_id' => \App\Models\Customer::factory(),
+            'booking_number' => 'BK-'.now()->format('Ymd').'-'.str_pad(fake()->unique()->numberBetween(1, 9999), 4, '0', STR_PAD_LEFT),
+            'customer_id' => Customer::factory(),
             'hire_from' => $hireFrom,
             'hire_to' => $hireTo,
             'status' => fake()->randomElement(['draft', 'confirmed', 'active', 'completed', 'cancelled']),

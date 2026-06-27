@@ -96,21 +96,20 @@ class InventoryVariant extends Model
 
     public function getBarcodeImageUrl(): string
     {
-         $generator = new BarcodeGeneratorPNG();
-         $barcodeData = $generator->getBarcode(
-             $this->sku,
-             $generator::TYPE_CODE_128
-         // $generator::TYPE_EAN_13
-         );
-//         return 'data:image/png;base64,' . base64_encode($barcodeData);
-         return  base64_encode($barcodeData);
+        $generator = new BarcodeGeneratorPNG;
+        $barcodeData = $generator->getBarcode(
+            $this->sku,
+            $generator::TYPE_CODE_128
+            // $generator::TYPE_EAN_13
+        );
+
+        //         return 'data:image/png;base64,' . base64_encode($barcodeData);
+        return base64_encode($barcodeData);
     }
-
-
 
     public function getBarcodeSvg(): string
     {
-        $generator = new BarcodeGeneratorSVG();
+        $generator = new BarcodeGeneratorSVG;
 
         return $generator->getBarcode(
             $this->sku,

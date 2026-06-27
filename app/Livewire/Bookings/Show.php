@@ -7,10 +7,12 @@ use App\Models\BookingItem;
 use App\Models\CleaningLog;
 use App\Models\DepositRefund;
 use App\Models\Payment;
+use App\Notifications\WhatsAppReturnReminder;
 use Flux\Flux;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
+use Spatie\Permission\Models\Permission;
 
 class Show extends Component
 {
@@ -274,6 +276,75 @@ class Show extends Component
         Flux::toast('Deposit refund recorded.');
     }
 
+    public function sendWhatsAppReturnReminder(): void
+    {
+        abort_unless(auth()->user()->can('bookings.edit'), 403);
+
+        $this->booking->loadMissing('customer', 'items.inventoryItem', 'items.variant');
+
+        $checkedOutItems = $this->booking->items->filter(fn ($i) => $i->status === 'checked_out');
+
+        if ($checkedOutItems->isEmpty()) {
+            Flux::toast(text: 'No checked-out items to remind about.', variant: 'danger');
+
+            return;
+        }
+
+        $customer = $this->booking->customer;
+        $balance = max(0, (float) $this->booking->total_amount - (float) $this->booking->payments()->sum('amount'));
+
+        // Build WhatsApp message
+        $itemsList = $checkedOutItems->map(fn ($i) => ($i->variant ? $i->inventoryItem->name.' ('.$i->variant->name.')' : $i->inventoryItem->name)
+            .' x'.$i->quantity
+        )->implode("\n");
+
+        $message = "*Reminder – Return Due*\n\n"
+            ."Hi {$customer->name},\n\n"
+            ."This is a reminder that your hired item(s) from ".config('app.name')." *({$this->booking->booking_number})* are due for return.\n\n"
+            ."*Hire Period:* {$this->booking->hire_from->format('d M Y')} → {$this->booking->hire_to->format('d M Y')}\n\n"
+            ."*Items:*\n{$itemsList}\n\n";
+
+        if ($balance > 0) {
+            $formattedBalance = number_format($balance, 0);
+            $message .= "*Outstanding Balance:* UGX {$formattedBalance}\n\n";
+        }
+
+        $message .= "Please return the items on time.\nThank you!";
+
+        // Log the reminder
+        $recipients = Permission::where('name', 'bookings.view')
+            ->first()?->users()
+            ->get()
+            ->merge(Permission::where('name', 'bookings.view')
+                ->first()?->roles()->with('users')->get()->flatMap->users)
+            ->unique('id');
+
+        if ($recipients && $recipients->isNotEmpty()) {
+            $notification = new WhatsAppReturnReminder(
+                booking: $this->booking,
+                messagePreview: Str::limit($message, 200),
+            );
+
+            foreach ($recipients as $user) {
+                $user->notify($notification);
+            }
+        }
+
+        Flux::toast(text: 'WhatsApp reminder logged and opened.', variant: 'success');
+
+        // Redirect to WhatsApp
+        $phone = preg_replace('/[^0-9]/', '', $customer->phone);
+        if (! str_starts_with($phone, '256') && strlen($phone) === 9) {
+            $phone = '256'.ltrim($phone, '0');
+        } elseif (strlen($phone) === 10 && str_starts_with($phone, '0')) {
+            $phone = '256'.substr($phone, 1);
+        }
+
+        $waUrl = 'https://wa.me/'.$phone.'?text='.rawurlencode($message);
+
+        $this->js("window.open('{$waUrl}', '_blank')");
+    }
+
     public function transitionStatus(string $status): void
     {
         abort_unless(auth()->user()->can('bookings.edit'), 403);
@@ -305,7 +376,7 @@ class Show extends Component
         if ($status === 'cancelled') {
             $checkedOut = $this->booking->items->filter(fn ($item) => in_array($item->status, ['checked_out', 'in_cleaning']))->count();
             if ($checkedOut > 0) {
-                Flux::toast(text: "Cannot cancel a booking with checked-out items.", variant: 'danger');
+                Flux::toast(text: 'Cannot cancel a booking with checked-out items.', variant: 'danger');
 
                 return;
             }

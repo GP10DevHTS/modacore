@@ -72,7 +72,7 @@ class InventoryItem extends Model
         });
 
         static::created(function ($item) {
-            $item->sku =  $item->sku . '-' . str_pad($item->id, 4, '0', STR_PAD_LEFT);
+            $item->sku = $item->sku.'-'.str_pad($item->id, 4, '0', STR_PAD_LEFT);
             $item->save();
         });
     }

@@ -31,7 +31,7 @@ class InventoryCategory extends Model
         static::creating(function ($category) {
             $category->code ??= app(InventorySkuService::class)->nextCategoryCode();
 
-            if(Auth::check()) {
+            if (Auth::check()) {
                 $category->user_id = Auth::id();
             }
         });

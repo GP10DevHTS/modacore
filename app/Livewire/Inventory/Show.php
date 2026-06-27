@@ -135,12 +135,12 @@ class Show extends Component
 
     public function openCreateVariantModal(): void
     {
-//        abort_unless(auth()->user()->can('inventory.edit'), 403);
+        //        abort_unless(auth()->user()->can('inventory.edit'), 403);
         $this->resetVariantForm();
         $this->variantStock = 1;
         $this->variantRentalPrice = $this->item->base_rental_price;
         $this->variantCostPrice = $this->item->cost_price;
-//        $this->js('$flux.modal("variant-form").show()');
+        //        $this->js('$flux.modal("variant-form").show()');
         Flux::toast('Create variant');
     }
 
@@ -266,8 +266,10 @@ class Show extends Component
         $this->resetValidation();
     }
 
-    public function exportForAjjiScan(){
+    public function exportForAjjiScan()
+    {
         Flux::toast('Exporting for AjjiScan...');
+
         return Excel::download(new AjjiScanVariantExport($this->item->id), Str::slug($this->item->name).'-ajji-scan-variants-'.date('ymdHis').'.xlsx');
     }
 

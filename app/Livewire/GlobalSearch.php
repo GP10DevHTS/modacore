@@ -126,7 +126,7 @@ class GlobalSearch extends Component
         if ($checkedOut->isNotEmpty()) {
             $status = 'checked_out';
             $booking = $checkedOut->first()->booking;
-            $label = 'Checked Out — ' . ($booking?->booking_number ?? 'N/A') . ' (' . ($booking?->customer?->name ?? 'N/A') . ')';
+            $label = 'Checked Out — '.($booking?->booking_number ?? 'N/A').' ('.($booking?->customer?->name ?? 'N/A').')';
             $color = 'amber';
 
             if ($inCleaning->isNotEmpty()) {
@@ -162,9 +162,9 @@ class GlobalSearch extends Component
         $booking = $onBookingPage ? request()->route('booking') : null;
 
         if ($onBookingPage && $booking) {
-            $this->redirect(route('bookings.edit', $booking) . '?item=' . $itemId . ($variantId ? '&variant=' . $variantId : ''));
+            $this->redirect(route('bookings.edit', $booking).'?item='.$itemId.($variantId ? '&variant='.$variantId : ''));
         } else {
-            $this->redirect(route('bookings.create') . '?item=' . $itemId . ($variantId ? '&variant=' . $variantId : ''));
+            $this->redirect(route('bookings.create').'?item='.$itemId.($variantId ? '&variant='.$variantId : ''));
         }
     }
 

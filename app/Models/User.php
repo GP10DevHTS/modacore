@@ -16,11 +16,12 @@ use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable(['name', 'email', 'password', 'phone', 'job_title', 'is_active'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
-class User extends Authenticatable implements  Onboardable
+class User extends Authenticatable implements Onboardable
 {
+    use GetsOnboarded;
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, HasRoles, Notifiable, TwoFactorAuthenticatable;
-    use GetsOnboarded;
 
     protected function casts(): array
     {

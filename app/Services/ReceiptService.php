@@ -29,17 +29,17 @@ class ReceiptService
             ? 'Security deposit for booking '.$booking->booking_number
             : 'Payment for booking '.$booking->booking_number;
 
-//        $item = InvoiceItem::make($description)
-//            ->pricePerUnit((float) $payment->amount)
-//            ->quantity(1);
+        //        $item = InvoiceItem::make($description)
+        //            ->pricePerUnit((float) $payment->amount)
+        //            ->quantity(1);
 
         $items = [];
         foreach ($payment->booking?->items as $item) {
             $items[] = InvoiceItem::make(
-                $item->inventoryItem->name . ( $item->variant ? "(".$item->variant->name.")"  : "")
-                )
+                $item->inventoryItem->name.($item->variant ? '('.$item->variant->name.')' : '')
+            )
                 ->pricePerUnit((float) $item->unit_price)
-                ->quantity($item->quantity );
+                ->quantity($item->quantity);
         }
 
         $notes = collect([
@@ -66,7 +66,7 @@ class ReceiptService
         $invoice->custom_fields = [
             'invoice_total' => $payment->booking?->total_amount ?? '0.00',
             'previous_payment' => $payment->booking?->payments()->where('id', '<', $payment->id)->sum('amount') ?? '0.00',
-//            'payment_received' => $payment->amount,
+            //            'payment_received' => $payment->amount,
             'balance_due' => max(0, $payment->booking?->total_amount - $payment->booking?->payments()->sum('amount')),
         ];
 

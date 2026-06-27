@@ -3,10 +3,11 @@
 use App\Models\User;
 use App\Notifications\BookingAlertNotification;
 use App\Notifications\OverdueInvoiceNotification;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 // ─── Dashboard ─────────────────────────────────────────────────────────────
 
