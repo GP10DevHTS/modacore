@@ -28,7 +28,7 @@ class Show extends Component
 
     public string $variantRentalPrice = '';
 
-    public string $variantCostPrice = '';
+    public $variantCostPrice = '';
 
     public int $variantStock = 0;
 
