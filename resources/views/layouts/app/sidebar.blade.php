@@ -741,76 +741,60 @@
                 @endif
             </div>
 
-            @if (auth()->user()->onboarding()->inProgress())
-                <flux:spacer />
+            {{-- Global Search --}}
+            @livewire('global-search')
 
-                <div class="erp-search">
+            {{-- Actions --}}
+            <div class="erp-topbar-actions">
+                @if (auth()->user()->onboarding()->inProgress())
                     <flux:dropdown>
-                        {{-- Trigger Button --}}
-                        <flux:button variant="ghost" size="sm" icon:trailing="chevron-down" class="flex items-center gap-2">
-                            <span>Complete Setup</span>
+                        <button type="button"
+                            class="flex items-center gap-1.5 rounded-lg border border-zinc-700/50 bg-zinc-800/80 px-2.5 py-1.5 text-xs font-medium text-zinc-200 hover:bg-zinc-700 hover:text-white transition-colors">
+                            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Complete Setup
+                            <span class="rounded-full bg-purple-500/20 px-1.5 py-0.5 text-[10px] font-bold text-purple-300">{{ Auth::user()->onboarding()->percentageCompleted() }}%</span>
+                            <svg class="size-3 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
 
-                            <flux:badge color="purple" size="sm">
-                                {{ Auth::user()->onboarding()->percentageCompleted() }}%
-                            </flux:badge>
-                        </flux:button>
-
-                        {{-- Dropdown Content --}}
                         <flux:menu class="w-72 p-2">
+                            <div class="px-3 py-2 text-xs text-zinc-500">Complete these steps to finish setup</div>
 
-                            {{-- Header --}}
-                            <div class="px-3 py-2 text-xs text-gray-500">
-                                Complete these steps to finish setup
-                            </div>
-
-                            {{-- Progress Bar --}}
                             <div class="px-3 pb-3">
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div
-                                        class="bg-purple-500 h-2 rounded-full transition-all duration-300"
-                                        style="width: {{ Auth::user()->onboarding()->percentageCompleted() }}%">
-                                    </div>
+                                <div class="w-full rounded-full h-2 bg-zinc-200 dark:bg-zinc-700">
+                                    <div class="bg-purple-500 h-2 rounded-full transition-all duration-300"
+                                        style="width: {{ Auth::user()->onboarding()->percentageCompleted() }}%"></div>
                                 </div>
                             </div>
 
-                            {{-- Steps --}}
                             @foreach (auth()->user()->onboarding()->steps as $step)
                                 @php $isComplete = $step->complete(); @endphp
-
-                                <flux:menu.item class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50">
-
-                                    {{-- Icon --}}
+                                <flux:menu.item class="flex items-center gap-3 px-3 py-2 rounded-lg">
                                     <div>
                                         @if($isComplete)
                                             <flux:icon name="check-circle" class="text-zinc-400 w-5 h-5"/>
                                         @else
-                                            <flux:icon name="clock" class="text-gray-400 w-5 h-5"/>
+                                            <flux:icon name="clock" class="text-zinc-400 w-5 h-5"/>
                                         @endif
                                     </div>
-
-                                    {{-- Step Text --}}
                                     <div class="flex flex-col">
-                                        <span class="text-sm {{ $isComplete ? 'text-gray-400 line-through' : 'text-gray-800' }}">
+                                        <span class="text-sm {{ $isComplete ? 'text-zinc-400 line-through' : 'text-zinc-800 dark:text-zinc-200' }}">
                                             {{ $loop->iteration }}. {{ $step->title }}
                                         </span>
-
                                         @if(!$isComplete)
                                             <flux:link href="{{$step->link}}" size="sm">{{ $step->cta }}</flux:link>
                                         @endif
                                     </div>
-
                                 </flux:menu.item>
                             @endforeach
-
                         </flux:menu>
                     </flux:dropdown>
-                </div>
+                @endif
 
-                <flux:spacer />
-            @endif
-
-            {{-- Actions --}}
-            <div class="erp-topbar-actions">
                 {{-- Notifications bell --}}
                 @livewire('notifications.bell')
 

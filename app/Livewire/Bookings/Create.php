@@ -12,6 +12,7 @@ use Flux\Flux;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 class Create extends Component
@@ -74,6 +75,12 @@ class Create extends Component
 
     public string $newCustomerHeight = '';
 
+    #[Url(as: 'item')]
+    public ?int $preselectedItemId = null;
+
+    #[Url(as: 'variant')]
+    public ?int $preselectedVariantId = null;
+
     public function mount(?Booking $booking = null): void
     {
         if ($booking) {
@@ -103,6 +110,14 @@ class Create extends Component
                 'item_name' => $line->inventoryItem->name,
                 'variant_name' => $line->variant?->name,
             ])->toArray();
+        }
+
+        // Auto-add preselected item AFTER booking items are loaded so it appends, not overwrites
+        if ($this->preselectedItemId && $this->editingBookingId) {
+            $this->autoAddPreselectedItem();
+        } elseif ($this->preselectedItemId) {
+            // For new bookings, just pre-populate the picker fields (dates not set yet)
+            $this->prepopulatePickerFields();
         }
     }
 
@@ -301,6 +316,46 @@ class Create extends Component
         $variant = InventoryItem::find($this->pickerItemId)?->variants()->with('attributeValues')->find($this->pickerVariantId);
         if ($variant && $variant->rental_price !== null) {
             $this->pickerUnitPrice = (string) $variant->rental_price;
+        }
+    }
+
+    public function autoAddPreselectedItem(): void
+    {
+        if ($this->preselectedVariantId) {
+            $variant = InventoryVariant::with('item')->find($this->preselectedVariantId);
+            if (! $variant || ! $variant->item) {
+                return;
+            }
+            $this->pickerItemId = (string) $variant->inventory_item_id;
+            $this->pickerVariantId = (string) $variant->id;
+            $this->pickerUnitPrice = (string) $variant->effectiveRentalPrice();
+            $this->addLineItem();
+        } elseif ($this->preselectedItemId) {
+            $item = InventoryItem::find($this->preselectedItemId);
+            if (! $item) {
+                return;
+            }
+            $this->pickerItemId = (string) $item->id;
+            $this->pickerUnitPrice = (string) $item->base_rental_price;
+            $this->addLineItem();
+        }
+    }
+
+    public function prepopulatePickerFields(): void
+    {
+        if ($this->preselectedVariantId) {
+            $variant = InventoryVariant::with('item')->find($this->preselectedVariantId);
+            if ($variant && $variant->item) {
+                $this->pickerItemId = (string) $variant->inventory_item_id;
+                $this->pickerVariantId = (string) $variant->id;
+                $this->pickerUnitPrice = (string) $variant->effectiveRentalPrice();
+            }
+        } elseif ($this->preselectedItemId) {
+            $item = InventoryItem::find($this->preselectedItemId);
+            if ($item) {
+                $this->pickerItemId = (string) $item->id;
+                $this->pickerUnitPrice = (string) $item->base_rental_price;
+            }
         }
     }
 
