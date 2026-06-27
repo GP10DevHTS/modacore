@@ -4,6 +4,7 @@ namespace App\Livewire\Bookings;
 
 use App\Models\Booking;
 use Flux\Flux;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -79,7 +80,7 @@ class Index extends Component
 
         $booking = Booking::findOrFail($this->cancellingId);
 
-        if ($booking->status === 'cancelled' || $booking->status === 'completed') {
+        if (! in_array($booking->status, ['draft', 'confirmed'])) {
             Flux::toast(text: 'This booking cannot be cancelled.', variant: 'danger');
             $this->js('$flux.modal("cancel-booking").close()');
 
@@ -118,6 +119,15 @@ class Index extends Component
 
         if ($booking->status !== 'active') {
             Flux::toast(text: 'Only active bookings can be marked as completed.', variant: 'danger');
+
+            return;
+        }
+
+        $booking->load('items');
+        $unreturned = $booking->items->filter(fn ($item) => $item->status !== 'returned')->count();
+
+        if ($unreturned > 0) {
+            Flux::toast(text: 'Cannot complete booking — '.$unreturned.' '.Str::plural('item', $unreturned).' not yet returned.', variant: 'danger');
 
             return;
         }

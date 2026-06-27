@@ -262,8 +262,8 @@ class Show extends Component
         $allowed = [
             'draft' => ['confirmed', 'cancelled'],
             'confirmed' => ['active', 'cancelled'],
-            'active' => ['completed', 'cancelled'],
-            'completed' => ['cancelled'],
+            'active' => ['completed'],
+            'completed' => [],
         ];
 
         $current = $this->booking->status;
