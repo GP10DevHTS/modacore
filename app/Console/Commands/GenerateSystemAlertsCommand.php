@@ -147,12 +147,19 @@ class GenerateSystemAlertsCommand extends Command
             return;
         }
 
-        $recipients = $permission->users()
+        $currentHour = (int) now()->format('G');
+
+        // Get all users with bookings.view permission, filtered by their preferred hour
+        $users = $permission->users()
             ->get()
             ->merge($permission->roles()->with('users')->get()->flatMap->users)
-            ->unique('id');
+            ->unique('id')
+            ->filter(fn ($user) => $user->reminder_hour === null || (int) $user->reminder_hour === $currentHour
+            );
 
-        if ($recipients->isEmpty()) {
+        if ($users->isEmpty()) {
+            $this->line('  → 0 users eligible for due-return alerts at this hour.');
+
             return;
         }
 
@@ -181,13 +188,15 @@ class GenerateSystemAlertsCommand extends Command
         $count = 0;
         foreach ($bookings as $booking) {
             $checkedOutCount = $booking->items->filter(fn ($i) => $i->status === 'checked_out')->count();
-            $pendingReminder = DB::table('notifications')
+
+            // Skip if reminder was already sent today (WhatsApp log exists)
+            $reminderSentToday = DB::table('notifications')
                 ->where('type', WhatsAppReturnReminder::class)
                 ->whereDate('created_at', today())
                 ->whereRaw("json_extract(data, '$.booking_id') = ?", [$booking->id])
                 ->exists();
 
-            if ($pendingReminder) {
+            if ($reminderSentToday) {
                 continue;
             }
 
@@ -201,7 +210,7 @@ class GenerateSystemAlertsCommand extends Command
                 iconType: 'warning',
             );
 
-            foreach ($recipients as $user) {
+            foreach ($users as $user) {
                 $alreadySent = DB::table('notifications')
                     ->where('notifiable_id', $user->id)
                     ->where('type', BookingAlertNotification::class)
@@ -214,6 +223,9 @@ class GenerateSystemAlertsCommand extends Command
                     $count++;
                 }
             }
+
+            // Update alert_sent_at on the booking
+            $booking->update(['alert_sent_at' => now()]);
         }
 
         $this->line("  → {$count} due-return alert(s) generated.");

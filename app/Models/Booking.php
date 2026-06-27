@@ -18,7 +18,7 @@ class Booking extends Model
 
     protected $fillable = [
         'booking_number', 'customer_id', 'hire_from', 'hire_to',
-        'status', 'total_amount', 'notes', 'created_by',
+        'status', 'total_amount', 'notes', 'created_by', 'alert_sent_at',
     ];
 
     protected function casts(): array
@@ -27,6 +27,7 @@ class Booking extends Model
             'hire_from' => 'datetime',
             'hire_to' => 'datetime',
             'total_amount' => 'decimal:2',
+            'alert_sent_at' => 'datetime',
         ];
     }
 

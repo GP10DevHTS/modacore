@@ -300,7 +300,7 @@ class Show extends Component
 
         $message = "*Reminder – Return Due*\n\n"
             ."Hi {$customer->name},\n\n"
-            ."This is a reminder that your hired item(s) from ".config('app.name')." *({$this->booking->booking_number})* are due for return.\n\n"
+            .'This is a reminder that your hired item(s) from '.config('app.name')." *({$this->booking->booking_number})* are due for return.\n\n"
             ."*Hire Period:* {$this->booking->hire_from->format('d M Y')} → {$this->booking->hire_to->format('d M Y')}\n\n"
             ."*Items:*\n{$itemsList}\n\n";
 
@@ -311,24 +311,26 @@ class Show extends Component
 
         $message .= "Please return the items on time.\nThank you!";
 
-        // Log the reminder
-        $recipients = Permission::where('name', 'bookings.view')
-            ->first()?->users()
-            ->get()
-            ->merge(Permission::where('name', 'bookings.view')
-                ->first()?->roles()->with('users')->get()->flatMap->users)
-            ->unique('id');
+//        // Log the reminder
+//        $recipients = Permission::where('name', 'bookings.view')
+//            ->first()?->users()
+//            ->get()
+//            ->merge(Permission::where('name', 'bookings.view')
+//                ->first()?->roles()->with('users')->get()->flatMap->users)
+//            ->unique('id');
+//
+//        if ($recipients && $recipients->isNotEmpty()) {
+//            $notification = new WhatsAppReturnReminder(
+//                booking: $this->booking,
+//                messagePreview: Str::limit($message, 200),
+//            );
+//
+//            foreach ($recipients as $user) {
+//                $user->notify($notification);
+//            }
+//        }
 
-        if ($recipients && $recipients->isNotEmpty()) {
-            $notification = new WhatsAppReturnReminder(
-                booking: $this->booking,
-                messagePreview: Str::limit($message, 200),
-            );
-
-            foreach ($recipients as $user) {
-                $user->notify($notification);
-            }
-        }
+        $this->booking->update(['alert_sent_at' => now()]);
 
         Flux::toast(text: 'WhatsApp reminder logged and opened.', variant: 'success');
 

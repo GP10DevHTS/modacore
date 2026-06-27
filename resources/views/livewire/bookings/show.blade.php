@@ -343,6 +343,17 @@
                             {{ implode(' ', $parts) ?: '—' }}
                         </dd>
                     </div>
+                    @if($booking->alert_sent_at)
+                        <div class="border-t border-zinc-100 pt-2.5 dark:border-zinc-700/60">
+                            <dt class="mb-1 text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Last Alert Sent</dt>
+                            <dd class="inline-flex items-center gap-1.5 rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 dark:bg-amber-900/20 dark:text-amber-400">
+                                <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                </svg>
+                                {{ $booking->alert_sent_at->format('d M Y, H:i') }}
+                            </dd>
+                        </div>
+                    @endif
                     @if($booking->notes)
                         <div class="border-t border-zinc-100 pt-2.5 dark:border-zinc-700/60">
                             <dt class="mb-1 text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Notes</dt>

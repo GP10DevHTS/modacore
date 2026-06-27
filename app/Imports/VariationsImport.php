@@ -3,7 +3,6 @@
 namespace App\Imports;
 
 use App\Models\InventoryItem;
-use App\Models\InventoryVariant;
 use App\Models\VariantType;
 use App\Services\InventorySkuService;
 use Illuminate\Support\Collection;
