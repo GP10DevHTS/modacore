@@ -52,14 +52,14 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="shrink-0">
-                                    <span class="inline-flex items-center gap-1 rounded-lg bg-amber-500/10 px-2.5 py-1.5 text-xs font-semibold text-amber-600 hover:bg-amber-500/20 dark:text-amber-400 transition-colors">
-                                        <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-                                        </svg>
-                                        {{ $result['on_booking_page'] ? 'Add to Booking' : 'New Booking' }}
-                                    </span>
-                                </div>
+{{--                                <div class="shrink-0">--}}
+{{--                                    <span class="inline-flex items-center gap-1 rounded-lg bg-amber-500/10 px-2.5 py-1.5 text-xs font-semibold text-amber-600 hover:bg-amber-500/20 dark:text-amber-400 transition-colors">--}}
+{{--                                        <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">--}}
+{{--                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>--}}
+{{--                                        </svg>--}}
+{{--                                        {{ $result['on_booking_page'] ? 'Add to Booking' : 'New Booking' }}--}}
+{{--                                    </span>--}}
+{{--                                </div>--}}
                             </div>
                         </button>
                     @endforeach
