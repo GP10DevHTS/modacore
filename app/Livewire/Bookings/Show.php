@@ -94,6 +94,10 @@ class Show extends Component
             'checked_out_at' => now(),
         ]);
 
+        $this->booking->update([
+            'status' => 'active',
+        ]);
+
         $this->booking->refresh()->load(['items.inventoryItem', 'items.variant']);
         Flux::toast('Item marked as checked out.');
     }

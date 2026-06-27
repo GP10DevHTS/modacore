@@ -4,8 +4,8 @@
         $statusConfig = [
             'draft'     => ['pill' => 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400', 'dot' => 'bg-zinc-400', 'label' => 'Draft'],
             'confirmed' => ['pill' => 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400', 'dot' => 'bg-blue-500', 'label' => 'Confirmed'],
-            'active'    => ['pill' => 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400', 'dot' => 'bg-emerald-500 animate-pulse', 'label' => 'Active'],
-            'completed' => ['pill' => 'bg-violet-50 text-violet-700 dark:bg-violet-900/20 dark:text-violet-400', 'dot' => 'bg-violet-500', 'label' => 'Completed'],
+            'active'    => ['pill' => 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400', 'dot' => 'bg-emerald-500 animate-pulse', 'label' => 'Taken'],
+            'completed' => ['pill' => 'bg-violet-50 text-violet-700 dark:bg-violet-900/20 dark:text-violet-400', 'dot' => 'bg-violet-500', 'label' => 'Returned'],
             'cancelled' => ['pill' => 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400', 'dot' => 'bg-red-500', 'label' => 'Cancelled'],
         ];
         $cfg = $statusConfig[$booking->status] ?? $statusConfig['draft'];
@@ -67,7 +67,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    Mark Active
+                    Mark Taken
                 </button>
             @endif
             @if($booking->status === 'active')
@@ -76,10 +76,10 @@
                     <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                     </svg>
-                    Mark Completed
+                    Mark Returned
                 </button>
             @endif
-            @if(! in_array($booking->status, ['cancelled', 'completed']))
+            @if(! in_array($booking->status, ['cancelled', 'completed','active']))
                 <button wire:click="transitionStatus('cancelled')"
                     class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3.5 py-2 text-sm font-semibold text-red-600 hover:bg-red-100 dark:border-red-800/30 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30 transition-colors">
                     <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -123,7 +123,9 @@
                                 <div class="flex items-center gap-2.5 flex-wrap">
                                     <span class="font-semibold text-zinc-900 dark:text-zinc-100">{{ $item->inventoryItem->name }}</span>
                                     @if($item->variant)
-                                        <span class="rounded bg-zinc-100 px-1.5 py-0.5 text-xs font-medium text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">{{ $item->variant->name }}</span>
+                                        <span class="rounded bg-zinc-100 px-1.5 py-0.5 text-xs font-medium text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+                                            {{ $item->variant->name }} ({{ $item->variant->sku }})
+                                        </span>
                                     @endif
                                     <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold {{ $icfg['pill'] }}">
                                         {{ $icfg['label'] }}

@@ -36,7 +36,7 @@
             <div class="flex gap-1.5">
                 @foreach(['', 'draft', 'confirmed', 'active', 'completed', 'cancelled'] as $s)
                     @php
-                        $labels = ['' => 'All', 'draft' => 'Draft', 'confirmed' => 'Confirmed', 'active' => 'Active', 'completed' => 'Completed', 'cancelled' => 'Cancelled'];
+                        $labels = ['' => 'All', 'draft' => 'Draft', 'confirmed' => 'Confirmed', 'active' => 'Taken', 'completed' => 'Returned', 'cancelled' => 'Cancelled'];
                         $colors = [
                             '' => 'bg-zinc-100 text-zinc-700 ring-zinc-200 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:ring-zinc-700',
                             'draft' => 'bg-zinc-100 text-zinc-700 ring-zinc-200 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:ring-zinc-700',
@@ -110,57 +110,62 @@
                         <td class="px-5 py-3.5 text-center">
                             <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold {{ $cfg['pill'] }}">
                                 <span class="size-1.5 rounded-full {{ $cfg['dot'] }}"></span>
-                                {{ ucfirst($booking->status) }}
+                                {{ ucfirst($booking->status == 'active' ? 'Taken' : ($booking->status == 'completed' ? 'Returned' : $booking->status) ) }}
                             </span>
                         </td>
 
                         <td class="px-5 py-3.5 text-right">
                             <div class="flex items-center justify-end gap-1">
-                                <a href="{{ route('bookings.show', $booking->id) }}" wire:navigate
-                                    class="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-700 dark:hover:text-zinc-300 transition-colors"
-                                    title="View">
-                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                    </svg>
-                                </a>
+                                <flux:tooltip content="View Details">
+                                    <a href="{{ route('bookings.show', $booking->id) }}" wire:navigate
+                                        class="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-700 dark:hover:text-zinc-300 transition-colors">
+                                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                    </a>
+                                </flux:tooltip>
                                 @can('bookings.edit')
                                 @if($booking->status === 'draft')
-                                    <button wire:click="openConfirm({{ $booking->id }})"
-                                        class="rounded-lg p-1.5 text-zinc-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 transition-colors"
-                                        title="Confirm">
-                                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                    </button>
+                                    <flux:tooltip content="Confirm">
+                                        <button wire:click="openConfirm({{ $booking->id }})"
+                                            class="rounded-lg p-1.5 text-zinc-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 transition-colors">
+                                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                        </button>
+                                    </flux:tooltip>
                                 @endif
                                 @if($booking->status === 'confirmed')
-                                    <button wire:click="markActive({{ $booking->id }})"
-                                        class="rounded-lg p-1.5 text-zinc-400 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-900/20 dark:hover:text-emerald-400 transition-colors"
-                                        title="Mark Active">
-                                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                    </button>
+                                    <flux:tooltip content="Mark Taken">
+                                        <button wire:click="markActive({{ $booking->id }})"
+                                            class="rounded-lg p-1.5 text-zinc-400 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-900/20 dark:hover:text-emerald-400 transition-colors">
+                                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                        </button>
+                                    </flux:tooltip>
                                 @endif
                                 @if($booking->status === 'active')
-                                    <button wire:click="markCompleted({{ $booking->id }})"
-                                        class="rounded-lg p-1.5 text-zinc-400 hover:bg-violet-50 hover:text-violet-600 dark:hover:bg-violet-900/20 dark:hover:text-violet-400 transition-colors"
-                                        title="Mark Completed">
-                                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                                        </svg>
-                                    </button>
+                                    <flux:tooltip content="Mark Returned">
+                                        <button wire:click="markCompleted({{ $booking->id }})"
+                                            class="rounded-lg p-1.5 text-zinc-400 hover:bg-violet-50 hover:text-violet-600 dark:hover:bg-violet-900/20 dark:hover:text-violet-400 transition-colors">
+                                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                        </button>
+                                    </flux:tooltip>
                                 @endif
-                                @if($booking->status !== 'cancelled' && $booking->status !== 'completed')
-                                    <button wire:click="openCancel({{ $booking->id }})"
-                                        class="rounded-lg p-1.5 text-zinc-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors"
-                                        title="Cancel">
-                                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                    </button>
+                                @if($booking->status !== 'cancelled' && $booking->status !== 'completed' && $booking->status !== 'active')
+                                    <flux:tooltip content="Cancel">
+                                        <button wire:click="openCancel({{ $booking->id }})"
+                                            class="rounded-lg p-1.5 text-zinc-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors">
+                                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                        </button>
+                                    </flux:tooltip>
                                 @endif
                                 @endcan
                             </div>
