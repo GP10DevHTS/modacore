@@ -87,6 +87,16 @@ class Index extends Component
             return;
         }
 
+        $booking->load('items');
+        $checkedOut = $booking->items->filter(fn ($item) => in_array($item->status, ['checked_out', 'in_cleaning']))->count();
+
+        if ($checkedOut > 0) {
+            Flux::toast(text: 'Cannot cancel a booking with checked-out items.', variant: 'danger');
+            $this->js('$flux.modal("cancel-booking").close()');
+
+            return;
+        }
+
         $booking->update(['status' => 'cancelled']);
         unset($this->bookings);
         $this->js('$flux.modal("cancel-booking").close()');

@@ -283,6 +283,15 @@ class Show extends Component
             }
         }
 
+        if ($status === 'cancelled') {
+            $checkedOut = $this->booking->items->filter(fn ($item) => in_array($item->status, ['checked_out', 'in_cleaning']))->count();
+            if ($checkedOut > 0) {
+                Flux::toast(text: "Cannot cancel a booking with checked-out items.", variant: 'danger');
+
+                return;
+            }
+        }
+
         $this->booking->update(['status' => $status]);
         $this->booking->refresh();
 
