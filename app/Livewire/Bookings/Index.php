@@ -15,7 +15,8 @@ class Index extends Component
 
     public string $search = '';
 
-    public string $statusFilter = '';
+    /** @var list<string> */
+    public array $statusFilter = ['confirmed', 'active'];
 
     public ?int $confirmingId = null;
 
@@ -27,13 +28,23 @@ class Index extends Component
         return Booking::query()
             ->with(['customer'])
             ->search($this->search)
-            ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
+            ->when($this->statusFilter, fn ($q) => $q->whereIn('status', $this->statusFilter))
             ->latest()
             ->paginate(15);
     }
 
     public function updatedSearch(): void
     {
+        $this->resetPage();
+    }
+
+    public function toggleStatus(string $status): void
+    {
+        if (in_array($status, $this->statusFilter)) {
+            $this->statusFilter = array_values(array_diff($this->statusFilter, [$status]));
+        } else {
+            $this->statusFilter[] = $status;
+        }
         $this->resetPage();
     }
 

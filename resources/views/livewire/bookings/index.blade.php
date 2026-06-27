@@ -34,24 +34,27 @@
                 />
             </div>
             <div class="flex gap-1.5">
-                @foreach(['', 'draft', 'confirmed', 'active', 'completed', 'cancelled'] as $s)
-                    @php
-                        $labels = ['' => 'All', 'draft' => 'Draft', 'confirmed' => 'Confirmed', 'active' => 'Taken', 'completed' => 'Returned', 'cancelled' => 'Cancelled'];
-                        $colors = [
-                            '' => 'bg-zinc-100 text-zinc-700 ring-zinc-200 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:ring-zinc-700',
-                            'draft' => 'bg-zinc-100 text-zinc-700 ring-zinc-200 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:ring-zinc-700',
-                            'confirmed' => 'bg-blue-50 text-blue-700 ring-blue-100 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:ring-blue-800/30',
-                            'active' => 'bg-emerald-50 text-emerald-700 ring-emerald-100 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:ring-emerald-800/30',
-                            'completed' => 'bg-violet-50 text-violet-700 ring-violet-100 hover:bg-violet-100 dark:bg-violet-900/20 dark:text-violet-400 dark:ring-violet-800/30',
-                            'cancelled' => 'bg-red-50 text-red-700 ring-red-100 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:ring-red-800/30',
-                        ];
-                        $activeClass = $statusFilter === $s
-                            ? 'ring-2 font-semibold'
-                            : 'ring-1';
-                    @endphp
-                    <button wire:click="$set('statusFilter', '{{ $s }}')"
-                        class="rounded-md px-2.5 py-1 text-xs transition-colors {{ $colors[$s] }} {{ $activeClass }}">
-                        {{ $labels[$s] }}
+                @php
+                    $statuses = ['draft', 'confirmed', 'active', 'completed', 'cancelled'];
+                    $labels = ['draft' => 'Draft', 'confirmed' => 'Confirmed', 'active' => 'Taken', 'completed' => 'Returned', 'cancelled' => 'Cancelled'];
+                    $colors = [
+                        'draft' => 'bg-zinc-100 text-zinc-700 ring-zinc-200 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:ring-zinc-700',
+                        'confirmed' => 'bg-blue-50 text-blue-700 ring-blue-100 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:ring-blue-800/30',
+                        'active' => 'bg-emerald-50 text-emerald-700 ring-emerald-100 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:ring-emerald-800/30',
+                        'completed' => 'bg-violet-50 text-violet-700 ring-violet-100 hover:bg-violet-100 dark:bg-violet-900/20 dark:text-violet-400 dark:ring-violet-800/30',
+                        'cancelled' => 'bg-red-50 text-red-700 ring-red-100 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:ring-red-800/30',
+                    ];
+                @endphp
+                <button wire:click="$set('statusFilter', [])"
+                    class="rounded-md px-2.5 py-1 text-xs transition-colors bg-zinc-100 text-zinc-700 ring-zinc-200 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:ring-zinc-700 {{ count($statusFilter) === 0 ? 'ring-2 font-semibold' : 'ring-1' }}">
+                    All
+                </button>
+                @foreach($statuses as $s)
+                    <button wire:click="toggleStatus('{{ $s }}')"
+                        class="rounded-md px-2.5 py-1 text-xs transition-colors {{ $colors[$s] }} {{ in_array($s, $statusFilter) ? 'ring-2 font-semibold' : 'ring-1' }}">
+                        <span class="flex items-center gap-1">
+                        {{ $labels[$s] }} @if(in_array($s, $statusFilter)) <flux:icon.check  variant="micro" /> @endif
+                        </span>
                     </button>
                 @endforeach
             </div>
@@ -179,7 +182,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                             </svg>
                             <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                                @if($search || $statusFilter) No bookings match your filters @else No bookings yet @endif
+                                @if($search || count($statusFilter) > 0) No bookings match your filters @else No bookings yet @endif
                             </p>
                         </td>
                     </tr>
